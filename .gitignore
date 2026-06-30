@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+
+# Environment
+.env
+.env.local
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+# Emitted by `tsc -b` for the composite Vite config project
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
