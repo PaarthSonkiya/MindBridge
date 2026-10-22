@@ -41,9 +41,18 @@ def to_simplified(text: str) -> str:
     return cc.convert(text) if cc else text
 
 
+_CJK = r"\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff"
+_FULLWIDTH = {",": "，", ".": "。", "?": "？", "!": "！", ":": "：", ";": "；"}
+_ZH_PUNCT = re.compile(rf"(?<=[{_CJK}”’)])\s*([,.?!:;])(?!\d)\s*")
+
+
+def chinese_punctuation(text: str) -> str:
+    """ASCII punctuation after Chinese characters → full-width (你好,我是 → 你好，我是); decimals stay."""
+    return _ZH_PUNCT.sub(lambda m: _FULLWIDTH[m.group(1)], text)
+
+
 def clean_asr(text: str, lang: str) -> str:
     text = text.strip()
     if lang == "zh":
-        text = to_simplified(text)
-        text = text.replace(",", "，").replace("?", "？").replace("!", "！")
+        text = chinese_punctuation(to_simplified(text))
     return text

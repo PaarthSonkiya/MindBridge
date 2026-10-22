@@ -364,13 +364,19 @@ def _norm(text: str) -> str:
     return " ".join(re.sub(r"[^\w\s]", " ", text.lower()).split())
 
 
-def error_rate(ref: str, hyp: str, lang: str) -> float:
+def error_counts(ref: str, hyp: str, lang: str) -> tuple[int, int]:
+    """(edits, reference length) in words, or in characters for Chinese and Korean."""
     r, h = _norm(ref), _norm(hyp)
     if lang in ("zh", "ko"):
         r, h = list(r.replace(" ", "")), list(h.replace(" ", ""))
     else:
         r, h = r.split(), h.split()
-    return _edit_distance(r, h) / max(1, len(r))
+    return _edit_distance(r, h), len(r)
+
+
+def error_rate(ref: str, hyp: str, lang: str) -> float:
+    e, n = error_counts(ref, hyp, lang)
+    return e / max(1, n)
 
 
 def mt_scores(hyps: list[str], refs: list[str], tgt: str) -> dict:
@@ -406,8 +412,10 @@ def _summarise(hyps, refs, tgt, asr_err, src, lat, extra) -> dict:
         d.update(mt_scores(hyps, refs, tgt))
     else:
         d.update(bleu=None, **{"chrf++": None}, note="no reference translations supplied")
-    if asr_err:
-        d["asr_" + ("cer" if src in ("zh", "ko") else "wer")] = round(100 * statistics.mean(asr_err), 2)
+    if asr_err:  # corpus-level: all edits / all reference words (or characters), as jiwer computes it
+        d["asr_" + ("cer" if src in ("zh", "ko") else "wer")] = round(
+            100 * sum(e for e, _ in asr_err) / max(1, sum(n for _, n in asr_err)), 2)
+        d["asr_error_rate_median"] = round(100 * statistics.median(e / max(1, n) for e, n in asr_err), 2)
     for k, v in lat.items():
         if v:
             d[f"{k}_ms_mean"] = round(statistics.mean(v), 1)
@@ -532,9 +540,9 @@ def main():
                         turn = bridge.talk(audio, sr, src, tgt, "bench", remember=False)
                         rec.update(asr_text=turn.source_text, hypothesis=turn.translation, timings_ms=turn.timings_ms,
                                    asr_backend=turn.asr_backend, audio_seconds=round(turn.audio_seconds, 2))
-                        er = error_rate(it[sk], turn.source_text, src)
-                        rec["asr_error_rate"] = round(er, 4)
-                        asr_err.append(er)
+                        e, n = error_counts(it[sk], turn.source_text, src)
+                        rec["asr_error_rate"] = round(e / max(1, n), 4)
+                        asr_err.append((e, n))
                         for k in lat:
                             if k in turn.timings_ms:
                                 lat[k].append(turn.timings_ms[k])

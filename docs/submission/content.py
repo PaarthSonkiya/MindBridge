@@ -42,9 +42,9 @@ def fields(board: dict | None) -> dict:
     sha = _git_sha()
     tree = f"{REPO}/tree/{BRANCH}"
     T = _json("onevoice_sample_text/summary.json") or {"directions": {}}
-    # Voice runs are split in two folders (each fits a 2-hour job): VI→EN + VI⇄KO + EN recordings, and VI⇄ZH.
+    # Voice runs are split in folders that each fit a 2-hour job: VI→EN + EN recordings, VI⇄KO, VI⇄ZH.
     V = {"directions": {}}
-    for part in ("onevoice_sample_voice", "onevoice_sample_voice_zh"):
+    for part in ("onevoice_sample_voice", "onevoice_sample_voice_ko", "onevoice_sample_voice_zh"):
         r = _json(f"{part}/summary.json")
         if r:
             V["directions"].update(r["directions"])
@@ -232,7 +232,7 @@ def fields(board: dict | None) -> dict:
         "Examples: \"Tôi muốn thuê xe đạp khoảng hai tiếng.\" → \"I'd like to rent a bicycle for two hours.\" "
         "Failure: \"Anh cần thêm dây không?\" → \"You need more rope?\" (reference: \"an extra cable\"): \"dây\" is "
         "ambiguous without context.")
-    q_ev = (f"{tree}/bench/results/published/: onevoice_sample_text/, onevoice_sample_voice/, onevoice_sample_voice_zh/ "
+    q_ev = (f"{tree}/bench/results/published/: onevoice_sample_text/, onevoice_sample_voice/ (VI→EN), _ko/, _zh/ "
             "(results.jsonl: every sentence with source, reference, output and timing; run.log; summary.md)")
 
     latency = (

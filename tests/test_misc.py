@@ -29,6 +29,14 @@ def test_mel_matches_reference_when_available():
     assert np.abs(ref - mine).max() < 1e-4
 
 
+def test_chinese_punctuation():
+    from mindbridge.mt.text import chinese_punctuation
+
+    assert chinese_punctuation("让我先介绍一下,这是我的校长.") == "让我先介绍一下，这是我的校长。"
+    assert chinese_punctuation("你看过我的护照吗?") == "你看过我的护照吗？"
+    assert chinese_punctuation("价格是3.5元. OK, fine.") == "价格是3.5元。OK, fine."
+
+
 def test_sentence_split_and_simplified_chinese():
     from mindbridge.mt.text import clean_asr, split_sentences
 
