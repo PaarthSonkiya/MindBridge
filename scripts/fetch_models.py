@@ -112,6 +112,24 @@ def fetch_nllb(size: str, convert: bool = False):
     (out / "LICENSE.txt").write_text("NLLB-200 weights: CC-BY-NC-4.0 (Meta AI). Non-commercial use.\n")
 
 
+# English ⇄ Vietnamese translator: VietAI envit5-translation (T5, 275M), int8 CTranslate2 build.
+# Pinned to the revision MindBridge was measured with (bench/results/published/mt_compare_*.json).
+ENVIT5 = ("luigi000/envit5-translation-ct2-int8", "f68ae0e2639dacde555fe91a36b74d662848d681")
+
+
+def fetch_envit5():
+    out = MODELS / "mt" / "envit5-translation-ct2-int8"
+    if (out / "model.bin").exists():
+        log(f"have {out.relative_to(ROOT)}")
+        return
+    from huggingface_hub import snapshot_download
+
+    log(f"downloading {ENVIT5[0]} (VietAI/envit5-translation, int8)")
+    snapshot_download(ENVIT5[0], revision=ENVIT5[1], local_dir=str(out),
+                      allow_patterns=["model.bin", "config.json", "shared_vocabulary.json", "spiece.model", "README.md"])
+    shutil.rmtree(out / ".cache", ignore_errors=True)
+
+
 def fetch_cpu_whisper():
     """CPU fallback: Whisper-small converted to CTranslate2 (Systran/faster-whisper-small), loaded as int8."""
     out = MODELS / "asr" / "ct2-whisper-small"
@@ -202,6 +220,8 @@ def main():
         fetch_cpu_whisper()
         licenses["asr/ct2-whisper-small"] = "MIT (OpenAI Whisper; CTranslate2 conversion by Systran)"
     if want("mt"):
+        fetch_envit5()
+        licenses["mt/envit5-translation-ct2-int8"] = "OpenRAIL (VietAI envit5-translation)"
         fetch_nllb(args.nllb, args.convert)
         licenses[f"mt/nllb-200-distilled-{args.nllb}-ct2-int8"] = "CC-BY-NC-4.0 (Meta NLLB-200)"
     if want("asr_npu") and not args.skip_npu:

@@ -9,12 +9,19 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 APP="$HERE/app"
 
 command -v python3 >/dev/null || { echo "python3 is required (preinstalled on Ubuntu 24.04)"; exit 1; }
-python3 -c 'import venv' 2>/dev/null || { echo "python3-venv is missing: sudo apt install python3-venv (needs network once)"; exit 1; }
 
-python3 -m venv "$APP/.venv"
+# Ubuntu ships python3 without ensurepip unless python3-venv is installed (which needs the network).
+# Create the environment without pip and bootstrap pip from the bundled wheel instead.
+if python3 -c 'import ensurepip' 2>/dev/null; then
+  python3 -m venv "$APP/.venv"
+else
+  python3 -m venv --without-pip "$APP/.venv"
+  PIPWHL="$(ls "$HERE"/wheels/pip-*.whl | head -1)"
+  "$APP/.venv/bin/python" "$PIPWHL/pip" install --no-index --quiet "$PIPWHL"
+fi
 . "$APP/.venv/bin/activate"
-pip install --no-index --find-links "$HERE/wheels" -r "$APP/requirements.txt"
-pip install --no-index --find-links "$HERE/wheels" "onnxruntime-qnn>=2.7.0" || echo "Note: onnxruntime-qnn not installed; speech recognition will use the CPU."
+python -m pip install --no-index --find-links "$HERE/wheels" -r "$APP/requirements.txt"
+python -m pip install --no-index --find-links "$HERE/wheels" "onnxruntime-qnn>=2.7.0" || echo "Note: onnxruntime-qnn not installed; speech recognition will use the CPU."
 
 rm -rf "$APP/models"
 ln -s "$HERE/models" "$APP/models"

@@ -1,0 +1,82 @@
+<!doctype html>
+<!-- Source of docs/img/architecture.png (render: python docs/img/render.py). Sized for an A4 page. -->
+<html><head><meta charset="utf-8"><title>MindBridge architecture</title>
+<style>
+  :root { --navy:#0a2357; --cyan:#00b4d8; --ink:#1a1a2e; --grey:#6b7280; --wash:#f2f4f7; --npu:#e6f7fb; --line:#c9d1de; }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1200px; padding: 20px; font-family: Arial, "Liberation Sans", sans-serif; color: var(--ink); background: #fff; }
+  .io { font-size: 19px; font-weight: 700; color: var(--navy); padding: 4px 0 10px 4px; }
+  .io.out { padding: 10px 0 4px 4px; }
+  .device { border: 3px solid var(--navy); border-radius: 18px; padding: 62px 22px 22px; position: relative; }
+  .device > .label { position: absolute; top: -1px; left: -1px; background: var(--navy); color: #fff; font-weight: 700;
+    font-size: 20px; padding: 10px 18px; border-radius: 16px 0 14px 0; }
+  .device > .net { position: absolute; top: 14px; right: 20px; font-size: 17px; color: var(--navy); font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 0 22px; }
+  .flow { display: flex; flex-direction: column; }
+  .box { border: 2px solid var(--line); border-radius: 12px; padding: 12px 16px 14px; background: #fff; position: relative; }
+  .box h3 { font-size: 21px; color: var(--navy); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .box p { font-size: 17px; line-height: 1.38; }
+  .box p + p { margin-top: 5px; }
+  .unit { font-size: 15px; font-weight: 700; padding: 4px 10px; border-radius: 6px; background: var(--wash); color: var(--navy); white-space: nowrap; }
+  .box.npu { border-color: var(--cyan); background: var(--npu); }
+  .box.npu .unit { background: var(--cyan); color: #fff; }
+  .down { height: 26px; position: relative; }
+  .down::before { content: ""; position: absolute; left: 50%; top: 2px; bottom: 9px; width: 3px; margin-left: -1.5px; background: var(--navy); }
+  .down::after { content: ""; position: absolute; left: 50%; bottom: 1px; margin-left: -8px; border-top: 11px solid var(--navy);
+    border-left: 8px solid transparent; border-right: 8px solid transparent; }
+  .note { font-size: 15px; color: var(--grey); margin-top: 6px; }
+  .side { display: flex; flex-direction: column; gap: 14px; }
+  .side .box { background: var(--wash); border-color: var(--wash); flex: 1; }
+  .dev { margin-top: 14px; border: 2px dashed #9aa3b2; border-radius: 12px; padding: 10px 16px; font-size: 16px; color: var(--grey); line-height: 1.35; }
+  .dev b { color: var(--ink); }
+</style></head>
+<body>
+  <div class="io">Speaker's voice in: USB mic, headset or the kit's onboard mic (push-to-talk)</div>
+  <div class="device">
+    <div class="label">On the device: Qualcomm RB3 Gen 2 (QCS6490, 6 GB RAM), Ubuntu 24.04</div>
+    <div class="net">Network off · outbound blocked</div>
+    <div class="grid">
+      <div class="flow">
+        <div class="box">
+          <h3>Audio front end <span class="unit">Kryo CPU</span></h3>
+          <p>16 kHz mono, 80 Hz high-pass; Silero VAD v5 trims silence and ends the turn</p>
+        </div>
+        <div class="down"></div>
+        <div class="box npu">
+          <h3>Speech recognition <span class="unit">Hexagon NPU (HTP v68)</span></h3>
+          <p><b>Whisper large-v3-turbo, w8a16</b>: Qualcomm AI Hub build for QCS6490 (QNN context binaries, QAIRT 2.50)</p>
+          <p>ONNX Runtime 1.24 + onnxruntime-qnn 2.7.0 (QAIRT 2.51, HTP backend, CPU fallback off)</p>
+          <div class="note">If the NPU is unavailable: Whisper-small int8 on the CPU (CTranslate2)</div>
+        </div>
+        <div class="down"></div>
+        <div class="box">
+          <h3>Translation <span class="unit">Kryo CPU</span></h3>
+          <p><b>EN ⇄ VI: envit5</b> (T5, 275M) int8, greedy</p>
+          <p><b>KO ⇄ VI, ZH ⇄ VI: NLLB-200 distilled 1.3B</b> int8, beam 2</p>
+          <p>Both on CTranslate2 4.x; each model loads only when its pair is used</p>
+        </div>
+        <div class="down"></div>
+        <div class="box">
+          <h3>Speech output <span class="unit">Kryo CPU</span></h3>
+          <p>Piper VITS voices (vi, en, zh), Supertonic-3 (ko), via sherpa-onnx</p>
+        </div>
+      </div>
+      <div class="side">
+        <div class="box">
+          <h3>Touchscreen UI</h3>
+          <p>FastAPI on 127.0.0.1 + full-screen browser on HDMI. One button per speaker (or keys 1 / 2); recording stops on silence. Translation in large type and spoken.</p>
+        </div>
+        <div class="box">
+          <h3>Operational memory</h3>
+          <p>English pivot → rule extractor → SQLite. Warns when an order contradicts an active restriction, asks the listener a check question, answers "can we restart Machine 4?", writes the shift handover.</p>
+        </div>
+        <div class="box">
+          <h3>Evidence</h3>
+          <p>Per-turn timings, peak RAM, model sizes and network state on screen and in the benchmark logs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="io out">Out: translated text on the listener's side of the screen + speech from the speaker / headphones</div>
+  <div class="dev"><b>Development only, not in the runtime:</b> Qualcomm AI Hub (download of the QCS6490 Whisper builds; profiling on hosted RB3 Gen 2 devices). The installed package needs no account, API key or network.</div>
+</body></html>

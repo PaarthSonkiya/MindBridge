@@ -1,6 +1,6 @@
 """The MindBridge pipeline: speech → text → translation → speech, plus memory.
 
-    mic ─▶ high-pass + VAD trim ─▶ Whisper (NPU) ─▶ NLLB (CPU) ─▶ VITS TTS (CPU) ─▶ speaker
+    mic ─▶ high-pass + VAD trim ─▶ Whisper (NPU) ─▶ envit5 / NLLB (CPU) ─▶ VITS TTS (CPU) ─▶ speaker
                                           │
                                           └──▶ English pivot ─▶ Operational Memory (SQLite)
 
@@ -23,7 +23,7 @@ from mindbridge.audio import dsp
 from mindbridge.config import REPO_ROOT, AppConfig
 from mindbridge.memory import MemoryEngine, MemoryStore
 from mindbridge.metrics import files_size_mb
-from mindbridge.mt import NllbTranslator
+from mindbridge.mt import MtRouter
 from mindbridge.mt.text import clean_asr
 from mindbridge.tts import Tts
 
@@ -81,13 +81,8 @@ class MindBridge:
         self.load_ms["asr"] = (time.perf_counter() - t) * 1e3
 
         t = time.perf_counter()
-        self.mt = NllbTranslator(
-            mp / cfg.mt.model_dir,
-            beam_size=cfg.mt.beam_size,
-            threads=cfg.mt.threads,
-            max_decoding_length=cfg.mt.max_decoding_length,
-            phrasebook=REPO_ROOT / "config" / "phrasebook.json",
-        )
+        self.mt = MtRouter(mp, cfg.mt, phrasebook=REPO_ROOT / "config" / "phrasebook.json")
+        self.mt.preload(cfg.default_pair.split("-"))
         self.load_ms["mt"] = (time.perf_counter() - t) * 1e3
 
         self.tts = Tts(mp / "tts", cfg.tts.threads, cfg.tts.speed) if (load_tts and cfg.tts.enabled) else None
@@ -105,6 +100,8 @@ class MindBridge:
         langs = pair.split("-")
         if hasattr(self.asr, "preload"):
             self.asr.preload(langs)
+        if hasattr(getattr(self, "mt", None), "preload"):
+            self.mt.preload(langs)
         if tts and getattr(self, "tts", None):
             self.tts.preload(langs)
 
@@ -277,9 +274,10 @@ class MindBridge:
             {"stage": "Speech recognition", "model": self.asr.name, "unit": self.asr.compute_unit.upper(),
              "size_mb": round(files_size_mb(self.asr.model_files()), 1),
              "note": getattr(self.asr, "fallback_reason", "")},
-            {"stage": "Translation", "model": self.mt.name, "unit": "CPU",
-             "size_mb": round(files_size_mb(self.mt.model_files()), 1), "note": ""},
         ]
+        for m in getattr(self.mt, "loaded", None) or [self.mt]:
+            rows.append({"stage": "Translation", "model": m.name, "unit": "CPU",
+                         "size_mb": round(files_size_mb(m.model_files()), 1), "note": ""})
         if self.vad is not None:
             rows.insert(0, {"stage": "Voice activity", "model": "Silero VAD v5", "unit": "CPU",
                             "size_mb": round(files_size_mb([str(self.cfg.models_path / 'vad' / 'silero_vad.onnx')]), 1), "note": ""})

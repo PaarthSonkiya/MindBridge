@@ -84,10 +84,39 @@ def cmd_talk(args, cfg):
             player.play(turn.tts_audio, turn.tts_sample_rate, block=True)
 
 
-def cmd_translate(args, cfg):
-    from mindbridge.mt import NllbTranslator
+def cmd_file(args, cfg):
+    """Run recorded files through the full pipeline (no microphone needed): transcript, translation, timings."""
+    import soundfile as sf
 
-    mt = NllbTranslator(cfg.models_path / cfg.mt.model_dir, cfg.mt.beam_size, cfg.mt.threads)
+    from mindbridge.metrics import network_snapshot, peak_rss_mb
+    from mindbridge.pipeline import MindBridge
+
+    if cfg.strict_offline:
+        offline_guard.install()
+    bridge = MindBridge(cfg, load_memory=False)
+    bridge.preload_pair(f"{args.src}-{args.tgt}")
+    print(f"ASR: {bridge.asr.name} | MT: {bridge.mt.name} | network default route: "
+          f"{network_snapshot()['has_default_route']}")
+    for path in args.wav:
+        audio, sr = sf.read(path, dtype="float32", always_2d=False)
+        if audio.ndim > 1:
+            audio = audio.mean(axis=1)
+        turn = bridge.talk(audio, sr, args.src, args.tgt, "file", remember=False)
+        print(f"\n{path} ({turn.audio_seconds:.1f} s)\n  [{turn.speaker_lang}] {turn.source_text}\n"
+              f"  [{args.tgt}] {turn.translation}")
+        print("  " + ", ".join(f"{k} {v:.0f} ms" for k, v in turn.timings_ms.items() if "." not in k))
+        if args.play and turn.tts_audio is not None:
+            from mindbridge.audio.io import Player
+
+            Player(cfg.audio.output_device).play(turn.tts_audio, turn.tts_sample_rate, block=True)
+    print(f"\npeak RAM {peak_rss_mb():.0f} MB")
+
+
+def cmd_translate(args, cfg):
+    from mindbridge.config import REPO_ROOT
+    from mindbridge.mt import MtRouter
+
+    mt = MtRouter(cfg.models_path, cfg.mt, phrasebook=REPO_ROOT / "config" / "phrasebook.json")
     r = mt.translate(args.text, args.src, args.tgt)
     print(r.text)
     print(f"({r.timings_ms['mt']:.0f} ms)", file=sys.stderr)
@@ -107,6 +136,8 @@ def cmd_doctor(args, cfg):
         "asr_cpu": mp / cfg.asr.cpu_model_dir,
         "mt": mp / cfg.mt.model_dir,
     }
+    if cfg.mt.en_vi_model_dir:
+        checks["mt_en_vi"] = mp / cfg.mt.en_vi_model_dir
     from mindbridge import languages as L
 
     for lang in L.LANGUAGES.values():
@@ -143,6 +174,11 @@ def main(argv=None):
     s.add_argument("--port", type=int, default=0)
     t = sub.add_parser("talk", help="terminal push-to-talk")
     t.add_argument("--pair", default="")
+    f = sub.add_parser("file", help="translate recorded .wav files end to end (no microphone needed)")
+    f.add_argument("wav", nargs="+")
+    f.add_argument("--src", default="en")
+    f.add_argument("--tgt", default="vi")
+    f.add_argument("--play", action="store_true", help="also play the spoken translation")
     tr = sub.add_parser("translate", help="translate one line of text")
     tr.add_argument("text")
     tr.add_argument("--src", default="en")
@@ -152,7 +188,12 @@ def main(argv=None):
     args = p.parse_args(argv)
     _setup_logging(args.verbose)
     cfg = load_config(args.config)
-    return {"serve": cmd_serve, "talk": cmd_talk, "translate": cmd_translate, "doctor": cmd_doctor}[args.cmd](args, cfg)
+    if args.cmd == "serve":  # keep a log next to the memory database for troubleshooting
+        fh = logging.FileHandler(cfg.data_path / "mindbridge.log", encoding="utf-8")
+        fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        logging.getLogger().addHandler(fh)
+    cmds = {"serve": cmd_serve, "talk": cmd_talk, "file": cmd_file, "translate": cmd_translate, "doctor": cmd_doctor}
+    return cmds[args.cmd](args, cfg)
 
 
 if __name__ == "__main__":

@@ -14,8 +14,8 @@ Everything below runs with the network **off**. The only online step is download
 ## Option A: offline bundle (recommended)
 
 ```bash
-tar -xzf mindbridge-offline-0.3.0-aarch64.tar.gz
-cd mindbridge-offline-0.3.0-aarch64
+tar -xzf mindbridge-offline-0.4.0-aarch64.tar.gz
+cd mindbridge-offline-0.4.0-aarch64
 bash install_offline.sh            # pip --no-index from wheels/, checks every model's sha256
 cd app
 bash scripts/run.sh                # UI full-screen on HDMI

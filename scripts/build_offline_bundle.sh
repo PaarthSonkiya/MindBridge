@@ -24,9 +24,16 @@ PLATS=(--platform manylinux_2_39_aarch64 --platform manylinux_2_35_aarch64 --pla
        --platform manylinux_2_28_aarch64 --platform manylinux_2_27_aarch64 --platform manylinux_2_17_aarch64
        --platform manylinux2014_aarch64 --platform linux_aarch64)
 COMMON=(--python-version "$PY" --implementation cp --abi "cp$PY" --abi abi3 --abi none --only-binary=:all:)
-pip download -r "$ROOT/requirements.txt" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
-# The requirements marker for onnxruntime-qnn is evaluated on THIS machine, so fetch it explicitly.
-pip download "onnxruntime-qnn>=2.7.0" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+if [ -f "$ROOT/requirements-aarch64.lock" ]; then
+  # Exact, tested versions (includes onnxruntime-qnn and every transitive dependency).
+  pip download -r "$ROOT/requirements-aarch64.lock" --no-deps -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+else
+  pip download -r "$ROOT/requirements.txt" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+  # The requirements marker for onnxruntime-qnn is evaluated on THIS machine, so fetch it explicitly.
+  pip download "onnxruntime-qnn>=2.7.0" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+fi
+# pip itself, so the installer can bootstrap it where Ubuntu's python3-venv/ensurepip is missing.
+pip download pip -d "$STAGE/wheels" --no-deps "${PLATS[@]}" "${COMMON[@]}"
 # opencc-python-reimplemented is pure Python but only published as an sdist on some mirrors.
 ls "$STAGE/wheels" | grep -qi opencc || pip wheel --no-deps -w "$STAGE/wheels" opencc-python-reimplemented
 echo "$(ls "$STAGE/wheels" | wc -l) wheels"

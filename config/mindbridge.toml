@@ -1,0 +1,38 @@
+# MindBridge default configuration ("quality mode") for the Qualcomm RB3 Gen 2 (QCS6490).
+# Any key can be overridden with MINDBRIDGE_<SECTION>_<KEY>, e.g. MINDBRIDGE_ASR_BACKEND=cpu.
+# Lower-latency alternative: config/fast.toml.
+
+models_dir = "models"
+data_dir = "data"
+default_pair = "vi-en"        # vi-en | vi-ko | vi-zh (changeable on screen)
+host = "127.0.0.1"            # the UI is only served on this device
+port = 8765
+strict_offline = true         # block every non-loopback connection at run time
+
+[asr]
+backend = "auto"              # auto = Hexagon NPU (QNN) if available, else CPU
+qnn_model_dir = "asr/whisper-large-v3-turbo-quantized-qcs6490"   # Qualcomm AI Hub w8a16 build
+cpu_model_dir = "asr/ct2-whisper-small"                           # CPU fallback (CTranslate2 int8)
+max_tokens = 120
+threads = 4
+
+[mt]
+# English ⇄ Vietnamese: envit5 (T5 275M, int8). Every other pair: NLLB-200 1.3B (int8).
+en_vi_model_dir = "mt/envit5-translation-ct2-int8"
+en_vi_beam_size = 1
+model_dir = "mt/nllb-200-distilled-1.3B-ct2-int8"
+beam_size = 2
+threads = 4
+max_decoding_length = 200
+
+[tts]
+enabled = true
+threads = 2
+speed = 1.0
+
+[audio]
+input_device = ""             # sounddevice name or index; "" = system default
+output_device = ""
+sample_rate = 16000
+vad_endpoint_silence_s = 0.9  # stop recording after this much silence
+max_utterance_s = 25.0

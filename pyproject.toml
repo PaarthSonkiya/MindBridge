@@ -1,6 +1,6 @@
 [project]
 name = "mindbridge"
-version = "0.3.0"
+version = "0.4.0"
 description = "Offline on-device voice translation and operational memory for multilingual factory floors (Qualcomm QCS6490)"
 readme = "README.md"
 requires-python = ">=3.11"

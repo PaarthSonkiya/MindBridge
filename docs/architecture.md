@@ -14,7 +14,7 @@ to reach a non-loopback address fails and is counted (the count is shown in **Ru
                   │                                                │                          │
                   │                                   text in the speaker's language          │
                   │                                                ▼                          │
-                  │                              NLLB-200 1.3B (CTranslate2 int8, CPU)         │
+                  │        envit5 (EN⇄VI) or NLLB-200 1.3B (KO/ZH⇄VI), CTranslate2 int8, CPU   │
                   │                                                ▼                          │
                   │                    text in the listener's language ─▶ UI immediately      │
                   │                                                ▼                          │
@@ -36,9 +36,17 @@ to reach a non-loopback address fails and is counted (the count is shown in **Ru
   Vietnamese word errors on real speech (22.9% → 10.9% on FLEURS). MindBridge drives AI Hub's
   static-shape decoder (200-slot self-attention cache, quantised uint8/uint16 I/O) one token at a
   time from numpy, so no PyTorch is needed on the device.
-* **NLLB on the CPU.** Translation is an autoregressive encoder–decoder with variable-length
-  input. CTranslate2's int8 kernels run NLLB-1.3B on the Kryo cores while the NPU stays free
-  for the next utterance. 1.3B beats 600M by 2–4 BLEU in five of six directions on FLORES.
+* **Translation on the CPU, one model per pair.** Translation is an autoregressive encoder–decoder
+  with variable-length input; CTranslate2's int8 kernels run it on the Kryo cores while the NPU stays
+  free for the next utterance. `mindbridge/mt/router.py` picks the translator per pair and loads it
+  only when that pair is used:
+  * **English ⇄ Vietnamese → envit5** (VietAI, T5 275M). On the organisers' VI→EN samples it scores
+    BLEU 35.0 / chrF++ 54.5 against NLLB-1.3B's 32.0 / 50.9, and on FLORES EN→VI 42.7 against 39.5,
+    while being 5× smaller (266 MB) and several times faster. Capitalised equipment names
+    ("Machine 4") are lower-cased first, otherwise envit5 copies them untranslated.
+  * **Korean/Chinese ⇄ Vietnamese → NLLB-200 distilled 1.3B**, beam 2. NLLB-3.3B was tried and ruled
+    out: it needs 4.6 GB of RAM by itself, more than the 6 GB board can spare next to Whisper.
+  * In a VI ⇄ EN session NLLB is never loaded, which keeps the memory footprint small.
 * **TTS on the CPU.** Piper VITS voices synthesise faster than real time on one or two cores.
 
 ### Speech recognition details (`mindbridge/asr/`)
@@ -58,8 +66,8 @@ to reach a non-loopback address fails and is counted (the count is shown in **Ru
 
 ### Memory layer (`mindbridge/memory/`)
 
-Every utterance is reduced to an English pivot (the English side of the pair, or one extra NLLB
-call for VI⇄KO and VI⇄ZH) and passed to a deterministic extractor that recognises:
+Every utterance is reduced to an English pivot (the English side of the pair, or one extra
+translation call for VI⇄KO and VI⇄ZH) and passed to a deterministic extractor that recognises:
 
 | Kind | Example | What MindBridge does |
 |---|---|---|

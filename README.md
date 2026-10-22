@@ -16,9 +16,10 @@ Qualcomm AI Hub and ONNX Runtime QNN.
 ## How it works
 
 ```
- mic ─▶ high-pass + Silero VAD ─▶ Whisper turbo w8a16 ─▶ NLLB-200 1.3B ─▶ Piper / Supertonic ─▶ speaker
-          (CPU)                    (Hexagon NPU,            (CTranslate2       (CPU)
-                                    AI Hub, QNN)             int8, CPU)
+ mic ─▶ high-pass + Silero VAD ─▶ Whisper turbo w8a16 ─▶ envit5 (EN⇄VI)    ─▶ Piper / Supertonic ─▶ speaker
+          (CPU)                    (Hexagon NPU,            NLLB-200 1.3B        (CPU)
+                                    AI Hub, QNN)            (KO/ZH⇄VI)
+                                                            CTranslate2 int8, CPU
                                           │
                                           └─▶ English pivot ─▶ operational memory (rules + SQLite)
                                                                  conflict · verify · recall · handover
@@ -28,7 +29,8 @@ Qualcomm AI Hub and ONNX Runtime QNN.
 |---|---|---|---|
 | Voice activity | Silero VAD v5 | CPU | 2 MB, trims noise, auto-stops recording |
 | Speech recognition | Whisper large-v3-turbo, w8a16, compiled by Qualcomm AI Hub for QCS6490 (Whisper-small as fast mode) | **Hexagon NPU** (onnxruntime-qnn) | Heaviest model; fixed shapes suit the NPU. Measured on RB3 Gen 2: 1.4 s encoder + 18.5 ms/token, every layer on the NPU |
-| Translation | NLLB-200 distilled 1.3B, CTranslate2 int8 | Kryo CPU | Autoregressive, dynamic shapes; int8 ARM kernels are fast. +2–4 BLEU over 600M on FLORES |
+| Translation, EN ⇄ VI | VietAI envit5-translation (T5, 275M), CTranslate2 int8 | Kryo CPU | Beats NLLB-1.3B on the organisers' VI→EN samples (BLEU 35.0 vs 32.0) and on FLORES EN→VI (42.7 vs 39.5), at a fifth of the size and several times the speed |
+| Translation, KO/ZH ⇄ VI | NLLB-200 distilled 1.3B, CTranslate2 int8 | Kryo CPU | Strongest model that fits the 6 GB board (3.3B needs 4.6 GB on its own); loaded only for these pairs |
 | Speech synthesis | Piper VITS (vi, en, zh), Supertonic-3 (ko) | Kryo CPU | Small, natural, offline |
 | Memory | Deterministic extractor + SQLite | CPU | Explainable, <1 ms, never invents an instruction |
 
@@ -46,8 +48,8 @@ Ubuntu 24.04 on the RB3 Gen 2 with Python 3.12. Download the offline bundle link
 submission, copy it to the board, switch the network off, then:
 
 ```bash
-tar -xzf mindbridge-offline-0.3.0-aarch64.tar.gz
-cd mindbridge-offline-0.3.0-aarch64
+tar -xzf mindbridge-offline-0.4.0-aarch64.tar.gz
+cd mindbridge-offline-0.4.0-aarch64
 bash install_offline.sh          # installs from bundled wheels, verifies model checksums
 cd app && bash scripts/run.sh    # opens the UI full-screen on the HDMI display
 ```
@@ -86,7 +88,7 @@ Published results live in [bench/results/published/](bench/results/published/).
 ```
 mindbridge/        the application (pipeline, ASR/MT/TTS backends, memory, server, UI)
   asr/             Whisper on NPU (QNN) and CPU, numpy log-mel, detokenizer
-  mt/              NLLB on CTranslate2, sentence splitting, phrase cache
+  mt/              envit5 + NLLB on CTranslate2, per-pair router, sentence splitting, phrase cache
   memory/          operational memory objects, extractor, engine, SQLite store
   ui/              offline touchscreen UI (plain HTML/CSS/JS, bundled fonts)
 bench/             benchmark harness
@@ -100,7 +102,7 @@ tests/             unit tests with fake models
 ## Model licences
 
 Whisper (MIT; Qualcomm AI Hub builds under the AI Hub Models licence), Silero VAD (MIT), Supertonic-3 (MIT), Piper voices (see each model card),
-NLLB-200 (CC-BY-NC-4.0, non-commercial; a commercial release would swap in a permissively
+envit5-translation (OpenRAIL, VietAI), NLLB-200 (CC-BY-NC-4.0, non-commercial; a commercial release would swap in a permissively
 licensed translation model). Full list with checksums: `models/manifest.json` after download.
 
 ## Licence

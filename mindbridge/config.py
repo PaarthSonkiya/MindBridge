@@ -29,6 +29,8 @@ class AsrConfig:
 
 @dataclass
 class MtConfig:
+    en_vi_model_dir: str = "mt/envit5-translation-ct2-int8"  # "" = use NLLB for English ⇄ Vietnamese too
+    en_vi_beam_size: int = 1
     model_dir: str = "mt/nllb-200-distilled-1.3B-ct2-int8"
     beam_size: int = 2
     threads: int = 4

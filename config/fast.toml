@@ -1,7 +1,8 @@
 # MindBridge "fast mode": lower latency, lower accuracy.
 #   MINDBRIDGE_CONFIG=config/fast.toml bash scripts/run.sh
-# Whisper-small on the NPU (~0.7 s per sentence vs ~1.8 s for turbo on RB3 Gen 2) and NLLB-600M.
-# Measured cost: Vietnamese WER 22.9% vs 10.9% (FLEURS); 2-4 BLEU lower translation (FLORES).
+# Whisper-small on the NPU (~0.7 s per sentence vs ~1.8 s for turbo on RB3 Gen 2); translators unchanged.
+# Measured cost: Vietnamese WER 22.9% vs 10.9% (FLEURS). For even faster KO/ZH translation, fetch
+# NLLB-600M (scripts/fetch_models.py --nllb 600M) and point model_dir at it (2-4 BLEU lower on FLORES).
 
 models_dir = "models"
 data_dir = "data"
@@ -18,7 +19,9 @@ max_tokens = 120
 threads = 4
 
 [mt]
-model_dir = "mt/nllb-200-distilled-600M-ct2-int8"
+en_vi_model_dir = "mt/envit5-translation-ct2-int8"
+en_vi_beam_size = 1
+model_dir = "mt/nllb-200-distilled-1.3B-ct2-int8"
 beam_size = 2
 threads = 4
 max_decoding_length = 200
