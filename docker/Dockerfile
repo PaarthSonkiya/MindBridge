@@ -1,15 +1,15 @@
 # MindBridge for RB3 Gen 2 (linux/arm64). Build once online, then run fully offline.
 #
-#   docker buildx build --platform linux/arm64 -f docker/Dockerfile -t mindbridge:0.3 .
-#   docker save mindbridge:0.3 | gzip > mindbridge-0.3-arm64.tar.gz      # ship this to judges
+#   docker buildx build --platform linux/arm64 -f docker/Dockerfile -t mindbridge:0.4 .
+#   docker save mindbridge:0.4 | gzip > mindbridge-0.4-arm64.tar.gz      # ship this to judges
 #
 # Run on the device with Wi-Fi/Ethernet switched off (models mounted read-only; NPU and sound passed through).
 # --network host only exposes the UI on 127.0.0.1; MindBridge itself blocks every non-loopback connection.
-#   docker load < mindbridge-0.3-arm64.tar.gz
+#   docker load < mindbridge-0.4-arm64.tar.gz
 #   docker run --rm -it --network host \
 #     --device /dev/fastrpc-cdsp --device /dev/snd -v /usr/lib/dsp:/usr/lib/dsp:ro \
 #     -v "$(ls /usr/lib/aarch64-linux-gnu/libcdsprpc.so* | head -1)":/usr/lib/aarch64-linux-gnu/libcdsprpc.so:ro \
-#     -v $PWD/models:/app/models:ro -v $PWD/data:/app/data mindbridge:0.3
+#     -v $PWD/models:/app/models:ro -v $PWD/data:/app/data mindbridge:0.4
 # libcdsprpc.so (FastRPC client, from the host's Qualcomm packages) is what lets QNN reach the Hexagon DSP;
 # without it the container still works, with speech recognition on the CPU.
 # then open http://127.0.0.1:8765 on the device's browser.

@@ -295,7 +295,7 @@ function setLight(light) { $("#led").className = `led ${light || ""}`; }
 async function showDetails() {
   const st = await (await fetch("/api/status")).json();
   applyStatus(st);
-  const rows = st.models.map((m) => `<tr><td>${esc(m.stage)}</td><td>${esc(m.model)}</td><td>${esc(m.unit)}</td><td>${m.size_mb} MB</td></tr>`).join("");
+  const rows = st.models.map((m) => `<tr><td>${esc(m.stage)}</td><td>${esc(m.model)}${m.note ? `<br><small>${esc(m.note)}</small>` : ""}</td><td>${esc(m.unit)}</td><td>${m.size_mb} MB</td></tr>`).join("");
   const total = st.models.reduce((a, m) => a + m.size_mb, 0).toFixed(0);
   const net = st.offline.network;
   $("#details-body").innerHTML = `

@@ -1,7 +1,8 @@
 # Sample recordings for a first run
 
 Synthetic speech made with MindBridge's own voices (Piper, Supertonic-3), so they can be shipped with the
-package. Use them to check an installation without a microphone:
+package. Use them to check an installation without a microphone (from `app/`, after
+`. .venv/bin/activate`):
 
 ```bash
 python -m mindbridge file samples/en_machine4_restriction.wav --src en --tgt vi

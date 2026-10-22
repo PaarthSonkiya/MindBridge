@@ -25,7 +25,7 @@ Requirements: aarch64 Linux with glibc ≥ 2.34 and Python 3.12 (Ubuntu 24.04), 
 about 8 GB free disk (3.7 GB of models). `python3-venv` is not needed: the installer bootstraps pip
 from the bundle. Without `/dev/fastrpc-cdsp` (no Qualcomm NPU) the same bundle runs with Whisper on the CPU.
 
-No microphone yet? `python -m mindbridge file samples/en_machine4_restriction.wav --src en --tgt vi`.
+No microphone yet? From `app/`: `.venv/bin/python -m mindbridge file samples/en_machine4_restriction.wav --src en --tgt vi`.
 
 ## Option B: Docker
 
@@ -40,6 +40,7 @@ docker run --rm -it --network host --device /dev/fastrpc-cdsp --device /dev/snd 
 ## Verify, then measure
 
 ```bash
+cd app && . .venv/bin/activate             # the offline installer's environment (Ubuntu has no bare `python`)
 python -m mindbridge doctor --run          # models present, NPU status, network state, one test translation
 python -m mindbridge file samples/*.wav --src vi --tgt en            # recorded speech → translation, with timings
 python -m mindbridge translate --file sentences.txt --src vi --tgt en --output out.txt   # one sentence per line
