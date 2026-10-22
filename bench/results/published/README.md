@@ -101,9 +101,24 @@ punctuation (VI→ZH 32.8 → 40.8 BLEU), and every translation keeps the source
 (VI→KO 32.6 → 33.2). EN→VI cannot be scored: the 100 `EV-*.wav` recordings came with the VI→EN sheet
 instead of their own texts.
 
-**Voice in** (recordings → Whisper large-v3-turbo → translation): see `onevoice_sample_voice*/`
-(summary.md in each). The CPU run uses turbo's int8 CTranslate2 weights; the board runs Qualcomm's w8a16
-build of the same model on the NPU.
+**Voice in** (the organisers' recordings → Whisper large-v3-turbo → translation; `onevoice_sample_voice/`,
+`_ko/`, `_zh/`). Error rates are corpus-level (all edits / all reference words, or characters for Korean and
+Chinese).
+
+| Direction | N | BLEU | chrF++ | Speech recognition error | Peak RAM of the run |
+|---|---|---|---|---|---|
+| VI→EN | 100 | 29.55 | 49.2 | 7.6 % WER (Vietnamese) | 2,589 MB |
+| VI→KO | 180 | 30.67 | 27.0 | 4.6 % WER (Vietnamese) | 4,608 MB |
+| KO→VI | 180 | 18.24 | 36.9 | 7.2 % CER (Korean) | (same run) |
+| VI→ZH | 180 | 38.35 | 28.5 | 16.3 % WER (Vietnamese) | 4,650 MB |
+| ZH→VI | 180 | 27.32 | 48.8 | 3.7 % CER (Chinese) | (same run) |
+| EN→VI | 100 | not scored (no reference texts supplied) | | transcripts in results.jsonl | 2,589 MB |
+
+The CPU run uses turbo's int8 CTranslate2 weights (1.5 GB, so peak RAM here is higher than on the board,
+where turbo runs from Qualcomm's w8a16 NPU build); timings on this 2-vCPU machine are not device timings.
+A VI ⇄ EN session never loads NLLB, which is why its peak is 2 GB lower. VI→ZH's word error rate is
+inflated by 5 Vietnamese recordings that hold much more speech than their reference text (e.g. VM-0383:
+reference "Được điểm tối đa.", recording is a whole paragraph); without those 5 it is 11.4 %.
 
 ## Caveats
 

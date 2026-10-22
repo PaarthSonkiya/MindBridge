@@ -48,7 +48,9 @@ def fields(board: dict | None) -> dict:
         if r:
             V["directions"].update(r["directions"])
             V["peak_ram_mb"] = max(V.get("peak_ram_mb", 0), r.get("peak_ram_mb", 0))
+            V.setdefault("peaks", {})[part] = r.get("peak_ram_mb")
             V.setdefault("models", r.get("models"))
+    pk = V.get("peaks", {})
     turbo = {r["model"]: r for r in (_json("aihub_whisper_turbo_qcs6490/summary.json") or [])}
     small = {r["model"]: r for r in (_json("aihub_whisper_small_qcs6490/summary.json") or [])}
     enc, dec = turbo.get("encoder.bin", {}), turbo.get("decoder.bin", {})
@@ -155,8 +157,9 @@ def fields(board: dict | None) -> dict:
             "on the CPU (Whisper-small int8 fallback): tested on a 2-vCPU x86-64 virtual machine (slow, about 5 s of "
             "speech recognition per sentence); 4+ cores recommended, other aarch64 boards estimated."),
         "Memory and storage": (
-            f"RAM: 6 GB (the RB3 Gen 2's). {b_mem} For comparison, a CPU-only run on an 8 GB x86-64 machine with "
-            f"Whisper large-v3-turbo also on the CPU peaked at {_fmt(V.get('peak_ram_mb'), 0)} MB; tested.\n\n"
+            f"RAM: 6 GB (the RB3 Gen 2's). {b_mem} For comparison, CPU-only runs on an 8 GB x86-64 machine with "
+            f"Whisper large-v3-turbo also on the CPU peaked at {_fmt(pk.get('onevoice_sample_voice'), 0)} MB (VI ⇄ EN) "
+            f"and {_fmt(V.get('peak_ram_mb'), 0)} MB (VI ⇄ KO/ZH); tested.\n\n"
             "Storage: about 8 GB free for the unpacked package, Python environment and models; estimated."),
         "OS and software": (
             "Ubuntu 24.04 LTS aarch64 (Qualcomm IoT image) with Python 3.12; for the NPU, Qualcomm's FastRPC user "
@@ -234,7 +237,7 @@ def fields(board: dict | None) -> dict:
         "Voice in (organisers' recordings → speech recognition → translation): " + ("; ".join(voice_parts) or
                                                                                    "[TO FILL]") + ". "
         "The 100 EN→VI recordings came without reference texts (the folder holds the VI→EN sheet), so EN→VI is not "
-        "scored.\n\n"
+        "scored; their transcripts and translations are in onevoice_sample_voice/results.jsonl for inspection.\n\n"
         "Examples: \"Tôi muốn thuê xe đạp khoảng hai tiếng.\" → \"I'd like to rent a bicycle for two hours.\" "
         "Failure: \"Anh cần thêm dây không?\" → \"You need more rope?\" (reference: \"an extra cable\"): \"dây\" is "
         "ambiguous without context.")
@@ -270,8 +273,10 @@ def fields(board: dict | None) -> dict:
         "[TO FILL from the board: du -sh of the installed folder].")
     size_ev = f"{tree}/bench/results/published/model_sizes.json (bench/model_sizes.py); models/manifest.json in the package"
 
-    mem = (f"{b_mem}\n\nFor reference, CPU-only run of the whole pipeline on x86-64 (Whisper turbo on the CPU instead "
-           f"of the NPU): {_fmt(V.get('peak_ram_mb'), 0)} MB peak RSS. NPU memory for Whisper turbo per AI Hub "
+    mem = (f"{b_mem}\n\nFor reference, CPU-only runs of the whole pipeline on x86-64 (Whisper turbo on the CPU instead "
+           f"of the NPU; peak resident memory sampled by psutil): {_fmt(pk.get('onevoice_sample_voice'), 0)} MB for "
+           f"VI ⇄ EN (NLLB never loaded), {_fmt(pk.get('onevoice_sample_voice_ko'), 0)} MB for VI ⇄ KO and "
+           f"{_fmt(pk.get('onevoice_sample_voice_zh'), 0)} MB for VI ⇄ ZH. NPU memory for Whisper turbo per AI Hub "
            f"profile: {_fmt(enc.get('peak_memory_mb'))} MB encoder, {_fmt(dec.get('peak_memory_mb'))} MB decoder.")
     mem_ev = "summary.json → peak_ram_mb in each benchmark folder; run.log"
 

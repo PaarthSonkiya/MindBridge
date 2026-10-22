@@ -1,0 +1,36 @@
+2026-10-23 00:18:47,151 INFO bench: command bench/run_benchmark.py --data /home/claude/dataset --pairs vi-ko --mode voice --out bench/results/published/onevoice_sample_voice_ko
+2026-10-23 00:18:47,155 INFO bench: device {"hostname": "vm", "machine": "x86_64", "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39", "python": "3.13.16", "soc": "", "cpu_count": 2, "total_ram_mb": 8028}
+2026-10-23 00:18:47,155 INFO bench: network before run {"interfaces": {"ifb0": {"up": false, "ipv4": []}, "ifb1": {"up": false, "ipv4": []}, "eth0": {"up": true, "ipv4": ["192.0.2.2"]}}, "default_route": "default via eth0 (IPv4)", "rfkill": null, "nmcli_radio": null, "has_default_route": true, "any_external_ip": true}
+2026-10-23 00:18:47,155 INFO mindbridge.offline: Strict offline mode: outbound network disabled for this process
+2026-10-23 00:18:47,448 INFO bench: dataset vi-ko: 180 sentence pairs, 180 with Vietnamese audio, 180 with ko audio
+2026-10-23 00:18:52,519 WARNING mindbridge.asr: ASR falling back to CPU (QNN unavailable: onnxruntime not installed)
+2026-10-23 00:18:53,105 INFO mindbridge.mt: loaded envit5-translation-ct2-int8 (CTranslate2 int8, CPU) in 586 ms
+2026-10-23 00:18:58,683 INFO mindbridge.mt: loaded nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU) in 3588 ms
+2026-10-23 00:18:59,521 INFO bench: models loaded in 11.3s, peak 4266 MB
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Voice activity", "model": "Silero VAD v5", "unit": "CPU", "size_mb": 0.6, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Speech recognition", "model": "whisper-large-v3-turbo-int8 (CPU, CTranslate2)", "unit": "CPU", "size_mb": 1547.3, "note": "QNN unavailable: onnxruntime not installed"}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Translation", "model": "envit5-translation-ct2-int8 (CTranslate2 int8, CPU)", "unit": "CPU", "size_mb": 265.7, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Translation", "model": "nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU)", "unit": "CPU", "size_mb": 1340.7, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Speech synthesis (Vietnamese)", "model": "vits-piper-vi_VN-vais1000-medium", "unit": "CPU", "size_mb": 60.2, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Speech synthesis (English)", "model": "vits-piper-en_US-amy-low", "unit": "CPU", "size_mb": 60.2, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Speech synthesis (Korean)", "model": "sherpa-onnx-supertonic-3-tts-int8-2026-05-11", "unit": "CPU", "size_mb": 137.8, "note": ""}
+2026-10-23 00:18:59,525 INFO bench: model {"stage": "Operational memory", "model": "Rule engine + SQLite", "unit": "CPU", "size_mb": 0.0, "note": ""}
+2026-10-23 00:18:59,527 INFO bench: == vi-ko: 180 sentences (voice)
+2026-10-23 00:23:22,800 INFO bench:   25/180
+2026-10-23 00:27:44,656 INFO bench:   50/180
+2026-10-23 00:32:03,409 INFO bench:   75/180
+2026-10-23 00:36:13,460 INFO bench:   100/180
+2026-10-23 00:40:32,624 INFO bench:   125/180
+2026-10-23 00:44:45,219 INFO bench:   150/180
+2026-10-23 00:49:07,384 INFO bench:   175/180
+2026-10-23 00:49:58,861 INFO bench:    {"n": 180, "synthetic_audio": 0, "bleu": 30.67, "chrf++": 27.04, "bleu_tokenizer": "char", "asr_wer": 4.6, "asr_error_rate_median": 0.0, "asr_ms_mean": 8416.2, "asr_ms_p50": 8429.2, "asr_ms_p90": 8882.8, "mt_ms_mean": 1223.5, "mt_ms_p50": 1200.2, "mt_ms_p90": 1706.2, "tts_ms_mean": 649.9, "tts_ms_p50": 619.9, "tts_ms_p90": 786.1, "total_ms_mean": 10326.0, "total_ms_p50": 10298.1, "total_ms_p90": 11145.9, "speech_to_translation_ms_mean": 9675.8, "speech_to_translation_ms_p50": 9658.5, "speech_to_translation_ms_p90": 10465.4}
+2026-10-23 00:49:58,861 INFO bench: == ko-vi: 180 sentences (voice)
+2026-10-23 00:54:12,116 INFO bench:   25/180
+2026-10-23 00:58:17,614 INFO bench:   50/180
+2026-10-23 01:02:23,408 INFO bench:   75/180
+2026-10-23 01:06:20,393 INFO bench:   100/180
+2026-10-23 01:10:22,053 INFO bench:   125/180
+2026-10-23 01:14:26,169 INFO bench:   150/180
+2026-10-23 01:18:32,464 INFO bench:   175/180
+2026-10-23 01:19:20,562 INFO bench:    {"n": 180, "synthetic_audio": 0, "bleu": 18.24, "chrf++": 36.91, "bleu_tokenizer": "13a", "asr_cer": 7.22, "asr_error_rate_median": 0.0, "asr_ms_mean": 8379.4, "asr_ms_p50": 8367.8, "asr_ms_p90": 8836.9, "mt_ms_mean": 1265.1, "mt_ms_p50": 1229.4, "mt_ms_p90": 1679.4, "tts_ms_mean": 97.4, "tts_ms_p50": 90.4, "tts_ms_p90": 154.0, "total_ms_mean": 9784.7, "total_ms_p50": 9673.2, "total_ms_p90": 10483.8, "speech_to_translation_ms_mean": 9687.1, "speech_to_translation_ms_p50": 9585.4, "speech_to_translation_ms_p90": 10343.3}
+2026-10-23 01:19:20,603 INFO bench: network after run {"interfaces": {"ifb0": {"up": false, "ipv4": []}, "ifb1": {"up": false, "ipv4": []}, "eth0": {"up": true, "ipv4": ["192.0.2.2"]}}, "default_route": "default via eth0 (IPv4)", "rfkill": null, "nmcli_radio": null, "has_default_route": true, "any_external_ip": true}
