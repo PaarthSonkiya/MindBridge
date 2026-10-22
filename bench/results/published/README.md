@@ -80,6 +80,31 @@ direct, for Korean/Chinese ⇄ Vietnamese.** Every hypothesis is in `mt_compare_
 (Whisper turbo QNN 984, envit5 266, two Piper voices 155, VAD 0.6); 2,807 MB for VI ⇄ KO (adds NLLB-1.3B
 1,341 and Supertonic 139); 3,754 MB for everything shipped, including the CPU fallback and fast mode.
 
+## 7. Organisers' sample set: MindBridge as shipped
+
+`bench/run_benchmark.py` on the OneVoice sample folders (Vie-Eng, Vie-Kor, Vie-Man), offline, the app's
+own translators and post-processing, x86-64 CPU (accuracy only; device timing comes from the board).
+
+**Text in, text out** (`onevoice_sample_text/`; BLEU / chrF++, sacreBLEU 13a, `zh` tokens for Chinese,
+characters for Korean):
+
+| Direction | N | BLEU | chrF++ | Translator |
+|---|---|---|---|---|
+| VI→EN | 100 | 35.09 | 54.5 | envit5 |
+| VI→KO | 180 | 33.22 | 29.0 | NLLB-1.3B |
+| KO→VI | 180 | 19.33 | 37.7 | NLLB-1.3B |
+| VI→ZH | 180 | 40.77 | 30.7 | NLLB-1.3B |
+| ZH→VI | 180 | 27.83 | 50.1 | NLLB-1.3B |
+
+Two output fixes found on these samples and kept in the app: Chinese translations use full-width
+punctuation (VI→ZH 32.8 → 40.8 BLEU), and every translation keeps the source sentence's final punctuation
+(VI→KO 32.6 → 33.2). EN→VI cannot be scored: the 100 `EV-*.wav` recordings came with the VI→EN sheet
+instead of their own texts.
+
+**Voice in** (recordings → Whisper large-v3-turbo → translation): see `onevoice_sample_voice*/`
+(summary.md in each). The CPU run uses turbo's int8 CTranslate2 weights; the board runs Qualcomm's w8a16
+build of the same model on the NPU.
+
 ## Caveats
 
 * Accuracy numbers (3, 4) were run on an x86 CPU; they do not depend on the hardware. Latency and memory
