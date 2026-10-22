@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""Download and prepare every model MindBridge needs (run once, online).
+
+    python scripts/fetch_models.py            # everything, NLLB-600M
+    python scripts/fetch_models.py --nllb 1.3B
+    python scripts/fetch_models.py --only tts,vad
+
+Layout produced under models/ (and recorded in models/manifest.json):
+
+    vad/silero_vad.onnx
+    asr/whisper-small-quantized-qcs6490/   Qualcomm AI Hub, w8a16, Hexagon NPU   (qualcomm/fetch_whisper.sh)
+    asr/sherpa-onnx-whisper-small/         int8 CPU fallback
+    mt/nllb-200-distilled-600M-ct2-int8/   CTranslate2 int8
+    tts/<voice>/                           one voice per language
+
+After this, the device never needs the network again.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+import time
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+MODELS = ROOT / "models"
+GH = "https://github.com/k2-fsa/sherpa-onnx/releases/download"
+
+ASSETS = {
+    "vad": [("vad/silero_vad.onnx", f"{GH}/asr-models/silero_vad.onnx", "MIT (snakers4/silero-vad)")],
+    "asr_cpu": [("asr/sherpa-onnx-whisper-small", f"{GH}/asr-models/sherpa-onnx-whisper-small.tar.bz2", "MIT (OpenAI Whisper)")],
+    "tts": [
+        ("tts/vits-piper-vi_VN-vais1000-medium", f"{GH}/tts-models/vits-piper-vi_VN-vais1000-medium.tar.bz2", "CC BY 4.0 (VAIS-1000 corpus)"),
+        ("tts/vits-piper-en_US-amy-low", f"{GH}/tts-models/vits-piper-en_US-amy-low.tar.bz2", "See mimic3-voices (Piper)"),
+        ("tts/vits-piper-zh_CN-huayan-medium", f"{GH}/tts-models/vits-piper-zh_CN-huayan-medium.tar.bz2", "See HuaYan_TTS (Piper)"),
+        ("tts/sherpa-onnx-supertonic-3-tts-int8-2026-05-11",
+         f"{GH}/tts-models/sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2", "MIT (Supertone Supertonic-3)"),
+    ],
+}
+NLLB = {
+    "600M": "facebook/nllb-200-distilled-600M",
+    "1.3B": "facebook/nllb-200-distilled-1.3B",
+}
+
+
+def log(msg: str):
+    print(f"[fetch] {msg}", flush=True)
+
+
+def download(url: str, dest: Path):
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_suffix(dest.suffix + ".part")
+    with urllib.request.urlopen(url) as r, open(tmp, "wb") as f:
+        shutil.copyfileobj(r, f, length=1 << 20)
+    tmp.rename(dest)
+
+
+def fetch_asset(rel: str, url: str):
+    target = MODELS / rel
+    if target.exists():
+        log(f"have {rel}")
+        return
+    log(f"downloading {url}")
+    if url.endswith(".tar.bz2"):
+        with tempfile.TemporaryDirectory() as td:
+            arc = Path(td) / "a.tar.bz2"
+            download(url, arc)
+            with tarfile.open(arc) as t:
+                t.extractall(td, filter="data")
+            src = Path(td) / Path(url).name.removesuffix(".tar.bz2")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), target)
+    else:
+        download(url, target)
+    if rel.startswith("asr/sherpa-onnx-whisper"):
+        # keep only the int8 graphs (saves ~900 MB) and drop test audio
+        for p in target.glob("*.onnx"):
+            if ".int8." not in p.name:
+                p.unlink()
+        shutil.rmtree(target / "test_wavs", ignore_errors=True)
+
+
+def fetch_nllb(size: str):
+    out = MODELS / "mt" / f"nllb-200-distilled-{size}-ct2-int8"
+    if (out / "model.bin").exists():
+        log(f"have {out.relative_to(ROOT)}")
+        return
+    repo = NLLB[size]
+    log(f"converting {repo} → CTranslate2 int8 (needs: pip install transformers torch sentencepiece ctranslate2)")
+    subprocess.run(
+        [sys.executable, "-m", "ctranslate2.converters.transformers", "--model", repo,
+         "--quantization", "int8", "--output_dir", str(out), "--force"],
+        check=True,
+    )
+    from huggingface_hub import hf_hub_download
+
+    sp = hf_hub_download(repo, "sentencepiece.bpe.model")
+    shutil.copy(sp, out / "sentencepiece.bpe.model")
+    (out / "LICENSE.txt").write_text("NLLB-200 weights: CC-BY-NC-4.0 (Meta AI). Non-commercial use.\n")
+
+
+def fetch_qnn_whisper():
+    log("fetching Qualcomm AI Hub Whisper for QCS6490 (qualcomm/fetch_whisper.sh)")
+    subprocess.run(["bash", str(ROOT / "qualcomm" / "fetch_whisper.sh")], check=True)
+
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def write_manifest(licenses: dict[str, str]):
+    files = []
+    for p in sorted(MODELS.rglob("*")):
+        if p.is_file() and p.name != "manifest.json" and "espeak-ng-data" not in p.parts:
+            files.append({"path": str(p.relative_to(MODELS)), "bytes": p.stat().st_size, "sha256": sha256(p)})
+    total = sum(f["bytes"] for f in files)
+    (MODELS / "manifest.json").write_text(json.dumps({
+        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "total_mb": round(total / 2**20, 1),
+        "licenses": licenses,
+        "files": files,
+    }, indent=2))
+    log(f"manifest: {len(files)} files, {total / 2**20:.0f} MB")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--nllb", default="600M", choices=list(NLLB))
+    ap.add_argument("--only", default="", help="comma list: vad,asr_cpu,asr_npu,mt,tts")
+    ap.add_argument("--skip-npu", action="store_true", help="skip the Qualcomm AI Hub Whisper download")
+    args = ap.parse_args()
+    only = set(filter(None, args.only.split(",")))
+    want = lambda k: not only or k in only  # noqa: E731
+
+    licenses: dict[str, str] = {}
+    for group, items in ASSETS.items():
+        if want(group):
+            for rel, url, lic in items:
+                fetch_asset(rel, url)
+                licenses[rel] = lic
+    if want("mt"):
+        fetch_nllb(args.nllb)
+        licenses[f"mt/nllb-200-distilled-{args.nllb}-ct2-int8"] = "CC-BY-NC-4.0 (Meta NLLB-200)"
+    if want("asr_npu") and not args.skip_npu:
+        fetch_qnn_whisper()
+        licenses["asr/whisper-small-quantized-qcs6490"] = "Apache-2.0 model / Qualcomm AI Hub assets license"
+    write_manifest(licenses)
+
+
+if __name__ == "__main__":
+    main()

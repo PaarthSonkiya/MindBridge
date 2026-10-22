@@ -1,0 +1,9 @@
+-r requirements.txt
+pytest>=8
+httpx>=0.27
+ruff>=0.5
+# model preparation (online, build machine only)
+transformers>=4.40
+huggingface_hub>=0.23
+qai_hub>=0.56
+qai_hub_models_cli>=0.65

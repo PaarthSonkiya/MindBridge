@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MindBridge</title>
+  <link rel="icon" href="/ui/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/ui/app.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 24" aria-hidden="true"><path d="M2 20 C10 2, 30 2, 38 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M8 20h24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      <span>MindBridge</span>
+    </div>
+    <nav class="pairs" id="pairs" aria-label="Language pair"></nav>
+    <div class="chips">
+      <span class="chip" id="chip-net" title="Network state">Checking network…</span>
+      <span class="chip" id="chip-npu" title="Where speech recognition runs">…</span>
+      <button class="chip chip-btn" id="btn-details" aria-expanded="false">Run details</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="speakers" aria-label="Speakers">
+      <article class="side side-a" id="side-a">
+        <div class="who"><span class="role" data-role></span><span class="lang" data-lang></span></div>
+        <button class="talk" data-side="a" aria-keyshortcuts="1">
+          <span class="ring" aria-hidden="true"></span>
+          <span class="talk-label" data-cta></span>
+          <span class="talk-hint">key 1</span>
+        </button>
+        <button class="ask" data-side="a" data-ask></button>
+      </article>
+      <article class="side side-b" id="side-b">
+        <div class="who"><span class="role" data-role></span><span class="lang" data-lang></span></div>
+        <button class="talk" data-side="b" aria-keyshortcuts="2">
+          <span class="ring" aria-hidden="true"></span>
+          <span class="talk-label" data-cta></span>
+          <span class="talk-hint">key 2</span>
+        </button>
+        <button class="ask" data-side="b" data-ask></button>
+      </article>
+      <button class="handover" id="btn-handover">Shift handover</button>
+    </section>
+
+    <section class="talklog" aria-label="Conversation" aria-live="polite">
+      <div class="log" id="log">
+        <div class="empty" id="empty">
+          <p>Tap a speaker and talk. MindBridge translates, speaks the translation aloud, and remembers instructions that matter for safety.</p>
+          <p class="muted">Everything runs on this device. No internet is used.</p>
+        </div>
+      </div>
+      <form class="typer" id="typer" autocomplete="off">
+        <select id="typer-side" aria-label="Who is typing"></select>
+        <input id="typer-text" type="text" placeholder="Type a line instead of speaking" aria-label="Type a line">
+        <button type="submit">Translate</button>
+      </form>
+    </section>
+
+    <aside class="memory" aria-label="Operational memory">
+      <figure class="badge" id="badge" aria-label="Badge display">
+        <div class="led" id="led" title="Safety light"></div>
+        <div class="eink" id="eink">
+          <div class="eink-1">ALL CLEAR</div>
+          <div class="eink-2">NO ACTIVE</div>
+          <div class="eink-3">RESTRICTIONS</div>
+        </div>
+        <figcaption>Badge display</figcaption>
+      </figure>
+      <div class="mem-head">
+        <h2>Remembered</h2>
+        <button class="link" id="btn-clear">Clear</button>
+      </div>
+      <ol class="mem" id="mem"></ol>
+    </aside>
+  </main>
+
+  <dialog id="details">
+    <form method="dialog" class="details">
+      <header><h2>Run details</h2><button aria-label="Close">Close</button></header>
+      <div id="details-body"></div>
+    </form>
+  </dialog>
+
+  <dialog id="handover">
+    <form method="dialog" class="details">
+      <header><h2>Shift handover</h2><button aria-label="Close">Close</button></header>
+      <div id="handover-body"></div>
+    </form>
+  </dialog>
+
+  <script src="/ui/app.js"></script>
+</body>
+</html>

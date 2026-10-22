@@ -1,55 +1,29 @@
 # Contributing to MindBridge
 
-Thanks for your interest in MindBridge! This guide covers how to get set up and the
-conventions we follow.
-
-## Development setup
+## Development setup (any laptop)
 
 ```bash
-# Backend
-cd backend
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements-dev.txt
-
-# Frontend
-cd ../frontend
-npm install
+python scripts/fetch_models.py --skip-npu     # CPU models; the NPU build needs the QCS6490 assets
+python -m mindbridge serve                    # http://127.0.0.1:8765
 ```
+
+On a laptop, speech recognition runs on the CPU (sherpa-onnx Whisper). On the RB3 Gen 2 it moves to
+the Hexagon NPU automatically when `models/asr/whisper-small-quantized-qcs6490/` and `onnxruntime-qnn`
+are present.
 
 ## Before opening a pull request
 
-Run the same checks CI runs:
-
 ```bash
-# Backend
-cd backend
-ruff check app tests
-MINDBRIDGE_FORCE_OFFLINE=true pytest -q
-
-# Frontend
-cd ../frontend
-npm run build
+ruff check mindbridge tests bench qualcomm scripts
+pytest -q
 ```
 
-## Conventions
+The tests use fake models, so they run without downloads, an NPU or a microphone.
 
-- **Python** — formatted and linted with [Ruff](https://docs.astral.sh/ruff/); type hints
-  on public functions; keep the offline engine deterministic and explainable.
-- **TypeScript** — `strict` mode; no `any` in new code.
-- **Engine changes** — every scoring or classification change should ship with a test.
-- **Commits** — present-tense, imperative summaries ("Add risk detection for hot work").
+## Rules of the road
 
-## Project layout
-
-| Area | Path | Notes |
-|------|------|-------|
-| Pipeline orchestration | `backend/app/engine/pipeline.py` | Offline ⇄ Claude routing |
-| Scoring logic | `backend/app/engine/understanding.py` | The Understanding Score™ |
-| Domain knowledge | `backend/app/engine/lexicon.py` | Hazards, glossary, phrase book |
-| API contract | `backend/app/models/schemas.py` | Pydantic schemas |
-| UI | `frontend/src/` | React + TypeScript |
-
-## Reporting issues
-
-Use the issue templates under `.github/ISSUE_TEMPLATE/`. For anything security-related,
-please follow [`SECURITY.md`](SECURITY.md) instead of opening a public issue.
+- No network calls at run time. `mindbridge/offline_guard.py` blocks them; keep it that way.
+- Every new pipeline stage records its time in `Turn.timings_ms`.
+- Memory stores operational facts only (instructions, decisions, issues, outcomes), never small talk.

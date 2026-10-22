@@ -1,33 +1,47 @@
-# MindBridge — developer convenience targets.
-.PHONY: help backend-install backend-run test lint frontend-install frontend-run frontend-build dev
+# MindBridge — convenience targets.
+.PHONY: help install models serve talk doctor test lint bench-text bench-voice profile bundle
 
 help:
-	@echo "MindBridge targets:"
-	@echo "  make backend-install   Install backend deps into backend/.venv"
-	@echo "  make backend-run       Run the Understanding Engine (port 8000)"
-	@echo "  make test              Run backend tests (offline mode)"
-	@echo "  make lint              Ruff lint the backend"
-	@echo "  make frontend-install  Install frontend deps"
-	@echo "  make frontend-run      Run the Understanding Console (port 5173)"
-	@echo "  make frontend-build    Type-check and build the frontend"
+	@echo "make install      Python env + dependencies (.venv)"
+	@echo "make models       Download/convert all models (online, once)"
+	@echo "make serve        Run the device UI on http://127.0.0.1:8765"
+	@echo "make talk         Terminal push-to-talk"
+	@echo "make doctor       Check models, NPU, audio, network"
+	@echo "make test         Unit tests (no models needed)"
+	@echo "make bench-text   Translation quality on DATA=<dataset>"
+	@echo "make bench-voice  Full voice pipeline benchmark on DATA=<dataset>"
+	@echo "make profile      Qualcomm AI Hub on-device profile (needs QAI_HUB_API_TOKEN)"
+	@echo "make bundle       Build the offline installation bundle for judges"
 
-backend-install:
-	cd backend && python -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
+install:
+	python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
 
-backend-run:
-	cd backend && . .venv/bin/activate && uvicorn app.main:app --reload
+models:
+	. .venv/bin/activate && python scripts/fetch_models.py
+
+serve:
+	bash scripts/run.sh
+
+talk:
+	. .venv/bin/activate && python -m mindbridge talk
+
+doctor:
+	. .venv/bin/activate && python -m mindbridge doctor --run
 
 test:
-	cd backend && . .venv/bin/activate && MINDBRIDGE_FORCE_OFFLINE=true pytest -q
+	. .venv/bin/activate && pytest -q
 
 lint:
-	cd backend && . .venv/bin/activate && ruff check app tests
+	. .venv/bin/activate && ruff check mindbridge tests bench qualcomm scripts
 
-frontend-install:
-	cd frontend && npm install
+bench-text:
+	. .venv/bin/activate && python bench/run_benchmark.py --data $(DATA) --mode text
 
-frontend-run:
-	cd frontend && npm run dev
+bench-voice:
+	. .venv/bin/activate && python bench/run_benchmark.py --data $(DATA) --mode voice --require-offline
 
-frontend-build:
-	cd frontend && npm run build
+profile:
+	. .venv/bin/activate && python qualcomm/aihub_profile.py
+
+bundle:
+	bash scripts/build_offline_bundle.sh

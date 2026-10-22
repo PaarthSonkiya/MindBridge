@@ -9,18 +9,19 @@ venv/
 .mypy_cache/
 *.log
 
-# Environment
+# Environment / secrets (never commit API tokens)
 .env
 .env.local
+.qai_hub/
 
-# Node / frontend
-node_modules/
+# MindBridge runtime artefacts (models are large; fetch with scripts/fetch_models.py)
+models/
+data/
 dist/
-.vite/
-*.tsbuildinfo
-# Emitted by `tsc -b` for the composite Vite config project
-frontend/vite.config.js
-frontend/vite.config.d.ts
+bench/results/*
+!bench/results/.gitkeep
+!bench/results/published/
+!bench/results/published/**
 
 # Editors / OS
 .vscode/
