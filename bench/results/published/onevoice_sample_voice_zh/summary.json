@@ -1,0 +1,177 @@
+{
+  "mode": "voice",
+  "started": "20261022-224030",
+  "data": "/home/claude/dataset",
+  "device": {
+    "hostname": "vm",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+    "python": "3.13.16",
+    "soc": "",
+    "cpu_count": 2,
+    "total_ram_mb": 8028
+  },
+  "models": [
+    {
+      "stage": "Voice activity",
+      "model": "Silero VAD v5",
+      "unit": "CPU",
+      "size_mb": 0.6,
+      "note": ""
+    },
+    {
+      "stage": "Speech recognition",
+      "model": "whisper-large-v3-turbo-int8 (CPU, CTranslate2)",
+      "unit": "CPU",
+      "size_mb": 1547.3,
+      "note": "QNN unavailable: onnxruntime not installed"
+    },
+    {
+      "stage": "Translation",
+      "model": "envit5-translation-ct2-int8 (CTranslate2 int8, CPU)",
+      "unit": "CPU",
+      "size_mb": 265.7,
+      "note": ""
+    },
+    {
+      "stage": "Translation",
+      "model": "nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU)",
+      "unit": "CPU",
+      "size_mb": 1340.7,
+      "note": ""
+    },
+    {
+      "stage": "Speech synthesis (Vietnamese)",
+      "model": "vits-piper-vi_VN-vais1000-medium",
+      "unit": "CPU",
+      "size_mb": 60.2,
+      "note": ""
+    },
+    {
+      "stage": "Speech synthesis (English)",
+      "model": "vits-piper-en_US-amy-low",
+      "unit": "CPU",
+      "size_mb": 60.2,
+      "note": ""
+    },
+    {
+      "stage": "Speech synthesis (Chinese)",
+      "model": "vits-piper-zh_CN-huayan-medium",
+      "unit": "CPU",
+      "size_mb": 60.3,
+      "note": ""
+    },
+    {
+      "stage": "Operational memory",
+      "model": "Rule engine + SQLite",
+      "unit": "CPU",
+      "size_mb": 0.0,
+      "note": ""
+    }
+  ],
+  "load_seconds": 12.04,
+  "directions": {
+    "vi-zh": {
+      "n": 180,
+      "synthetic_audio": 0,
+      "bleu": 38.35,
+      "chrf++": 28.46,
+      "bleu_tokenizer": "zh",
+      "asr_wer": 16.27,
+      "asr_error_rate_median": 0.0,
+      "asr_ms_mean": 8747.2,
+      "asr_ms_p50": 8718.7,
+      "asr_ms_p90": 9147.0,
+      "mt_ms_mean": 1777.2,
+      "mt_ms_p50": 1712.1,
+      "mt_ms_p90": 2447.0,
+      "tts_ms_mean": 203.1,
+      "tts_ms_p50": 175.8,
+      "tts_ms_p90": 313.3,
+      "total_ms_mean": 10770.9,
+      "total_ms_p50": 10650.8,
+      "total_ms_p90": 11756.7,
+      "speech_to_translation_ms_mean": 10567.5,
+      "speech_to_translation_ms_p50": 10475.7,
+      "speech_to_translation_ms_p90": 11445.1
+    },
+    "zh-vi": {
+      "n": 180,
+      "synthetic_audio": 0,
+      "bleu": 27.32,
+      "chrf++": 48.77,
+      "bleu_tokenizer": "13a",
+      "asr_cer": 3.7,
+      "asr_error_rate_median": 0.0,
+      "asr_ms_mean": 8997.3,
+      "asr_ms_p50": 8983.7,
+      "asr_ms_p90": 9649.6,
+      "mt_ms_mean": 1932.5,
+      "mt_ms_p50": 1782.4,
+      "mt_ms_p90": 2933.9,
+      "tts_ms_mean": 174.4,
+      "tts_ms_p50": 145.4,
+      "tts_ms_p90": 292.7,
+      "total_ms_mean": 11150.9,
+      "total_ms_p50": 10966.9,
+      "total_ms_p90": 12625.5,
+      "speech_to_translation_ms_mean": 10976.1,
+      "speech_to_translation_ms_p50": 10839.9,
+      "speech_to_translation_ms_p90": 12333.6
+    }
+  },
+  "unlinked_recordings": 0,
+  "peak_ram_mb": 4650.0,
+  "network_before": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "network_after": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "offline_guard": {
+    "installed": true,
+    "blocked_attempts": []
+  },
+  "finished": "20261022-234630",
+  "total_model_mb": 3335.0
+}
