@@ -148,7 +148,8 @@ _OUTCOME = re.compile(
     r"\b(has been|have been|was|were|is now|are now|got|been|just|already|finished|completed|done)\b.*?\b("
     r"replaced|fixed|repaired|completed|finished|done|cleaned|installed|passed|resolved|restored|changed|"
     r"tested|signed off|approved|inspected|checked|tightened|calibrated|working|normal)\b"
-    r"|\b(passed the (?:pressure |safety )?test|is working (?:again|now|normally)|works (?:again|now)|back to normal|"
+    r"|\b(passed the (?:pressure |safety )?test|(?:is|are|was) (?:working|running|operating) (?:again|now|normally|fine)|"
+    r"(?:works|runs) (?:again|normally)|back to normal|"
     r"(?:have|has|had) (?:replaced|fixed|repaired|changed|cleaned|finished|completed)|"
     r"(?:i|we) (?:replaced|fixed|repaired|changed|cleaned|finished|completed|installed))\b",
     re.I,

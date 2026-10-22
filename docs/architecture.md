@@ -1,84 +1,98 @@
 # Architecture
 
-MindBridge is built as an **edge-first pipeline** with an optional cloud-reasoning upgrade.
-Every stage is designed to produce a useful result with no network connection, then
-transparently improve when Claude is available.
+MindBridge is one Python process on the RB3 Gen 2. It serves a touchscreen UI on `127.0.0.1`,
+captures audio from the board's microphone, and runs four models plus a rule engine. No component
+opens a network connection; `mindbridge/offline_guard.py` patches the socket layer so any attempt
+to reach a non-loopback address fails and is counted (the count is shown in **Run details**).
 
-## The pipeline
+## Pipeline
 
 ```
-Speech / Text input
-        │
-        ▼
-┌───────────────────┐
-│ 1. Intent         │  Classify purpose: instruction · warning · question ·
-│    Recognition    │  confirmation · emergency · approval · escalation.
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│ 2. Risk & Safety  │  Detect hazards (LOTO, high voltage, gas, confined space…)
-│    Intelligence   │  and assign a risk level; flag for mandatory read-back.
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│ 3. Translation    │  EN ⇄ VI. Offline phrase book + honest fallback, or
-│                   │  full Claude translation that preserves safety detail.
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│ 4. Expertise      │  Re-express for engineer / technician / operator / trainee,
-│    Adaptation     │  expanding jargon via the technical glossary.
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│ 5. Understanding  │  Score a listener read-back against the original to
-│    Verification   │  estimate true comprehension → Understanding Score™.
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│ 6. Shared Context │  Persist turns, equipment references, risk events; power
-│    Memory         │  continuity and the AI shift-handover report.
-└───────────────────┘
+                  ┌───────────────────────── one conversational turn ─────────────────────────┐
+ tap / key ─▶ mic │ high-pass 80 Hz ─▶ Silero VAD trim ─▶ Whisper encoder ─▶ Whisper decoder  │
+                  │   (numpy/scipy)      (CPU, 2 MB)        (NPU, 1×)          (NPU, 1×/token) │
+                  │                                                │                          │
+                  │                                   text in the speaker's language          │
+                  │                                                ▼                          │
+                  │                              NLLB-200 600M (CTranslate2 int8, CPU)         │
+                  │                                                ▼                          │
+                  │                    text in the listener's language ─▶ UI immediately      │
+                  │                                                ▼                          │
+                  │                              Piper / Supertonic TTS (CPU) ─▶ speaker      │
+                  └────────────────────────────────────────────────────────────────────────────┘
+                                   │ (after the translation is shown, off the critical path)
+                                   ▼
+                     English pivot ─▶ extractor ─▶ memory engine ─▶ alerts · check question · answer
+                                                         │
+                                                      SQLite (data/memory.db)
 ```
 
-## Components
+### Why this split between NPU and CPU
 
-| Module | Responsibility |
-|--------|----------------|
-| `app/main.py` | FastAPI routes (`/process`, `/verify`, `/handover`, `/health`). |
-| `app/engine/pipeline.py` | Orchestrates all stages; routes between offline and Claude. |
-| `app/engine/intent.py` | Ordered keyword-cue intent classifier. |
-| `app/engine/risk.py` | Hazard lexicon → risk level + confirmation requirement. |
-| `app/engine/translator.py` | Offline EN⇄VI phrase book with labelled fallback. |
-| `app/engine/expertise.py` | Expertise-level rewriting + key-point extraction. |
-| `app/engine/understanding.py` | Weighted, explainable Understanding Score™. |
-| `app/engine/lexicon.py` | Domain knowledge: hazards, glossary, phrase book. |
-| `app/memory/context_store.py` | Thread-safe in-process session memory. |
-| `app/llm/client.py` | Optional Claude client (lazy, dependency-isolated). |
+* **Whisper on the NPU.** The encoder is ~90% of Whisper's compute and has fixed shapes
+  (80 × 3000 log-mel). Qualcomm AI Hub publishes a w8a16 build compiled for the QCS6490's
+  Hexagon v68; Qualcomm's own figures are ~235 ms for the encoder and ~23 ms per decoded
+  token on this chip. MindBridge drives AI Hub's static-shape decoder (200-slot self-attention
+  cache) one token at a time from numpy, so no PyTorch is needed on the device.
+* **NLLB on the CPU.** Translation is an autoregressive encoder–decoder with variable-length
+  input. CTranslate2's int8 kernels run NLLB-600M on the Kryo cores while the NPU stays free
+  for the next utterance.
+* **TTS on the CPU.** Piper VITS voices synthesise faster than real time on one or two cores.
 
-## Dual-engine routing
+### Speech recognition details (`mindbridge/asr/`)
 
-`UnderstandingEngine` checks `Settings.llm_enabled` (true only when an API key is present
-and offline mode is not forced). Claude-backed methods are wrapped in try/except so any
-failure — missing package, network error, malformed reply — **falls back to the deterministic
-engine** rather than failing the request. This keeps the system dependable on the factory
-floor.
+* `mel.py` — Whisper log-mel in numpy, verified equal to `transformers.WhisperFeatureExtractor`
+  (max difference 1e-7).
+* `whisper_qnn.py` — runs AI Hub's encoder/decoder pair on the NPU through
+  `onnxruntime-qnn` (plugin EP, HTP backend, CPU fallback disabled so nothing silently runs on
+  the CPU). The prompt is forced to `<|sot|><|lang|><|transcribe|><|notimestamps|>`: push-to-talk
+  already knows who is speaking, so the language is never guessed wrongly. When it must be
+  detected, only the conversation's two languages are considered. A loop guard stops Whisper's
+  repetition hallucinations.
+* `whisper_sherpa.py` — CPU fallback (sherpa-onnx, Whisper-small int8).
+* Chinese output is converted to Simplified (OpenCC) to match `zho_Hans`.
 
-## Why edge-first
+### Memory layer (`mindbridge/memory/`)
 
-Industrial environments have intermittent connectivity, strict data-privacy requirements,
-and zero tolerance for latency on safety messages. By making the deterministic engine the
-*default* rather than a fallback, MindBridge guarantees that intent, risk flagging, and
-comprehension scoring keep working even when fully air-gapped — the design target being
-Snapdragon-class on-device NPUs.
+Every utterance is reduced to an English pivot (the English side of the pair, or one extra NLLB
+call for VI⇄KO and VI⇄ZH) and passed to a deterministic extractor that recognises:
 
-## Scaling the memory layer
+| Kind | Example | What MindBridge does |
+|---|---|---|
+| instruction (forbid) | "Do not restart Machine 4 until the valve is replaced." | stores a restriction with its condition; asks the listener a check question; badge shows **MACHINE 4 / DO NOT RESTART** |
+| instruction (require) | "Start Machine 4." | if it contradicts an active restriction: red conflict alert in both languages, order held |
+| exception | "Machine 4 can only restart if maintenance signs off." | conditional restriction |
+| issue | "Machine 6 is vibrating again." | amber alert, open issue |
+| commitment | "I will replace the valve before night shift." | tracked until an outcome clears it |
+| decision / procedure | "We will run Line 2 at half speed." | kept for the handover |
+| outcome | "The valve was replaced and Machine 4 passed the test." | clears matching restrictions, issues and commitments |
+| question | "Can we restart Machine 4?" | answered from memory, in the asker's language |
 
-`ContextStore` is an in-process store behind a small interface (`add_turn`, `get`,
-`recent_context`, `equipment_referenced`). A production deployment swaps it for SQLite
-(single edge device) or Redis/Postgres (multi-node site) without touching the engine.
+Equipment is recognised in English ("machine number four" → Machine 4) and directly in the
+source language ("máy số 4", "4번 기계", "四号机器"). Small talk is never stored.
+
+Rules instead of a language model: on the QCS6490 a 0.5–1B model would compete with Whisper
+for the NPU or add seconds on the CPU, and a rule engine cannot invent an instruction nobody gave.
+The roadmap moves extraction to a small LLM on IQ-8275/IQ-9075-class hardware.
+
+## Process layout
+
+```
+python -m mindbridge serve
+ ├─ uvicorn (asyncio)  ── HTTP + WebSocket on 127.0.0.1:8765 ── kiosk browser on HDMI
+ ├─ worker thread      ── one job at a time: talk / ask / verify
+ ├─ PortAudio callback ── mic blocks → VAD end-pointing → auto-stop
+ └─ SQLite             ── data/memory.db (memories + event log)
+```
+
+If PortAudio is missing, the UI records through the browser (`getUserMedia` on localhost) and
+uploads a WAV; the rest of the pipeline is unchanged.
+
+## Failure behaviour
+
+| Failure | Behaviour |
+|---|---|
+| NPU unavailable / QNN load error | Whisper runs on the CPU; UI chip shows "Speech on CPU" with the reason |
+| TTS voice missing | Text-only output |
+| Nothing recognised | "Didn't catch that" prompt; nothing stored |
+| Network present | Allowed but never used; UI warns "Network is on — turn it off for the demo" |

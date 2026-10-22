@@ -1,194 +1,105 @@
-<div align="center">
+# MindBridge
 
-# ◇ MindBridge
+**Offline voice translation and operational memory for multilingual factory floors, running entirely on a Qualcomm QCS6490 (RB3 Gen 2).**
 
-### Translating Understanding, Not Just Language
+A Korean, Chinese or English supervisor and a Vietnamese operator each tap their side of the
+screen and talk. MindBridge recognises the speech on the Hexagon NPU, translates it on the device,
+speaks the translation aloud, and remembers what matters for safety: it catches a contradicting
+order ("start Machine 4" while a restriction is still active), checks that the operator understood,
+answers "can we restart Machine 4?" from the factory's own history, and writes the shift handover.
+Nothing leaves the device. The network can be switched off; at run time MindBridge blocks every
+outbound connection anyway.
 
-**An AI-powered Communication Operating System that verifies the listener actually understood — not just that the words were translated.**
+Built for the [OneVoice AI Challenge 2026](https://luma.com/g1rwi7ag) (Phase 3 prototype), with
+Qualcomm AI Hub and ONNX Runtime QNN.
 
-[![CI](https://github.com/PaarthSonkiya/MindBridge/actions/workflows/ci.yml/badge.svg)](https://github.com/PaarthSonkiya/MindBridge/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Frontend: React + TS](https://img.shields.io/badge/frontend-React%20%2B%20TypeScript-61dafb.svg)](frontend/)
-[![Edge-first](https://img.shields.io/badge/runtime-edge--first%20%E2%80%A2%20offline--capable-6ee7d4.svg)](#-edge-first-by-design)
-
-</div>
-
----
-
-## The shift: from Translation AI to Understanding AI
-
-Existing tools answer **"Did the system translate the sentence correctly?"**
-MindBridge answers the question that actually prevents accidents:
-
-> **"Did the listener actually understand the message?"**
-
-In manufacturing, logistics, construction, healthcare, energy, and mining, communication
-fails not only across *languages* but across *expertise, context, and comprehension*. A
-correctly translated safety instruction is worthless if the worker didn't grasp it.
-MindBridge analyses every message across five dimensions — **intent, context, risk,
-expertise, and understanding** — and actively closes comprehension gaps before they
-become incidents.
-
-## 🎯 Core innovation — the Understanding Score™
-
-For every safety-critical instruction, MindBridge asks the listener to confirm, then scores
-how likely it is they truly understood — from an explainable, weighted breakdown:
-
-| Factor | Weight | What it measures |
-|--------|:------:|------------------|
-| Key-point coverage | 40% | Did the read-back capture the critical actions? |
-| Entity coverage | 25% | Were equipment / part references (e.g. *Filter B*, *LOTO*) retained? |
-| Confirmation language | 15% | Did the listener affirm rather than hedge? |
-| Conversational clarity | 10% | Absence of confusion / requests to repeat. |
-| Contextual consistency | 10% | Did the read-back avoid contradicting the order? |
-
-When the score falls below threshold, MindBridge automatically **rephrases, simplifies,
-adds context, or requests clarification** — turning translation into *verified understanding*.
-
-See [`docs/understanding-score.md`](docs/understanding-score.md) for the full methodology.
-
-## ✨ What's in this repository
-
-A working, runnable prototype of the MindBridge engine and console:
-
-- **🧠 Understanding Engine** (`backend/`) — a FastAPI service implementing the full edge
-  pipeline: intent recognition → risk intelligence → translation → expertise adaptation →
-  comprehension verification → shared context memory → shift handover.
-- **🖥️ Understanding Console** (`frontend/`) — a React + TypeScript interface that
-  demonstrates the live pipeline, the Understanding Score™ gauge, risk flags, and the AI
-  shift-handover report.
-- **🔌 Dual engine** — runs **fully offline** on a deterministic, explainable NLP engine
-  (perfect for edge devices and reproducible demos), and **transparently upgrades to
-  Claude** (`claude-opus-4-8`) when an `ANTHROPIC_API_KEY` is provided.
-
-## 🏗️ Architecture
+## How it works
 
 ```
-                          ┌──────────────────────────────────────────┐
-   Speech / Text  ─────▶  │            UNDERSTANDING ENGINE           │
-                          │                                          │
-                          │  1. Intent Recognition                   │
-                          │  2. Risk & Safety Intelligence           │
-                          │  3. Translation  (EN ⇄ VI)               │
-                          │  4. Expertise Adaptation                 │
-                          │  5. Understanding Verification ◀── score │
-                          │  6. Shared Context Memory                │
-                          └──────────────────────────────────────────┘
-                                 │                          │
-                          Adapted, verified           Shift handover
-                          message + TTS                  reports
+ mic ─▶ high-pass + Silero VAD ─▶ Whisper-small w8a16 ─▶ NLLB-200 600M ─▶ Piper / Supertonic ─▶ speaker
+          (CPU)                    (Hexagon NPU,            (CTranslate2       (CPU)
+                                    AI Hub, QNN)             int8, CPU)
+                                          │
+                                          └─▶ English pivot ─▶ operational memory (rules + SQLite)
+                                                                 conflict · verify · recall · handover
 ```
 
-Each stage degrades gracefully: with no network and no API key the deterministic engine
-keeps every feature working. [`docs/architecture.md`](docs/architecture.md) has the details.
+| Stage | Model | Runs on | Why |
+|---|---|---|---|
+| Voice activity | Silero VAD v5 | CPU | 2 MB, trims noise, auto-stops recording |
+| Speech recognition | Whisper-small, w8a16, compiled by Qualcomm AI Hub for QCS6490 | **Hexagon NPU** (onnxruntime-qnn) | Heaviest model; fixed shapes suit the NPU |
+| Translation | NLLB-200 distilled 600M, CTranslate2 int8 | Kryo CPU | Autoregressive, dynamic shapes; int8 ARM kernels are fast |
+| Speech synthesis | Piper VITS (vi, en, zh), Supertonic-3 (ko) | Kryo CPU | Small, natural, offline |
+| Memory | Deterministic extractor + SQLite | CPU | Explainable, <1 ms, never invents an instruction |
 
-## 🚀 Quick start
+If the NPU is not available, speech recognition falls back to the CPU automatically
+(sherpa-onnx Whisper int8) and the UI says so.
 
-You'll need **Python 3.11+** and **Node 18+**.
+Language pairs: **VI ⇄ EN**, **VI ⇄ KO**, **VI ⇄ ZH** (choose on the screen).
 
-### 1. Backend (Understanding Engine)
+## For judges: install offline on an RB3 Gen 2
+
+Ubuntu 24.04 on the RB3 Gen 2 with Python 3.12. Download the offline bundle linked in our
+submission, copy it to the board, switch the network off, then:
 
 ```bash
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload          # http://localhost:8000  (docs at /docs)
+tar -xzf mindbridge-offline-0.3.0-aarch64.tar.gz
+cd mindbridge-offline-0.3.0-aarch64
+bash install_offline.sh          # installs from bundled wheels, verifies model checksums
+cd app && bash scripts/run.sh    # opens the UI full-screen on the HDMI display
 ```
 
-> The service boots with **zero configuration** in offline mode. To enable Claude-powered
-> reasoning, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`.
+Then tap **Tap to speak** (or press `1` / `2` on a keyboard), speak, and wait for the
+translation. **Run details** (top right) shows where each model runs, model sizes, memory use and the
+live network state. Full steps, including a Docker option: [docs/reproduction.md](docs/reproduction.md).
 
-### 2. Frontend (Understanding Console)
+## For developers
 
 ```bash
-cd frontend
-npm install
-npm run dev                            # http://localhost:5173
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements-dev.txt
+python scripts/fetch_models.py             # online, once: all models into models/
+python -m mindbridge doctor --run          # checks models, NPU, audio, network, translates one line
+python -m mindbridge serve                 # http://127.0.0.1:8765
+pytest -q                                  # 20 tests, no models needed
 ```
 
-The dev server proxies `/api` to the backend automatically. Open the console, pick a
-preset message (e.g. *Lockout/Tagout*), run it through the engine, type a worker read-back,
-and watch the Understanding Score™ update live.
+On the board, `bash scripts/setup_rb3.sh` does the system packages, Python environment and models.
 
-## 🔬 Try it from the API
+## Measuring it
 
 ```bash
-# Analyse an instruction
-curl -s localhost:8000/api/process -H 'Content-Type: application/json' -d '{
-  "text": "Replace Filter B before restarting the machine.",
-  "target_lang": "vi", "listener_expertise": "trainee"
-}'
-
-# Score a worker read-back
-curl -s localhost:8000/api/verify -H 'Content-Type: application/json' -d '{
-  "original_text": "Replace Filter B before restarting the machine.",
-  "readback_text": "Understood, I will replace Filter B before restart."
-}'
+python bench/run_benchmark.py --data <sample-dataset-folder> --mode text           # BLEU / chrF++
+python bench/run_benchmark.py --data <sample-dataset-folder> --mode voice --require-offline
+python qualcomm/aihub_profile.py                                                    # on-device NPU profile via AI Hub
 ```
 
-## 🧩 Key features
+Each run writes `bench/results/<timestamp>/` with per-sentence results, a summary table, and a
+`run.log` containing the device, model inventory and the network state before and after the run.
+Published results live in [bench/results/published/](bench/results/published/).
 
-| Feature | Status | Where |
-|---------|:------:|-------|
-| Real-time multilingual translation (EN ⇄ VI) | ✅ | `engine/translator.py` |
-| Intent recognition (7 categories) | ✅ | `engine/intent.py` |
-| Expertise adaptation engine | ✅ | `engine/expertise.py` |
-| Risk & safety intelligence | ✅ | `engine/risk.py` |
-| Comprehension verification — **Understanding Score™** | ✅ | `engine/understanding.py` |
-| Shared context memory | ✅ | `memory/context_store.py` |
-| AI shift-handover assistant | ✅ | `engine/pipeline.py` |
-| Human ↔ machine (IoT) communication | 🔜 | Roadmap Phase 3 |
-
-## 🛡️ Edge-first by design
-
-All core processing is deterministic and runs on-device — no message leaves the machine in
-offline mode. This is intended for **Snapdragon-powered edge hardware** where privacy,
-latency, and reliability in low-connectivity industrial environments matter most. The
-Claude path is an *optional* enhancement, not a dependency.
-
-## 🧪 Tests & quality
-
-```bash
-cd backend && pip install -r requirements-dev.txt
-pytest            # unit + API integration tests
-ruff check .      # linting
-```
-
-CI runs the backend test suite and the frontend type-check + build on every push — see
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
-
-## 🗺️ Roadmap
-
-1. **Phase 1** — Real-time multilingual communication with understanding verification ✅ *(this prototype)*
-2. **Phase 2** — Shared team memory & AI shift handovers ✅ *(prototype)*
-3. **Phase 3** — Industrial IoT & machine integration
-4. **Phase 4** — AR-assisted contextual guidance
-5. **Phase 5** — Universal AI Communication Infrastructure
-
-Full detail in [`docs/roadmap.md`](docs/roadmap.md).
-
-## 📂 Project structure
+## Repository
 
 ```
-MindBridge/
-├── backend/        FastAPI Understanding Engine (Python)
-├── frontend/       React + TypeScript Understanding Console
-├── docs/           Architecture, scoring methodology, roadmap
-└── .github/        CI workflow, issue & PR templates
+mindbridge/        the application (pipeline, ASR/MT/TTS backends, memory, server, UI)
+  asr/             Whisper on NPU (QNN) and CPU, numpy log-mel, detokenizer
+  mt/              NLLB on CTranslate2, sentence splitting, phrase cache
+  memory/          operational memory objects, extractor, engine, SQLite store
+  ui/              offline touchscreen UI (plain HTML/CSS/JS, bundled fonts)
+bench/             benchmark harness
+qualcomm/          AI Hub fetch + profiling scripts
+scripts/           model download, RB3 setup, offline bundle, installer, launcher
+docker/            arm64 Dockerfile
+docs/              architecture, reproduction, demo scenario, hardware, roadmap, submission draft
+tests/             unit tests with fake models
 ```
 
-## 🤝 Contributing
+## Model licences
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). Issues and pull requests are welcome.
+Whisper (MIT), Silero VAD (MIT), Supertonic-3 (MIT), Piper voices (see each model card),
+NLLB-200 (CC-BY-NC-4.0, non-commercial; a commercial release would swap in a permissively
+licensed translation model). Full list with checksums: `models/manifest.json` after download.
 
-## 📜 License
+## Licence
 
-[MIT](LICENSE) © 2026 Paarth Sonkiya
-
----
-
-<div align="center">
-<em>MindBridge exists to eliminate misunderstandings in the workplace — transforming
-communication into verified understanding for safer, smarter collaboration.</em>
-</div>
+Code: [MIT](LICENSE) © 2026 Paarth Sonkiya

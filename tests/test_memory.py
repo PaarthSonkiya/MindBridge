@@ -20,6 +20,7 @@ def test_kinds():
     assert extract("I will replace the valve before the night shift.").kind == "commitment"
     assert extract("The valve was replaced and Machine 4 passed the pressure test.").kind == "outcome"
     assert extract("Can we restart machine 4?").kind == "question"
+    assert extract("Machine 4 is running normally again.").kind == "outcome"
     assert extract("Machine 4 can only be restarted if maintenance has signed off.").kind == "exception"
 
 
