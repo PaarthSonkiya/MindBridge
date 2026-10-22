@@ -91,6 +91,17 @@ class NllbTranslator:
         joiner = "" if tgt == "zh" else " "
         return MtResult(joiner.join(out), src, tgt, {"mt": (time.perf_counter() - t0) * 1e3})
 
+    def translate_many(self, texts: list[str], src: str, tgt: str) -> list[str]:
+        """Translate several multi-sentence texts with ONE model call (sentences split, batched, rejoined)."""
+        joiner = "" if tgt == "zh" else " "
+        pieces = [split_sentences(t) for t in texts]
+        flat = self.translate_batch([p for ps in pieces for p in ps], src, tgt)
+        out, i = [], 0
+        for ps in pieces:
+            out.append(joiner.join(flat[i : i + len(ps)]))
+            i += len(ps)
+        return out
+
     def translate_batch(self, sentences: list[str], src: str, tgt: str) -> list[str]:
         if not sentences:
             return []

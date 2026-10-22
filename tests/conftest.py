@@ -46,6 +46,9 @@ class FakeMt:
     def translate_batch(self, sents, src, tgt):
         return [self.translate(s, src, tgt).text for s in sents]
 
+    def translate_many(self, texts, src, tgt):
+        return [self.translate(t, src, tgt).text for t in texts]
+
     def model_files(self):
         return []
 

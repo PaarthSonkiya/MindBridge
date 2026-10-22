@@ -8,9 +8,9 @@
 Layout produced under models/ (and recorded in models/manifest.json):
 
     vad/silero_vad.onnx
-    asr/whisper-small-quantized-qcs6490/   Qualcomm AI Hub, w8a16, Hexagon NPU   (qualcomm/fetch_whisper.sh)
-    asr/sherpa-onnx-whisper-small/         int8 CPU fallback
-    mt/nllb-200-distilled-600M-ct2-int8/   CTranslate2 int8
+    asr/whisper-*-quantized-qcs6490/       Qualcomm AI Hub, w8a16, Hexagon NPU   (qualcomm/fetch_whisper.sh)
+    asr/ct2-whisper-small/                 CTranslate2 int8 CPU fallback
+    mt/nllb-200-distilled-1.3B-ct2-int8/   CTranslate2 int8
     tts/<voice>/                           one voice per language
 
 After this, the device never needs the network again.
@@ -37,7 +37,6 @@ GH = "https://github.com/k2-fsa/sherpa-onnx/releases/download"
 
 ASSETS = {
     "vad": [("vad/silero_vad.onnx", f"{GH}/asr-models/silero_vad.onnx", "MIT (snakers4/silero-vad)")],
-    "asr_cpu": [("asr/sherpa-onnx-whisper-small", f"{GH}/asr-models/sherpa-onnx-whisper-small.tar.bz2", "MIT (OpenAI Whisper)")],
     "tts": [
         ("tts/vits-piper-vi_VN-vais1000-medium", f"{GH}/tts-models/vits-piper-vi_VN-vais1000-medium.tar.bz2", "CC BY 4.0 (VAIS-1000 corpus)"),
         ("tts/vits-piper-en_US-amy-low", f"{GH}/tts-models/vits-piper-en_US-amy-low.tar.bz2", "See mimic3-voices (Piper)"),
@@ -81,12 +80,6 @@ def fetch_asset(rel: str, url: str):
             shutil.move(str(src), target)
     else:
         download(url, target)
-    if rel.startswith("asr/sherpa-onnx-whisper"):
-        # keep only the int8 graphs (saves ~900 MB) and drop test audio
-        for p in target.glob("*.onnx"):
-            if ".int8." not in p.name:
-                p.unlink()
-        shutil.rmtree(target / "test_wavs", ignore_errors=True)
 
 
 # Pre-converted CTranslate2 int8 builds published by OpenNMT (the CTranslate2 authors).
@@ -117,6 +110,46 @@ def fetch_nllb(size: str, convert: bool = False):
     shutil.copy(sp, out / "sentencepiece.bpe.model")
     shutil.rmtree(out / ".cache", ignore_errors=True)
     (out / "LICENSE.txt").write_text("NLLB-200 weights: CC-BY-NC-4.0 (Meta AI). Non-commercial use.\n")
+
+
+def fetch_cpu_whisper():
+    """CPU fallback: Whisper-small converted to CTranslate2 (Systran/faster-whisper-small), loaded as int8."""
+    out = MODELS / "asr" / "ct2-whisper-small"
+    if (out / "model.bin").exists():
+        log(f"have {out.relative_to(ROOT)}")
+        return
+    from huggingface_hub import snapshot_download
+
+    log("downloading Systran/faster-whisper-small (CTranslate2)")
+    snapshot_download("Systran/faster-whisper-small", local_dir=str(out),
+                      allow_patterns=["model.bin", "config.json", "vocabulary.*", "tokenizer.json"])
+    shutil.rmtree(out / ".cache", ignore_errors=True)
+    write_whisper_tokens(out / "whisper-tokens.txt")
+
+
+def write_whisper_tokens(path: Path):
+    """Byte-level token table ('<base64 bytes> <id>') from Whisper's multilingual vocabulary.
+
+    Rebuilt from the faster-whisper tokenizer.json (GPT-2 byte-to-unicode mapping), so no extra download."""
+    import base64
+
+    bs = list(range(ord("!"), ord("~") + 1)) + list(range(ord("¡"), ord("¬") + 1)) + list(range(ord("®"), ord("ÿ") + 1))
+    cs = bs[:]
+    n = 0
+    for b in range(256):
+        if b not in bs:
+            bs.append(b)
+            cs.append(256 + n)
+            n += 1
+    u2b = {chr(c): b for b, c in zip(bs, cs, strict=True)}
+    vocab = json.loads((path.parent / "tokenizer.json").read_text(encoding="utf-8"))["model"]["vocab"]
+    lines = []
+    for tok, idx in sorted(vocab.items(), key=lambda kv: kv[1]):
+        if idx >= 50257:
+            continue
+        raw = bytes(u2b[ch] for ch in tok if ch in u2b)
+        lines.append(f"{base64.b64encode(raw).decode()} {idx}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def fetch_qnn_whisper(model: str):
@@ -165,6 +198,9 @@ def main():
             for rel, url, lic in items:
                 fetch_asset(rel, url)
                 licenses[rel] = lic
+    if want("asr_cpu"):
+        fetch_cpu_whisper()
+        licenses["asr/ct2-whisper-small"] = "MIT (OpenAI Whisper; CTranslate2 conversion by Systran)"
     if want("mt"):
         fetch_nllb(args.nllb, args.convert)
         licenses[f"mt/nllb-200-distilled-{args.nllb}-ct2-int8"] = "CC-BY-NC-4.0 (Meta NLLB-200)"

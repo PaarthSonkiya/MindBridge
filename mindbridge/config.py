@@ -21,16 +21,15 @@ def _default_config_path() -> Path:
 @dataclass
 class AsrConfig:
     backend: str = "auto"  # auto | qnn | cpu
-    qnn_model_dir: str = "asr/whisper-small-quantized-qcs6490"
-    cpu_model_dir: str = "asr/sherpa-onnx-whisper-small"
-    cpu_model_prefix: str = "small"
+    qnn_model_dir: str = "asr/whisper-large-v3-turbo-quantized-qcs6490"
+    cpu_model_dir: str = "asr/ct2-whisper-small"
     max_tokens: int = 120
     threads: int = 4
 
 
 @dataclass
 class MtConfig:
-    model_dir: str = "mt/nllb-200-distilled-600M-ct2-int8"
+    model_dir: str = "mt/nllb-200-distilled-1.3B-ct2-int8"
     beam_size: int = 2
     threads: int = 4
     max_decoding_length: int = 200

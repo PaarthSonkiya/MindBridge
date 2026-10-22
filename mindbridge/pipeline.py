@@ -192,24 +192,38 @@ class MindBridge:
         turn.explanation = res.explanation
         if res.memory is not None:
             turn.memory = res.memory.to_dict()
+
+        # Everything MindBridge says back is composed in English; translate it in one batch per language.
+        want: dict[str, list[str]] = {turn.listener_lang: [], turn.speaker_lang: []}
+        for a in res.alerts:
+            want[turn.listener_lang].append(a["text_en"])
+            want[turn.speaker_lang].append(a["text_en"])
+        if res.verification_question_en and res.memory is not None:
+            want[turn.listener_lang].append(res.verification_question_en)
+        if res.answer_en:
+            want[turn.speaker_lang].append(res.answer_en)
+        done: dict[tuple[str, str], str] = {}
+        for lang, texts in want.items():
+            texts = list(dict.fromkeys(texts))
+            if not texts:
+                continue
+            outs = texts if lang == "en" else self.mt.translate_many(texts, "en", lang)
+            done.update({(lang, t): o for t, o in zip(texts, outs, strict=True)})
+
         for a in res.alerts:
             a = dict(a)
-            a["text"] = {
-                turn.listener_lang: self.translate(a["text_en"], "en", turn.listener_lang).text,
-                turn.speaker_lang: self.translate(a["text_en"], "en", turn.speaker_lang).text,
-            }
+            a["text"] = {lang: done[(lang, a["text_en"])] for lang in (turn.listener_lang, turn.speaker_lang)}
             turn.alerts.append(a)
         if res.verification_question_en and res.memory is not None:
-            q = self.translate(res.verification_question_en, "en", turn.listener_lang).text
             turn.verification = {
                 "memory_id": res.memory.id,
                 "question_en": res.verification_question_en,
-                "question": q,
+                "question": done[(turn.listener_lang, res.verification_question_en)],
                 "lang": turn.listener_lang,
             }
         if res.answer_en:
             turn.answer_en = res.answer_en
-            turn.answer = self.translate(res.answer_en, "en", turn.speaker_lang).text
+            turn.answer = done[(turn.speaker_lang, res.answer_en)]
         turn.timings_ms["memory"] = (time.perf_counter() - t0) * 1e3
         return turn
 
@@ -253,10 +267,7 @@ class MindBridge:
 
     def handover(self, lang: str) -> dict:
         en = self.memory.handover_en()
-        from mindbridge.mt.text import split_sentences
-
-        parts = split_sentences(en)
-        text = (" " if lang != "zh" else "").join(self.mt.translate_batch(parts, "en", lang)) if lang != "en" else en
+        text = self.mt.translate_many([en], "en", lang)[0] if lang != "en" else en
         return {"lang": lang, "text": text, "text_en": en, "structured": self.memory.handover_structured()}
 
     # ------------------------------------------------------------------ evidence

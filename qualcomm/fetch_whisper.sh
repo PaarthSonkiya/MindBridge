@@ -31,7 +31,7 @@ echo "== NPU build (precompiled QNN ONNX for $CHIPSET)"
 qai-hub-models fetch "$MODEL" -r precompiled_qnn_onnx -p w8a16 -c "$CHIPSET" "${sdk[@]}" -o "$npu_dir"
 
 # Whisper's vocabulary (same for every multilingual size); our detokenizer reads it.
-TOK="$OUT/sherpa-onnx-whisper-small/small-tokens.txt"
+TOK="$OUT/ct2-whisper-small/whisper-tokens.txt"
 if [ -f "$TOK" ]; then
   cp "$TOK" "$npu_dir/whisper-tokens.txt"
 fi

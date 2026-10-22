@@ -33,9 +33,9 @@ def load_asr(cfg: AppConfig) -> AsrEngine:
             errors.append(f"QNN unavailable: {why if not ok else 'model dir missing: ' + str(qnn_dir)}")
         if backend == "qnn":
             raise RuntimeError("; ".join(errors))
-    from mindbridge.asr.whisper_sherpa import WhisperSherpa
+    from mindbridge.asr.whisper_ct2 import WhisperCt2
 
-    eng = WhisperSherpa(cfg.models_path / cfg.asr.cpu_model_dir, cfg.asr.cpu_model_prefix, cfg.asr.threads)
+    eng = WhisperCt2(cfg.models_path / cfg.asr.cpu_model_dir, cfg.asr.threads, max_tokens=cfg.asr.max_tokens)
     if errors:
         log.warning("ASR falling back to CPU (%s)", "; ".join(errors))
     eng.fallback_reason = "; ".join(errors)  # type: ignore[attr-defined]
