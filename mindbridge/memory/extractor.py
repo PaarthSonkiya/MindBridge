@@ -176,7 +176,7 @@ _COND_STRIP = re.compile(r"\b(?:until|till|unless|before|only if|only after|if)\
 _NEGATED = re.compile(r"\b(?:not|never|yet to)\b|n't\b", re.I)
 _EXCEPTION = re.compile(r"\b(can only|may only|only (?:if|when|after)|except)\b", re.I)
 _IMPERATIVE_START = re.compile(
-    r"^(please\s+)?(" + "|".join(sorted({v.split(' ')[0] for v, _ in _VERB_TO_FAMILY} | {
+    r"^(?:(?:please|now|then|first|immediately|right now|next|also|and|so|ok(?:ay)?|right)[,\s]+)*(" + "|".join(sorted({v.split(' ')[0] for v, _ in _VERB_TO_FAMILY} | {
         "wait", "call", "tell", "report", "wear", "put", "keep", "set", "reduce", "increase", "lower", "raise",
         "remove", "install", "close", "lock", "unlock", "label", "mark", "send", "bring", "take", "measure",
         "record", "write", "follow", "evacuate", "leave", "slow"}, key=len, reverse=True)) + r")\b",

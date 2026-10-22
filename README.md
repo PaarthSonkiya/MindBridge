@@ -37,8 +37,19 @@ Qualcomm AI Hub and ONNX Runtime QNN.
 If the NPU is not available, speech recognition falls back to the CPU automatically
 (Whisper-small on CTranslate2, int8) and the UI says so.
 
-Measured results (RB3 Gen 2 NPU profile via Qualcomm AI Hub, speech accuracy on FLEURS, translation on
-FLORES): [bench/results/published/](bench/results/published/README.md).
+### Measured on the organisers' sample set
+
+| Direction | Text in: BLEU / chrF++ | Voice in: BLEU | Speech recognition error |
+|---|---|---|---|
+| VI→EN | 35.1 / 54.5 | 29.6 | 7.6 % WER |
+| VI→KO | 33.2 / 29.0 | 30.7 | 4.6 % WER |
+| KO→VI | 19.3 / 37.7 | 18.2 | 7.2 % CER |
+| VI→ZH | 40.8 / 30.7 | 38.4 | 16.3 % WER |
+| ZH→VI | 27.8 / 50.1 | 27.3 | 3.7 % CER |
+
+On the RB3 Gen 2's NPU (Qualcomm AI Hub profile): Whisper turbo encoder 1.4 s per utterance + 18.5 ms per
+token. Every number, raw log and per-sentence output, plus FLEURS/FLORES model comparisons:
+[bench/results/published/](bench/results/published/README.md).
 
 Language pairs: **VI ⇄ EN**, **VI ⇄ KO**, **VI ⇄ ZH** (choose on the screen).
 

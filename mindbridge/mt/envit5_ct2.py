@@ -109,11 +109,14 @@ class Envit5Translator:
             return []
         if not self.supports(src, tgt):
             raise ValueError(f"envit5 translates only English ⇄ Vietnamese, not {src}→{tgt}")
+        # envit5's vocabulary has no em/en dash: they come out as "⁇".
+        inputs = [s.replace(" — ", ", ").replace("—", ", ").replace("–", "-") for s in sentences]
         if src == "en":
-            sentences = [normalise_english(s) for s in sentences]
-        batch = [self.sp.encode(f"{src}: {s}", out_type=str) + ["</s>"] for s in sentences]
+            inputs = [normalise_english(s) for s in inputs]
+        batch = [self.sp.encode(f"{src}: {s}", out_type=str) + ["</s>"] for s in inputs]
         with self._lock:
             results = self.translator.translate_batch(batch, beam_size=self.beam_size, max_decoding_length=self.max_len)
-        outs = [_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).strip() for r in results]
+        outs = [" ".join(_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).replace("⁇", " ").split())
+                for r in results]
         outs = [detokenise_english(o) for o in outs] if tgt == "en" else [tidy_vietnamese(o) for o in outs]
         return [keep_final_punctuation(s, o, tgt) for s, o in zip(sentences, outs, strict=True)]

@@ -101,3 +101,10 @@ def test_readback_does_not_clear_and_order_in_second_sentence_conflicts():
     assert any(a["level"] == "red" for a in r.alerts)
     r2 = e.ingest("We will start Machine 4 now.", "", "en", "Supervisor")
     assert any(a["level"] == "red" for a in r2.alerts)
+
+
+def test_imperative_after_leading_adverb():
+    from mindbridge.memory.extractor import extract
+
+    m = extract("Now stop machine number six and contact the maintenance team.")
+    assert m.kind == "instruction" and m.subject == "Machine 6"
