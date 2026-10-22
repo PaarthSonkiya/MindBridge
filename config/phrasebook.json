@@ -1,0 +1,52 @@
+{
+  "en-vi": {
+    "Stop the machine": "Dừng máy lại.",
+    "Emergency stop": "Dừng khẩn cấp!",
+    "Do not touch": "Không được chạm vào.",
+    "Wait here": "Đợi ở đây.",
+    "Danger": "Nguy hiểm!",
+    "Turn off the power": "Tắt nguồn điện.",
+    "Call maintenance": "Gọi bộ phận bảo trì.",
+    "Wear your gloves": "Đeo găng tay vào.",
+    "Wear your helmet": "Đội mũ bảo hộ vào.",
+    "Evacuate now": "Sơ tán ngay!",
+    "Everything is OK": "Mọi thứ đều ổn.",
+    "Machine 4 is under maintenance": "Máy số 4 đang được bảo trì."
+  },
+  "vi-en": {
+    "Dừng máy lại": "Stop the machine.",
+    "Dừng khẩn cấp": "Emergency stop!",
+    "Có nguy hiểm": "There is danger!",
+    "Máy bị kẹt": "The machine is jammed.",
+    "Em cần hỗ trợ": "I need help.",
+    "Gọi bảo trì": "Call maintenance."
+  },
+  "ko-vi": {
+    "기계를 멈추세요": "Dừng máy lại.",
+    "비상 정지": "Dừng khẩn cấp!",
+    "만지지 마세요": "Không được chạm vào.",
+    "여기서 기다리세요": "Đợi ở đây.",
+    "위험합니다": "Nguy hiểm!",
+    "전원을 끄세요": "Tắt nguồn điện."
+  },
+  "vi-ko": {
+    "Dừng máy lại": "기계를 멈추세요.",
+    "Dừng khẩn cấp": "비상 정지!",
+    "Máy bị kẹt": "기계가 걸렸습니다.",
+    "Em cần hỗ trợ": "도움이 필요합니다."
+  },
+  "zh-vi": {
+    "把机器停下来": "Dừng máy lại.",
+    "紧急停止": "Dừng khẩn cấp!",
+    "不要碰": "Không được chạm vào.",
+    "在这里等一下": "Đợi ở đây.",
+    "危险": "Nguy hiểm!",
+    "关掉电源": "Tắt nguồn điện."
+  },
+  "vi-zh": {
+    "Dừng máy lại": "把机器停下来。",
+    "Dừng khẩn cấp": "紧急停止！",
+    "Máy bị kẹt": "机器卡住了。",
+    "Em cần hỗ trợ": "我需要帮助。"
+  }
+}
