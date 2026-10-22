@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -88,28 +89,39 @@ def fetch_asset(rel: str, url: str):
         shutil.rmtree(target / "test_wavs", ignore_errors=True)
 
 
-def fetch_nllb(size: str):
+# Pre-converted CTranslate2 int8 builds published by OpenNMT (the CTranslate2 authors).
+NLLB_PREBUILT = {"1.3B": "OpenNMT/nllb-200-distilled-1.3B-ct2-int8"}
+
+
+def fetch_nllb(size: str, convert: bool = False):
+    """600M: convert Meta's weights (needs ~4 GB RAM + torch). 1.3B: OpenNMT's int8 build (conversion needs ~8 GB)."""
     out = MODELS / "mt" / f"nllb-200-distilled-{size}-ct2-int8"
     if (out / "model.bin").exists():
         log(f"have {out.relative_to(ROOT)}")
         return
     repo = NLLB[size]
-    log(f"converting {repo} → CTranslate2 int8 (needs: pip install transformers torch sentencepiece ctranslate2)")
-    subprocess.run(
-        [sys.executable, "-m", "ctranslate2.converters.transformers", "--model", repo,
-         "--quantization", "int8", "--output_dir", str(out), "--force"],
-        check=True,
-    )
-    from huggingface_hub import hf_hub_download
+    from huggingface_hub import hf_hub_download, snapshot_download
 
+    if size in NLLB_PREBUILT and not convert:
+        log(f"downloading {NLLB_PREBUILT[size]}")
+        snapshot_download(NLLB_PREBUILT[size], local_dir=str(out),
+                          allow_patterns=["model.bin", "config.json", "shared_vocabulary.*"])
+    else:
+        log(f"converting {repo} → CTranslate2 int8 (needs: pip install transformers torch sentencepiece ctranslate2)")
+        subprocess.run(
+            [sys.executable, "-m", "ctranslate2.converters.transformers", "--model", repo,
+             "--quantization", "int8", "--output_dir", str(out), "--force"],
+            check=True,
+        )
     sp = hf_hub_download(repo, "sentencepiece.bpe.model")
     shutil.copy(sp, out / "sentencepiece.bpe.model")
+    shutil.rmtree(out / ".cache", ignore_errors=True)
     (out / "LICENSE.txt").write_text("NLLB-200 weights: CC-BY-NC-4.0 (Meta AI). Non-commercial use.\n")
 
 
-def fetch_qnn_whisper():
-    log("fetching Qualcomm AI Hub Whisper for QCS6490 (qualcomm/fetch_whisper.sh)")
-    subprocess.run(["bash", str(ROOT / "qualcomm" / "fetch_whisper.sh")], check=True)
+def fetch_qnn_whisper(model: str):
+    log(f"fetching Qualcomm AI Hub {model} for QCS6490 (qualcomm/fetch_whisper.sh)")
+    subprocess.run(["bash", str(ROOT / "qualcomm" / "fetch_whisper.sh")], check=True, env={**os.environ, "MODEL": model})
 
 
 def sha256(path: Path) -> str:
@@ -137,7 +149,10 @@ def write_manifest(licenses: dict[str, str]):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--nllb", default="600M", choices=list(NLLB))
+    ap.add_argument("--nllb", default="1.3B", choices=list(NLLB), help="translation model size")
+    ap.add_argument("--whisper", default="whisper_large_v3_turbo_quantized,whisper_small_quantized",
+                    help="AI Hub Whisper builds for the NPU (comma list)")
+    ap.add_argument("--convert", action="store_true", help="convert NLLB from Meta's weights even if a prebuilt exists")
     ap.add_argument("--only", default="", help="comma list: vad,asr_cpu,asr_npu,mt,tts")
     ap.add_argument("--skip-npu", action="store_true", help="skip the Qualcomm AI Hub Whisper download")
     args = ap.parse_args()
@@ -151,11 +166,12 @@ def main():
                 fetch_asset(rel, url)
                 licenses[rel] = lic
     if want("mt"):
-        fetch_nllb(args.nllb)
+        fetch_nllb(args.nllb, args.convert)
         licenses[f"mt/nllb-200-distilled-{args.nllb}-ct2-int8"] = "CC-BY-NC-4.0 (Meta NLLB-200)"
     if want("asr_npu") and not args.skip_npu:
-        fetch_qnn_whisper()
-        licenses["asr/whisper-small-quantized-qcs6490"] = "Apache-2.0 model / Qualcomm AI Hub assets license"
+        for model in filter(None, args.whisper.split(",")):
+            fetch_qnn_whisper(model)
+            licenses[f"asr/{model.replace('_', '-')}-qcs6490"] = "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license"
     write_manifest(licenses)
 
 
