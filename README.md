@@ -16,7 +16,7 @@ Qualcomm AI Hub and ONNX Runtime QNN.
 ## How it works
 
 ```
- mic ─▶ high-pass + Silero VAD ─▶ Whisper-small w8a16 ─▶ NLLB-200 600M ─▶ Piper / Supertonic ─▶ speaker
+ mic ─▶ high-pass + Silero VAD ─▶ Whisper turbo w8a16 ─▶ NLLB-200 1.3B ─▶ Piper / Supertonic ─▶ speaker
           (CPU)                    (Hexagon NPU,            (CTranslate2       (CPU)
                                     AI Hub, QNN)             int8, CPU)
                                           │
@@ -27,13 +27,16 @@ Qualcomm AI Hub and ONNX Runtime QNN.
 | Stage | Model | Runs on | Why |
 |---|---|---|---|
 | Voice activity | Silero VAD v5 | CPU | 2 MB, trims noise, auto-stops recording |
-| Speech recognition | Whisper-small, w8a16, compiled by Qualcomm AI Hub for QCS6490 | **Hexagon NPU** (onnxruntime-qnn) | Heaviest model; fixed shapes suit the NPU |
-| Translation | NLLB-200 distilled 600M, CTranslate2 int8 | Kryo CPU | Autoregressive, dynamic shapes; int8 ARM kernels are fast |
+| Speech recognition | Whisper large-v3-turbo, w8a16, compiled by Qualcomm AI Hub for QCS6490 (Whisper-small as fast mode) | **Hexagon NPU** (onnxruntime-qnn) | Heaviest model; fixed shapes suit the NPU. Measured on RB3 Gen 2: 1.4 s encoder + 18.5 ms/token, every layer on the NPU |
+| Translation | NLLB-200 distilled 1.3B, CTranslate2 int8 | Kryo CPU | Autoregressive, dynamic shapes; int8 ARM kernels are fast. +2–4 BLEU over 600M on FLORES |
 | Speech synthesis | Piper VITS (vi, en, zh), Supertonic-3 (ko) | Kryo CPU | Small, natural, offline |
 | Memory | Deterministic extractor + SQLite | CPU | Explainable, <1 ms, never invents an instruction |
 
 If the NPU is not available, speech recognition falls back to the CPU automatically
-(sherpa-onnx Whisper int8) and the UI says so.
+(Whisper-small on CTranslate2, int8) and the UI says so.
+
+Measured results (RB3 Gen 2 NPU profile via Qualcomm AI Hub, speech accuracy on FLEURS, translation on
+FLORES): [bench/results/published/](bench/results/published/README.md).
 
 Language pairs: **VI ⇄ EN**, **VI ⇄ KO**, **VI ⇄ ZH** (choose on the screen).
 
@@ -61,7 +64,7 @@ pip install -r requirements-dev.txt
 python scripts/fetch_models.py             # online, once: all models into models/
 python -m mindbridge doctor --run          # checks models, NPU, audio, network, translates one line
 python -m mindbridge serve                 # http://127.0.0.1:8765
-pytest -q                                  # 20 tests, no models needed
+pytest -q                                  # unit tests, no models needed
 ```
 
 On the board, `bash scripts/setup_rb3.sh` does the system packages, Python environment and models.
@@ -96,7 +99,7 @@ tests/             unit tests with fake models
 
 ## Model licences
 
-Whisper (MIT), Silero VAD (MIT), Supertonic-3 (MIT), Piper voices (see each model card),
+Whisper (MIT; Qualcomm AI Hub builds under the AI Hub Models licence), Silero VAD (MIT), Supertonic-3 (MIT), Piper voices (see each model card),
 NLLB-200 (CC-BY-NC-4.0, non-commercial; a commercial release would swap in a permissively
 licensed translation model). Full list with checksums: `models/manifest.json` after download.
 

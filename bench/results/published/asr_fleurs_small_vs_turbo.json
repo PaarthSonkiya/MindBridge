@@ -1,0 +1,42 @@
+{
+ "small vi": {
+  "error_rate_%": 22.9,
+  "metric": "WER",
+  "sec_per_utt_cpu": 3.4
+ },
+ "small en": {
+  "error_rate_%": 6.0,
+  "metric": "WER",
+  "sec_per_utt_cpu": 2.4
+ },
+ "small ko": {
+  "error_rate_%": 10.9,
+  "metric": "CER",
+  "sec_per_utt_cpu": 2.7
+ },
+ "small zh": {
+  "error_rate_%": 12.6,
+  "metric": "CER",
+  "sec_per_utt_cpu": 2.8
+ },
+ "turbo vi": {
+  "error_rate_%": 10.9,
+  "metric": "WER",
+  "sec_per_utt_cpu": 9.7
+ },
+ "turbo en": {
+  "error_rate_%": 4.5,
+  "metric": "WER",
+  "sec_per_utt_cpu": 9.2
+ },
+ "turbo ko": {
+  "error_rate_%": 9.5,
+  "metric": "CER",
+  "sec_per_utt_cpu": 9.6
+ },
+ "turbo zh": {
+  "error_rate_%": 10.5,
+  "metric": "CER",
+  "sec_per_utt_cpu": 9.9
+ }
+}

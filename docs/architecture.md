@@ -14,7 +14,7 @@ to reach a non-loopback address fails and is counted (the count is shown in **Ru
                   │                                                │                          │
                   │                                   text in the speaker's language          │
                   │                                                ▼                          │
-                  │                              NLLB-200 600M (CTranslate2 int8, CPU)         │
+                  │                              NLLB-200 1.3B (CTranslate2 int8, CPU)         │
                   │                                                ▼                          │
                   │                    text in the listener's language ─▶ UI immediately      │
                   │                                                ▼                          │
@@ -29,27 +29,31 @@ to reach a non-loopback address fails and is counted (the count is shown in **Ru
 
 ### Why this split between NPU and CPU
 
-* **Whisper on the NPU.** The encoder is ~90% of Whisper's compute and has fixed shapes
-  (80 × 3000 log-mel). Qualcomm AI Hub publishes a w8a16 build compiled for the QCS6490's
-  Hexagon v68; Qualcomm's own figures are ~235 ms for the encoder and ~23 ms per decoded
-  token on this chip. MindBridge drives AI Hub's static-shape decoder (200-slot self-attention
-  cache) one token at a time from numpy, so no PyTorch is needed on the device.
+* **Whisper on the NPU.** The encoder is most of Whisper's compute and has fixed shapes
+  (128 × 3000 log-mel for large-v3-turbo). Qualcomm AI Hub publishes w8a16 builds compiled for the
+  QCS6490's Hexagon v68. Measured on a hosted RB3 Gen 2: turbo 1,402 ms encoder + 18.5 ms per token;
+  small 235 ms + 23 ms per token; every layer on the NPU. Turbo is the default because it halves
+  Vietnamese word errors on real speech (22.9% → 10.9% on FLEURS). MindBridge drives AI Hub's
+  static-shape decoder (200-slot self-attention cache, quantised uint8/uint16 I/O) one token at a
+  time from numpy, so no PyTorch is needed on the device.
 * **NLLB on the CPU.** Translation is an autoregressive encoder–decoder with variable-length
-  input. CTranslate2's int8 kernels run NLLB-600M on the Kryo cores while the NPU stays free
-  for the next utterance.
+  input. CTranslate2's int8 kernels run NLLB-1.3B on the Kryo cores while the NPU stays free
+  for the next utterance. 1.3B beats 600M by 2–4 BLEU in five of six directions on FLORES.
 * **TTS on the CPU.** Piper VITS voices synthesise faster than real time on one or two cores.
 
 ### Speech recognition details (`mindbridge/asr/`)
 
 * `mel.py` — Whisper log-mel in numpy, verified equal to `transformers.WhisperFeatureExtractor`
   (max difference 1e-7).
-* `whisper_qnn.py` — runs AI Hub's encoder/decoder pair on the NPU through
+* `whisper_qnn.py` — runs AI Hub's encoder/decoder pair (quantised I/O read from AI Hub's
+  `metadata.json`) on the NPU through
   `onnxruntime-qnn` (plugin EP, HTP backend, CPU fallback disabled so nothing silently runs on
   the CPU). The prompt is forced to `<|sot|><|lang|><|transcribe|><|notimestamps|>`: push-to-talk
   already knows who is speaking, so the language is never guessed wrongly. When it must be
   detected, only the conversation's two languages are considered. A loop guard stops Whisper's
   repetition hallucinations.
-* `whisper_sherpa.py` — CPU fallback (sherpa-onnx, Whisper-small int8).
+* `whisper_ct2.py` — CPU fallback (Whisper-small, CTranslate2 int8). Both paths share the numpy
+  features and a byte-level detokenizer, so Chinese/Korean characters split across tokens survive.
 * Chinese output is converted to Simplified (OpenCC) to match `zho_Hans`.
 
 ### Memory layer (`mindbridge/memory/`)
