@@ -20,6 +20,7 @@ import argparse
 import csv
 import json
 import logging
+import re
 import statistics
 import sys
 import time
@@ -51,73 +52,88 @@ def _lang_of_column(name: str) -> str | None:
     return None
 
 
-def _rows_from_file(path: Path) -> list[dict]:
+def _tables_from_file(path: Path) -> list[list[dict]]:
+    """Each worksheet of an .xlsx is its own table; other formats are one table."""
     suf = path.suffix.lower()
     if suf in (".csv", ".tsv", ".txt"):
         with open(path, encoding="utf-8-sig", newline="") as f:
             sample = f.read(4096)
             f.seek(0)
             delim = "\t" if suf == ".tsv" or sample.count("\t") > sample.count(",") else ","
-            return list(csv.DictReader(f, delimiter=delim))
+            return [list(csv.DictReader(f, delimiter=delim))]
     if suf == ".jsonl":
-        return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        return [[json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]]
     if suf == ".json":
         data = json.loads(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, list) else data.get("data", [])
+        return [data if isinstance(data, list) else data.get("data", [])]
     if suf == ".xlsx":
         import openpyxl
 
         wb = openpyxl.load_workbook(path, read_only=True)
-        rows: list[dict] = []
+        tables = []
         for ws in wb.worksheets:
             it = ws.iter_rows(values_only=True)
             header = [str(h or "").strip() for h in next(it, [])]
-            rows += [dict(zip(header, [("" if v is None else str(v)) for v in r], strict=False)) for r in it]
-        return rows
+            rows = [dict(zip(header, [("" if v is None else str(v)) for v in r], strict=False)) for r in it]
+            tables.append([r for r in rows if any(v for v in r.values())])
+        return tables
     return []
 
 
+_AUDIO_COL = re.compile(r"audio|wav|mp3|flac|path|file", re.I)
+
+
+def _audio_lang(col: str) -> str | None:
+    tag = re.sub(r"[_\-\s]*(audio|wav|mp3|flac|path|file)[_\-\s]*", "", col.lower())
+    return _lang_of_column(tag) if tag else None
+
+
 def load_pairs(data: Path) -> dict[tuple[str, str], list[dict]]:
-    """Return {(lang_a, lang_b): [{"a": text, "b": text, "audio_a": path?, "audio_b": path?}]}."""
-    files = [data] if data.is_file() else sorted(p for p in data.rglob("*") if p.suffix.lower() in (".csv", ".tsv", ".jsonl", ".json", ".xlsx", ".txt"))
+    """Return {(vi, other): [{"a": vi_text, "b": other_text, "audio_a": path?, "audio_b": path?}]}."""
+    exts = (".csv", ".tsv", ".jsonl", ".json", ".xlsx", ".txt")
+    files = [data] if data.is_file() else sorted(p for p in data.rglob("*") if p.suffix.lower() in exts)
     out: dict[tuple[str, str], list[dict]] = {}
     for f in files:
-        rows = _rows_from_file(f)
-        if not rows:
-            continue
-        cols = {c: _lang_of_column(c) for c in rows[0].keys()}
-        langs = [c for c, lang in cols.items() if lang]
-        audio_cols = {c: c.lower() for c in rows[0].keys() if "audio" in c.lower() or "wav" in c.lower()}
-        if len(langs) < 2:
-            # e.g. columns "source","target" + file name like vi-en.tsv
-            stem = f.stem.lower().replace("_", "-")
-            parts = [p for p in stem.split("-") if p in LANG_ALIASES]
+        for ti, rows in enumerate(_tables_from_file(f)):
+            if not rows:
+                continue
             keys = list(rows[0].keys())
-            if len(parts) == 2 and len(keys) >= 2:
-                cols = {keys[0]: parts[0], keys[1]: parts[1]}
-                langs = keys[:2]
-            else:
-                logging.warning("skip %s: cannot tell which columns are which language (%s)", f, list(rows[0].keys()))
+            audio_cols = [c for c in keys if _AUDIO_COL.search(c)]
+            text_cols = [c for c in keys if c not in audio_cols]
+            cols = {c: _lang_of_column(c) for c in text_cols}
+            langs = [c for c, lang in cols.items() if lang]
+            if len(langs) < 2:
+                # e.g. columns "source","target" + a file name like vi-en.tsv
+                stem = f.stem.lower().replace("_", "-")
+                parts = [p for p in stem.split("-") if p in LANG_ALIASES]
+                if len(parts) == 2 and len(text_cols) >= 2:
+                    cols = {text_cols[0]: parts[0], text_cols[1]: parts[1]}
+                    langs = text_cols[:2]
+                else:
+                    logging.warning("skip %s (table %d): cannot tell which columns are which language (%s)", f, ti, keys)
+                    continue
+            ca, cb = langs[0], langs[1]
+            la, lb = cols[ca], cols[cb]
+            if "vi" not in (la, lb) or la == lb:
+                logging.warning("skip %s (table %d): need a Vietnamese column and one other language", f, ti)
                 continue
-        ca, cb = langs[0], langs[1]
-        la, lb = cols[ca], cols[cb]
-        key = (la, lb) if la == "vi" else (lb, la)
-        if la != "vi":
-            ca, cb = cb, ca
-        items = []
-        for r in rows:
-            a, b = str(r.get(ca, "")).strip(), str(r.get(cb, "")).strip()
-            if not a or not b:
-                continue
-            item = {"a": a, "b": b, "file": f.name}
-            for c in audio_cols:
-                val = str(r.get(c, "")).strip()
-                if val:
-                    p = (f.parent / val) if not Path(val).is_absolute() else Path(val)
-                    side = "audio_a" if any(x in c.lower() for x in LANG_ALIASES[key[0]]) else "audio_b"
-                    item[side] = str(p)
-            items.append(item)
-        out.setdefault(key, []).extend(items)
+            if la != "vi":
+                ca, cb, la, lb = cb, ca, lb, la
+            key = (la, lb)
+            items = []
+            for r in rows:
+                a, b = str(r.get(ca, "") or "").strip(), str(r.get(cb, "") or "").strip()
+                if not a or not b:
+                    continue
+                item = {"a": a, "b": b, "file": f.name}
+                for c in audio_cols:
+                    val = str(r.get(c, "") or "").strip()
+                    lang = _audio_lang(c)
+                    if val and lang in key:
+                        p = (f.parent / val) if not Path(val).is_absolute() else Path(val)
+                        item["audio_a" if lang == key[0] else "audio_b"] = str(p)
+                items.append(item)
+            out.setdefault(key, []).extend(items)
     return out
 
 
@@ -268,6 +284,10 @@ def main():
                     results.write(json.dumps(rec, ensure_ascii=False) + "\n")
                     if (i + 1) % 50 == 0:
                         log.info("  %d/%d", i + 1, len(items))
+                if not hyps:
+                    log.error("   %s: nothing scored (no usable audio/text)", key)
+                    summary["directions"][key] = {"n": 0, "bleu": None, "chrf++": None}
+                    continue
                 d = {"n": len(hyps), **mt_scores(hyps, refs, tgt)}
                 if asr_err:
                     d["asr_" + ("cer" if src in ("zh", "ko") else "wer")] = round(100 * statistics.mean(asr_err), 2)

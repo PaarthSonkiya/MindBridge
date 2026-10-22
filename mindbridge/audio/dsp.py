@@ -62,7 +62,8 @@ def prepare_for_asr(audio: np.ndarray, sr: int) -> np.ndarray:
     audio = resample(to_mono_float32(audio), sr)
     audio = highpass(audio)
     audio = normalize(audio)
-    return pad_tail(audio)
+    # Whisper drops the first syllable when speech starts at t=0, and the last word when it stops abruptly.
+    return pad_tail(np.concatenate([np.zeros(int(0.3 * TARGET_SR), np.float32), audio]))
 
 
 def wav_bytes(audio: np.ndarray, sr: int) -> bytes:

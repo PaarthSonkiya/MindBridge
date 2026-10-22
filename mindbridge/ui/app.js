@@ -43,7 +43,7 @@ function connect() {
 }
 function handle(ev) {
   switch (ev.type) {
-    case "hello": applyStatus(ev.status); refreshMemory(); break;
+    case "hello": applyStatus(ev.status); setState(ev.status.state); refreshMemory(); break;
     case "state": setState(ev.state, ev.side, ev.mode); break;
     case "turn": renderTurn(ev.turn, ev.side, ev.has_audio); break;
     case "turn_update": updateTurn(ev.turn); break;
@@ -142,7 +142,13 @@ async function browserRecord(side, mode, memoryId) {
     const fd = new FormData();
     fd.append("file", new Blob([wav], { type: "audio/wav" }), "speech.wav");
     fd.append("side", side); fd.append("mode", mode); fd.append("memory_id", memoryId ?? "");
-    await fetch("/api/upload", { method: "POST", body: fd });
+    try {
+      const r = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!r.ok) throw new Error(`upload failed (${r.status})`);
+    } catch (err) {
+      toast("Couldn't send the recording to MindBridge. Try again.");
+      setState("idle");
+    }
   };
   proc.onaudioprocess = (e) => {
     const x = new Float32Array(e.inputBuffer.getChannelData(0)); chunks.push(x);

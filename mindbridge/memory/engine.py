@@ -78,7 +78,9 @@ class MemoryEngine:
         res = IngestResult(memory=None, explanation=ex.explanation)
 
         if ex.kind == "question":
-            res.answer_en = self.answer(text_en, text_source, source_lang) if (ex.subject or ex.action) else ""
+            # Only answer unprompted when it is a concrete "can we <action> <machine>?" question;
+            # open questions go through the Ask button.
+            res.answer_en = self.answer(text_en, text_source, source_lang) if (ex.subject and ex.action_family) else ""
             return res
         if ex.kind == "note" and not ex.subject:
             return res  # small talk is never stored — operational memory only
@@ -218,7 +220,7 @@ class MemoryEngine:
     def answer(self, question_en: str, question_source: str = "", lang: str = "en") -> str:
         ents = find_entities(question_en, question_source, lang)
         verb, fam, _ = find_action(question_en)
-        mems = self.store.all()
+        mems = [m for m in self.store.all() if m.kind != "note"]
         if re.search(r"\b(what changed|what happened|since yesterday|since this morning|handover|summary|update)\b", question_en, re.I) and not ents:
             return self.handover_en()
         if not ents:

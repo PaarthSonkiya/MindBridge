@@ -26,7 +26,7 @@ _NUMWORDS = {
     "second": "2", "third": "3", "fourth": "4", "fifth": "5",
 }
 _NUM = r"(\d{1,4}[a-z]?|[a-z]\b|" + "|".join(_NUMWORDS) + r")"
-_EQUIP_AFTER = re.compile(rf"\b({EQUIPMENT})s?\s*(?:no\.?|number|num\.?|#)?\s*{_NUM}", re.I)
+_EQUIP_AFTER = re.compile(rf"\b({EQUIPMENT})s?+\s*(?:no\.?|number|num\.?|#)?\s*{_NUM}", re.I)
 _EQUIP_BEFORE = re.compile(rf"\b(?:number|no\.?|#)\s*{_NUM}\s+({EQUIPMENT})\b", re.I)
 _CODE = re.compile(r"\b([A-Z]{1,4})-?(\d{1,4})\b")
 _EQUIP_BARE = re.compile(rf"\b(?:the|this|that)\s+((?:[a-z]+\s)?(?:{EQUIPMENT}))\b", re.I)
@@ -167,6 +167,9 @@ _DECISION = re.compile(
     re.I,
 )
 _PROCEDURE = re.compile(r"^(after|first|once)\b.+?,\s*(then\s+)?\w+|\bthen\b.+\bthen\b|\bstep \d", re.I)
+_CLAUSE_SPLIT = re.compile(r"(?<=[.!?;,])\s+")
+_COND_STRIP = re.compile(r"\b(?:until|till|unless|before|only if|only after|if)\b[^.!?]*", re.I)
+_NEGATED = re.compile(r"\b(?:not|never|yet to)\b|n't\b", re.I)
 _EXCEPTION = re.compile(r"\b(can only|may only|only (?:if|when|after)|except)\b", re.I)
 _IMPERATIVE_START = re.compile(
     r"^(please\s+)?(" + "|".join(sorted({v.split(' ')[0] for v, _ in _VERB_TO_FAMILY} | {
@@ -178,7 +181,9 @@ _IMPERATIVE_START = re.compile(
 
 HAZARDS: dict[str, tuple[str, str]] = {
     "lockout": ("Lockout/Tagout", "critical"), "tagout": ("Lockout/Tagout", "critical"),
-    "loto": ("Lockout/Tagout", "critical"), "high voltage": ("High voltage", "critical"),
+    "loto": ("Lockout/Tagout", "critical"), "lock out": ("Lockout/Tagout", "critical"),
+    "lock-out": ("Lockout/Tagout", "critical"), "danger tag": ("Lockout/Tagout", "critical"),
+    "high voltage": ("High voltage", "critical"),
     "electric": ("Electrical", "high"), "voltage": ("Electrical", "high"), "live wire": ("Live conductor", "critical"),
     "gas": ("Gas", "high"), "chemical": ("Chemical", "high"), "acid": ("Chemical", "high"),
     "pressure": ("Stored pressure", "high"), "confined space": ("Confined space", "critical"),
@@ -212,7 +217,7 @@ def assess_risk(text: str) -> tuple[str, list[str]]:
     low = text.lower()
     level, found = "none", []
     for term, (label, lvl) in HAZARDS.items():
-        if re.search(rf"\b{re.escape(term)}", low):
+        if re.search(rf"\b{re.escape(term)}(?:s|es|al|ed|ing)?\b", low):
             if label not in found:
                 found.append(label)
             if _RISK_ORDER.index(lvl) > _RISK_ORDER.index(level):
@@ -235,32 +240,38 @@ def extract(text_en: str, source_text: str = "", source_lang: str = "en") -> Ext
     condition = f"{cond_m.group(1).lower()} {cond_m.group(2).strip()}" if cond_m else ""
     is_q = t.endswith("?") or bool(_QUESTION_START.match(t)) or source_text.strip().endswith(("?", "？"))
     neg = _NEG.search(t)
+    # Judge each sentence/clause separately: "We are behind schedule. Start Machine 4 now." is an order.
+    clauses = [c.strip() for c in _CLAUSE_SPLIT.split(t) if c.strip()]
+    imperative = any(_REQ.match(c) or _IMPERATIVE_START.match(c) for c in clauses)
+    # Completion words inside "until/unless/before ..." describe a condition, not something done.
+    main = _COND_STRIP.sub("", t)
+    outcome = bool(_OUTCOME.search(main)) and not _NEGATED.search(main)
 
     if is_q:
         kind, polarity = "question", "info"
         why.append("question form")
-    elif _OUTCOME.search(t):
-        kind, polarity = "outcome", "info"
-        why.append("completion wording (replaced / fixed / passed ...)")
     elif _EXCEPTION.search(t) and fam:
         kind, polarity = "exception", "forbid"
         why.append("'only if / can only' → conditional permission")
     elif neg and fam:
         kind, polarity = "instruction", "forbid"
         why.append(f"prohibition '{neg.group(0)}' + action '{verb}'")
+    elif outcome:
+        kind, polarity = "outcome", "info"
+        why.append("completion wording (replaced / fixed / passed ...)")
     elif _COMMIT.search(t):
         kind, polarity = "commitment", "info"
         why.append("first-person promise (I will ...)")
-    elif _ISSUE.search(t) and not _IMPERATIVE_START.match(t):
+    elif _ISSUE.search(t) and not imperative:
         kind, polarity = "issue", "info"
         why.append(f"problem wording '{_ISSUE.search(t).group(0)}'")
     elif _DECISION.search(t):
-        kind, polarity = "decision", "info"
+        kind, polarity = "decision", ("require" if fam else "info")
         why.append("team decision wording (we will / let's / from now on)")
     elif _PROCEDURE.search(t) and fam:
         kind, polarity = "procedure", "require"
         why.append("ordered steps (after ..., then ...)")
-    elif (_REQ.match(t) or _IMPERATIVE_START.match(t)) and (fam or subject or _IMPERATIVE_START.match(t)):
+    elif imperative:
         kind, polarity = "instruction", "require"
         why.append("imperative instruction")
     else:

@@ -91,13 +91,17 @@ class Recorder:
                 self._chunks.append(block)
             rms = float(np.sqrt(np.mean(block**2))) if block.size else 0.0
             self.level_dbfs = 20 * np.log10(max(rms, 1e-6))
-            if endpoint is not None and not fired["done"]:
+            if fired["done"]:
+                return
+            too_long = time.monotonic() - self.started_at > self.max_seconds
+            ended = False
+            if endpoint is not None:
                 endpoint.accept(resample(block, self._native_sr))
-                too_long = time.monotonic() - self.started_at > self.max_seconds
-                if (endpoint.heard_speech and endpoint.trailing_silence_s() >= silence_s) or too_long:
-                    fired["done"] = True
-                    if on_auto_stop:
-                        threading.Thread(target=on_auto_stop, daemon=True).start()
+                ended = endpoint.heard_speech and endpoint.trailing_silence_s() >= silence_s
+            if ended or too_long:
+                fired["done"] = True
+                if on_auto_stop:
+                    threading.Thread(target=on_auto_stop, daemon=True).start()
 
         self._stream = sd.InputStream(
             device=dev, channels=1, samplerate=self._native_sr, dtype="float32", blocksize=1024, callback=cb

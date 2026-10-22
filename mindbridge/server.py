@@ -48,6 +48,7 @@ class Hub:
         self.listening: dict | None = None
         self.recorder = None
         self.mic_error = ""
+        self._mic_lock = threading.Lock()
         self._init_mic()
         threading.Thread(target=self._worker, daemon=True).start()
 
@@ -79,18 +80,21 @@ class Hub:
     def start_listening(self, side: str, mode: str, memory_id: int | None = None) -> dict:
         if self.recorder is None:
             return {"ok": False, "error": f"No microphone on the device ({self.mic_error}). Using browser mic."}
-        if self.recorder.active:
-            return self.stop_listening()
-        endpoint = None
-        if self.bridge.vad is not None:
-            endpoint = self.bridge.vad.streaming()
-        self.listening = {"side": side, "mode": mode, "memory_id": memory_id, "t0": time.time()}
-        self.recorder.start(endpoint, self.cfg.audio.vad_endpoint_silence_s, on_auto_stop=self.stop_listening)
+        with self._mic_lock:
+            if self.recorder.active:
+                return self._stop_locked()
+            endpoint = self.bridge.vad.streaming() if self.bridge.vad is not None else None
+            self.listening = {"side": side, "mode": mode, "memory_id": memory_id, "t0": time.time()}
+            self.recorder.start(endpoint, self.cfg.audio.vad_endpoint_silence_s, on_auto_stop=self.stop_listening)
         self._set_state("listening", side=side, mode=mode)
         threading.Thread(target=self._level_meter, daemon=True).start()
         return {"ok": True}
 
     def stop_listening(self) -> dict:
+        with self._mic_lock:
+            return self._stop_locked()
+
+    def _stop_locked(self) -> dict:
         if self.recorder is None or not self.recorder.active or self.listening is None:
             return {"ok": False}
         audio = self.recorder.stop()
@@ -118,7 +122,9 @@ class Hub:
                 log.exception("job failed")
                 self.emit({"type": "error", "message": str(exc)})
             finally:
-                self._set_state("idle")
+                recording = self.recorder is not None and self.recorder.active
+                if self.jobs.empty() and not recording:
+                    self._set_state("idle")
 
     def _run(self, job: dict):
         sides = self.sides()

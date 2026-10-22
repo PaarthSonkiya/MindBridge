@@ -29,7 +29,8 @@ Without `/dev/fastrpc-cdsp` (no Qualcomm NPU) the same bundle runs with Whisper 
 ```bash
 docker load < mindbridge-0.3-arm64.tar.gz
 docker run --rm -it --network host --device /dev/fastrpc-cdsp --device /dev/snd \
-  -v /usr/lib/dsp:/usr/lib/dsp:ro -v $PWD/models:/app/models:ro -v $PWD/data:/app/data mindbridge:0.3
+  -v /usr/lib/dsp:/usr/lib/dsp:ro -v /usr/lib/aarch64-linux-gnu/libcdsprpc.so:/usr/lib/aarch64-linux-gnu/libcdsprpc.so:ro \
+  -v $PWD/models:/app/models:ro -v $PWD/data:/app/data mindbridge:0.3
 # open http://127.0.0.1:8765
 ```
 

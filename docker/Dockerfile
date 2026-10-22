@@ -8,7 +8,10 @@
 #   docker load < mindbridge-0.3-arm64.tar.gz
 #   docker run --rm -it --network host \
 #     --device /dev/fastrpc-cdsp --device /dev/snd -v /usr/lib/dsp:/usr/lib/dsp:ro \
+#     -v "$(ls /usr/lib/aarch64-linux-gnu/libcdsprpc.so* | head -1)":/usr/lib/aarch64-linux-gnu/libcdsprpc.so:ro \
 #     -v $PWD/models:/app/models:ro -v $PWD/data:/app/data mindbridge:0.3
+# libcdsprpc.so (FastRPC client, from the host's Qualcomm packages) is what lets QNN reach the Hexagon DSP;
+# without it the container still works, with speech recognition on the CPU.
 # then open http://127.0.0.1:8765 on the device's browser.
 FROM ubuntu:24.04
 

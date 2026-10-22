@@ -14,6 +14,7 @@ python3 -c 'import venv' 2>/dev/null || { echo "python3-venv is missing: sudo ap
 python3 -m venv "$APP/.venv"
 . "$APP/.venv/bin/activate"
 pip install --no-index --find-links "$HERE/wheels" -r "$APP/requirements.txt"
+pip install --no-index --find-links "$HERE/wheels" "onnxruntime-qnn>=2.7.0" || echo "Note: onnxruntime-qnn not installed; speech recognition will use the CPU."
 
 rm -rf "$APP/models"
 ln -s "$HERE/models" "$APP/models"

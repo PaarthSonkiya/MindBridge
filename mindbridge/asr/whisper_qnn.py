@@ -63,7 +63,7 @@ class WhisperQnn(AsrEngine):
         self.logits_name = next(n for n in self.dec_out_names if "logit" in n.lower())
         self.self_in = sorted(n for n in self.dec_inputs if "cache_self" in n and n.endswith("_in"))
         for name, spec in [(self.enc_in.name, self.enc_in), *self.dec_inputs.items()]:
-            if "float" not in spec.type and name not in ("input_ids", "position_ids"):
+            if spec.type != "tensor(float)" and name not in ("input_ids", "position_ids"):
                 raise RuntimeError(
                     f"Input '{name}' is {spec.type}; MindBridge expects float I/O. "
                     "Re-export the model from AI Hub without --quantize_io."

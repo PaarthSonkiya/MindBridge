@@ -114,7 +114,8 @@ class MindBridge:
         t0 = time.perf_counter()
         x = dsp.prepare_for_asr(audio, sr)
         if self.vad is not None:
-            x = dsp.pad_tail(self.vad.trim(x))
+            lead = np.zeros(int(0.3 * dsp.TARGET_SR), np.float32)
+            x = dsp.pad_tail(np.concatenate([lead, self.vad.trim(x)]))
         timings["preprocess"] = (time.perf_counter() - t0) * 1e3
         t1 = time.perf_counter()
         res = self.asr.transcribe(x, lang, candidates)

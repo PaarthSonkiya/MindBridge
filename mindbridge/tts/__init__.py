@@ -85,11 +85,13 @@ class Tts:
 
                 g = so.GenerationConfig()
                 g.sid, g.num_steps, g.speed = SUPERTONIC_SPEAKER, SUPERTONIC_STEPS, 1.05 * self.speed
-                g.extra["lang"] = lang
+                g.extra = {"lang": lang}  # assign the dict; item assignment is silently dropped
                 out = tts.generate(text, g)
             else:
                 out = tts.generate(text, sid=0, speed=self.speed)
         audio = np.asarray(out.samples, dtype=np.float32)
+        # 150 ms lead-in: many USB/HDMI audio paths clip the first syllable while waking up.
+        audio = np.concatenate([np.zeros(int(0.15 * out.sample_rate), np.float32), audio])
         return TtsResult(audio, int(out.sample_rate), (time.perf_counter() - t0) * 1e3)
 
     def model_files(self, langs: list[str]) -> list[str]:

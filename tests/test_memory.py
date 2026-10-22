@@ -76,3 +76,27 @@ def test_handover_mentions_open_items():
     e.ingest("Machine 6 is vibrating again.", "", "en", "Operator")
     h = e.handover_en()
     assert "restriction" in h and "Machine 6" in h
+
+
+def test_review_regressions():
+    # completion words inside an "until" clause are a condition, not an outcome
+    ex = extract("Do not restart Machine 4 until the pressure valve has been replaced.")
+    assert ex.kind == "instruction" and ex.polarity == "forbid"
+    assert extract("The valve has not been replaced yet.").kind != "outcome"
+    # an order in the second sentence still counts
+    assert extract("We are behind schedule. Start Machine 4 now.").polarity == "require"
+    # whole-word hazards; LOTO phrasing; no fake "Unit S"
+    assert "Gas" not in extract("Please bring the torque wrench and a new gasket.").hazards
+    assert "Lockout/Tagout" in extract("Lock out Machine 4 and put a danger tag on the main switch.").hazards
+    assert find_entities("The target is two thousand units by the end of the shift.") == []
+
+
+def test_readback_does_not_clear_and_order_in_second_sentence_conflicts():
+    e = engine()
+    e.ingest("Do not restart Machine 4 until the pressure valve has been replaced.", "", "en", "Supervisor")
+    e.ingest("Machine 4 will stop until the valve has been replaced.", "", "en", "Operator")
+    assert e.answer("Can we restart machine 4?").startswith("Not yet")
+    r = e.ingest("We are behind schedule. Start Machine 4 now.", "", "en", "Supervisor")
+    assert any(a["level"] == "red" for a in r.alerts)
+    r2 = e.ingest("We will start Machine 4 now.", "", "en", "Supervisor")
+    assert any(a["level"] == "red" for a in r2.alerts)

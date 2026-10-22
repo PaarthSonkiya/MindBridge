@@ -60,3 +60,26 @@ def test_bench_loader(tmp_path):
     assert pairs[("vi", "en")][0] == {"a": "Dừng máy lại.", "b": "Stop the machine.", "file": "a.csv"}
     assert pairs[("vi", "ko")][0]["b"] == "기계를 멈추세요."
     assert rb.error_rate("dừng máy lại", "dừng máy", "vi") == pytest.approx(1 / 3)
+
+
+def test_bench_loader_audio_columns_and_sheets(tmp_path):
+    import importlib.util
+    from pathlib import Path
+
+    import openpyxl
+
+    spec = importlib.util.spec_from_file_location("rb2", Path(__file__).parent.parent / "bench" / "run_benchmark.py")
+    rb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rb)
+    (tmp_path / "t.csv").write_text("id,audio_vi,vi,ko\n1,a/1.wav,Dừng máy.,기계를 멈추세요.\n", encoding="utf-8")
+    wb = openpyxl.Workbook()
+    wb.active.append(["Vietnamese", "English"])
+    wb.active.append(["Dừng máy.", "Stop the machine."])
+    ws2 = wb.create_sheet("ko")
+    ws2.append(["Vietnamese", "Korean"])
+    ws2.append(["Dừng máy.", "기계를 멈추세요."])
+    wb.save(tmp_path / "s.xlsx")
+    pairs = rb.load_pairs(tmp_path)
+    ko = pairs[("vi", "ko")]
+    assert any(i["a"] == "Dừng máy." and i.get("audio_a", "").endswith("1.wav") for i in ko)
+    assert len(ko) == 2 and pairs[("vi", "en")][0]["b"] == "Stop the machine."

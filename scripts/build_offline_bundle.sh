@@ -19,13 +19,17 @@ echo "== Code"
 git -C "$ROOT" archive --format=tar HEAD | (mkdir -p "$STAGE/app" && tar -x -C "$STAGE/app")
 
 echo "== Wheels for linux aarch64, CPython $PY"
-for plat in manylinux_2_39_aarch64 manylinux_2_34_aarch64 manylinux_2_28_aarch64 manylinux2014_aarch64; do
-  pip download -r "$ROOT/requirements.txt" -d "$STAGE/wheels" \
-    --platform "$plat" --python-version "$PY" --implementation cp --only-binary=:all: && break || true
-done
-# pure-python packages without wheels for every tag
-pip download -d "$STAGE/wheels" --no-deps --only-binary=:all: opencc-python-reimplemented || \
-  pip download -d "$STAGE/wheels" --no-deps opencc-python-reimplemented
+# pip does not expand manylinux tags downwards, so list every tag the board (glibc 2.39) accepts.
+PLATS=(--platform manylinux_2_39_aarch64 --platform manylinux_2_35_aarch64 --platform manylinux_2_34_aarch64
+       --platform manylinux_2_28_aarch64 --platform manylinux_2_27_aarch64 --platform manylinux_2_17_aarch64
+       --platform manylinux2014_aarch64 --platform linux_aarch64)
+COMMON=(--python-version "$PY" --implementation cp --abi "cp$PY" --abi abi3 --abi none --only-binary=:all:)
+pip download -r "$ROOT/requirements.txt" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+# The requirements marker for onnxruntime-qnn is evaluated on THIS machine, so fetch it explicitly.
+pip download "onnxruntime-qnn>=2.7.0" -d "$STAGE/wheels" "${PLATS[@]}" "${COMMON[@]}"
+# opencc-python-reimplemented is pure Python but only published as an sdist on some mirrors.
+ls "$STAGE/wheels" | grep -qi opencc || pip wheel --no-deps -w "$STAGE/wheels" opencc-python-reimplemented
+echo "$(ls "$STAGE/wheels" | wc -l) wheels"
 
 echo "== Models"
 [ -f "$ROOT/models/manifest.json" ] || python3 "$ROOT/scripts/fetch_models.py"
