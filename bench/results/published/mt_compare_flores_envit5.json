@@ -1,0 +1,25 @@
+{
+ "data": "FLORES-200 devtest, first 200 sentences, vi-en (compare with mt_flores_nllb_size_beam.json)",
+ "results": {
+  "envit5": {
+   "vi-en": {
+    "n": 200,
+    "bleu": 38.33,
+    "chrf++": 62.15,
+    "bleu_tokenizer": "13a",
+    "sec_per_sentence": 0.733,
+    "beam": 1,
+    "model_dir": "envit5-ct2-int8"
+   },
+   "en-vi": {
+    "n": 200,
+    "bleu": 42.66,
+    "chrf++": 60.72,
+    "bleu_tokenizer": "13a",
+    "sec_per_sentence": 0.85,
+    "beam": 1,
+    "model_dir": "envit5-ct2-int8"
+   }
+  }
+ }
+}

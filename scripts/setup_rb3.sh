@@ -28,15 +28,11 @@ echo "== Python environment"
 python3 -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+if [ -f requirements-aarch64.lock ]; then pip install -r requirements-aarch64.lock; else pip install -r requirements.txt; fi
 
-echo "== Models"
-pip install "qai_hub_models_cli>=0.65"
-python scripts/fetch_models.py --only vad,asr_cpu,tts,asr_npu
-if [ ! -f models/mt/nllb-200-distilled-600M-ct2-int8/model.bin ]; then
-  echo "Translation model not found. Build it on a laptop with: python scripts/fetch_models.py --only mt"
-  echo "then copy models/mt/ to this device (or install the offline bundle)."
-fi
+echo "== Models (prebuilt downloads; nothing is converted on the board)"
+pip install "huggingface_hub>=0.23" "qai_hub_models_cli>=0.65"
+python scripts/fetch_models.py
 
 echo "== Self-check"
 python -m mindbridge doctor || true

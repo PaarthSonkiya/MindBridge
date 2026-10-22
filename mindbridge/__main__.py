@@ -13,6 +13,7 @@ import json
 import logging
 import sys
 import time
+from pathlib import Path
 
 from mindbridge import __version__, offline_guard
 from mindbridge.config import load_config
@@ -116,7 +117,21 @@ def cmd_translate(args, cfg):
     from mindbridge.config import REPO_ROOT
     from mindbridge.mt import MtRouter
 
+    if cfg.strict_offline:
+        offline_guard.install()
     mt = MtRouter(cfg.models_path, cfg.mt, phrasebook=REPO_ROOT / "config" / "phrasebook.json")
+    if args.file:  # one sentence per line in, one translation per line out
+        src_lines = Path(args.file).read_text(encoding="utf-8-sig").splitlines()
+        out = sys.stdout
+        if args.output:
+            out = open(args.output, "w", encoding="utf-8")  # noqa: SIM115
+        t0 = time.perf_counter()
+        for line in src_lines:
+            out.write((mt.translate(line, args.src, args.tgt).text if line.strip() else "") + "\n")
+        if args.output:
+            out.close()
+        print(f"{len(src_lines)} lines in {time.perf_counter() - t0:.1f} s", file=sys.stderr)
+        return
     r = mt.translate(args.text, args.src, args.tgt)
     print(r.text)
     print(f"({r.timings_ms['mt']:.0f} ms)", file=sys.stderr)
@@ -179,8 +194,10 @@ def main(argv=None):
     f.add_argument("--src", default="en")
     f.add_argument("--tgt", default="vi")
     f.add_argument("--play", action="store_true", help="also play the spoken translation")
-    tr = sub.add_parser("translate", help="translate one line of text")
-    tr.add_argument("text")
+    tr = sub.add_parser("translate", help="translate a line of text, or a file with one sentence per line")
+    tr.add_argument("text", nargs="?", default="")
+    tr.add_argument("--file", help="input text file, one sentence per line")
+    tr.add_argument("--output", help="write translations here (default: stdout)")
     tr.add_argument("--src", default="en")
     tr.add_argument("--tgt", default="vi")
     d = sub.add_parser("doctor", help="check models, NPU, audio and network")

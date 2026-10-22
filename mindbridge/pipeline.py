@@ -282,7 +282,8 @@ class MindBridge:
             rows.insert(0, {"stage": "Voice activity", "model": "Silero VAD v5", "unit": "CPU",
                             "size_mb": round(files_size_mb([str(self.cfg.models_path / 'vad' / 'silero_vad.onnx')]), 1), "note": ""})
         if self.tts:
-            for lang in (a, b):
+            loaded = list(getattr(self.tts, "_voices", {}))
+            for lang in [x for x in (a, b) if x not in loaded] + loaded:
                 rows.append({"stage": f"Speech synthesis ({L.get(lang).name})", "model": L.get(lang).tts_voice,
                              "unit": "CPU", "size_mb": round(files_size_mb(self.tts.model_files([lang])), 1), "note": ""})
         rows.append({"stage": "Operational memory", "model": "Rule engine + SQLite", "unit": "CPU", "size_mb": 0.0, "note": ""})

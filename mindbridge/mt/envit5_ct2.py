@@ -29,6 +29,14 @@ _EQUIP = re.compile(
 )
 
 
+# envit5 was trained on tokenised English and sometimes writes "Do n't" / "I 've".
+_CONTRACTION = re.compile(r"(\w) (n't|'s|'re|'ve|'ll|'d|'m)\b", re.I)
+
+
+def detokenise_english(text: str) -> str:
+    return _CONTRACTION.sub(r"\1\2", text)
+
+
 def normalise_english(text: str) -> str:
     return _EQUIP.sub(lambda m: ("production line" if m.group(1) == "Line" else m.group(1).lower()) + m.group(2), text)
 
@@ -97,4 +105,5 @@ class Envit5Translator:
         batch = [self.sp.encode(f"{src}: {s}", out_type=str) + ["</s>"] for s in sentences]
         with self._lock:
             results = self.translator.translate_batch(batch, beam_size=self.beam_size, max_decoding_length=self.max_len)
-        return [_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).strip() for r in results]
+        outs = [_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).strip() for r in results]
+        return [detokenise_english(o) for o in outs] if tgt == "en" else outs

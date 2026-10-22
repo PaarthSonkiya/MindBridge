@@ -39,7 +39,14 @@ def fields(board: dict | None) -> dict:
     sha = _git_sha()
     tree = f"{REPO}/tree/{BRANCH}"
     T = _json("onevoice_sample_text/summary.json") or {"directions": {}}
-    V = _json("onevoice_sample_voice/summary.json") or {"directions": {}}
+    # Voice runs are split in two folders (each fits a 2-hour job): VI→EN + VI⇄KO + EN recordings, and VI⇄ZH.
+    V = {"directions": {}}
+    for part in ("onevoice_sample_voice", "onevoice_sample_voice_zh"):
+        r = _json(f"{part}/summary.json")
+        if r:
+            V["directions"].update(r["directions"])
+            V["peak_ram_mb"] = max(V.get("peak_ram_mb", 0), r.get("peak_ram_mb", 0))
+            V.setdefault("models", r.get("models"))
     turbo = {r["model"]: r for r in (_json("aihub_whisper_turbo_qcs6490/summary.json") or [])}
     small = {r["model"]: r for r in (_json("aihub_whisper_small_qcs6490/summary.json") or [])}
     enc, dec = turbo.get("encoder.bin", {}), turbo.get("decoder.bin", {})
@@ -67,6 +74,12 @@ def fields(board: dict | None) -> dict:
         b_mem = "On the RB3 Gen 2: [TO FILL: peak RAM from the board voice run]."
         b_dev = "[TO FILL: board run folder]"
 
+    if board:
+        run_status = "Measured on our RB3 Gen 2 (Section 4)."
+    else:
+        run_status = ("Verified so far: the NPU models and MindBridge's own decoding loop on hosted RB3 Gen 2 devices "
+                      "(Qualcomm AI Hub), and the whole pipeline on a CPU. [TO FILL: full run on our own RB3 Gen 2]")
+
     summary = {
         "Team / individual participant": "MindBridge",
         "Project name": "MindBridge: offline voice translation with operational memory for multilingual factory floors",
@@ -91,10 +104,10 @@ def fields(board: dict | None) -> dict:
                               "NPU with HTP v68), 6 GB LPDDR5 RAM, 128 GB UFS; Ubuntu 24.04 LTS for Qualcomm IoT. "
                               "[TO FILL: microphone and speaker models; display]",
         "Current capability & progress": (
-            "Works end to end and offline: each speaker taps their side (or presses 1 / 2) and talks; Whisper "
-            "recognises the speech on the Hexagon NPU, the translation appears on screen and is spoken. On top, "
-            "operational memory: conflict alerts, understanding checks, questions answered from memory and a "
-            "spoken shift handover.\n\n"
+            "End to end and offline: each speaker taps their side (or presses 1 / 2) and talks; Whisper recognises "
+            "the speech on the Hexagon NPU, the translation appears on screen and is spoken. On top, operational "
+            "memory: conflict alerts, understanding checks, questions answered from memory and a spoken shift "
+            "handover. " + run_status + "\n\n"
             "Changes since Phase 2 (same product and direction): speech recognition moved from SenseVoice (no "
             "Vietnamese) to Whisper large-v3-turbo compiled by Qualcomm AI Hub for QCS6490; translation uses envit5 "
             "for English ⇄ Vietnamese and NLLB-200 1.3B for Korean and Chinese, chosen by measurement; memory "
@@ -140,8 +153,8 @@ def fields(board: dict | None) -> dict:
             f"{_fmt(V.get('peak_ram_mb'), 0)} MB peak, tested.\n\n"
             "Storage: about 8 GB free for the unpacked package, Python environment and models; estimated."),
         "OS and software": (
-            "Ubuntu 24.04 LTS aarch64 (Qualcomm IoT image) with Python 3.12 and the FastRPC/CDSP driver "
-            "(libcdsprpc.so, part of the image). Bundled: onnxruntime 1.31.0 + onnxruntime-qnn 2.7.0 (QAIRT 2.51, "
+            "Ubuntu 24.04 LTS aarch64 (Qualcomm IoT image) with Python 3.12; for the NPU, Qualcomm's FastRPC user "
+            "library (libcdsprpc.so, from the image or the ubuntu-qcom-iot PPA). Bundled: onnxruntime 1.31.0 + onnxruntime-qnn 2.7.0 (QAIRT 2.51, "
             "HTP v68 libraries included), CTranslate2 4.8.3, sherpa-onnx 1.13.8, numpy 2.5.4, FastAPI 0.159.1, "
             "uvicorn 0.54.0; every version pinned in app/requirements-aarch64.lock. No GPU driver or internet "
             "needed."),
@@ -178,24 +191,45 @@ def fields(board: dict | None) -> dict:
     }
 
     # ---------------------------------------------------------------- 4. results
-    n_ve, n_vk = t("vi-en", "n"), t("vi-ko", "n")
+    order = ["vi-en", "en-vi", "vi-ko", "ko-vi", "vi-zh", "zh-vi"]
+    if board:
+        npu_check = ("On our RB3 Gen 2 (NPU) the same recordings give: " + "; ".join(
+            f"{d.split('-')[0].upper()} error rate {_fmt(bd(d, 'asr_cer') or bd(d, 'asr_wer'), 1, '%')}, "
+            f"BLEU {_fmt(bd(d, 'bleu'))}" for d in order if bd(d, "bleu") is not None) + ".")
+    else:
+        npu_check = "[TO FILL: error rate and BLEU from the board voice run, to confirm the NPU build matches]"
+    names = {"vi": "Vietnamese", "en": "English", "ko": "Korean", "zh": "Chinese"}
+
+    def arrow(d):
+        a, b = d.split("-")
+        return f"{a.upper()}→{b.upper()}"
+
+    text_parts = [f"{arrow(d)} {_fmt(t(d, 'bleu'))} / {_fmt(t(d, 'chrf++'))} (n={t(d, 'n')})"
+                  for d in order if t(d, "bleu") is not None]
+    voice_parts = []
+    for d in order:
+        if v(d, "bleu") is None:
+            continue
+        src = d.split("-")[0]
+        er = v(d, "asr_cer") if src in ("ko", "zh") else v(d, "asr_wer")
+        kind = "character" if src in ("ko", "zh") else "word"
+        voice_parts.append(f"{arrow(d)} {_fmt(v(d, 'bleu'))} / {_fmt(v(d, 'chrf++'))}, {names[src]} {kind} error rate "
+                           f"{_fmt(er, 1, '%')} (n={v(d, 'n')})")
     quality = (
-        "Metric: sacreBLEU corpus BLEU (13a tokenizer; character tokens for Korean) and chrF++, on the organisers' "
-        "sample set. Same models and settings as the device, run offline on an x86-64 CPU (accuracy does not depend "
-        "on the processor).\n\n"
-        f"Text in: VI→EN BLEU {_fmt(t('vi-en', 'bleu'))} / chrF++ {_fmt(t('vi-en', 'chrf++'))} (n={n_ve}); "
-        f"VI→KO {_fmt(t('vi-ko', 'bleu'))} / {_fmt(t('vi-ko', 'chrf++'))} (n={n_vk}); "
-        f"KO→VI {_fmt(t('ko-vi', 'bleu'))} / {_fmt(t('ko-vi', 'chrf++'))} (n={t('ko-vi', 'n')}).\n\n"
-        f"Voice in (organisers' recordings → speech recognition → translation): VI→EN BLEU {_fmt(v('vi-en', 'bleu'))}, "
-        f"Vietnamese word error rate {_fmt(v('vi-en', 'asr_wer'), 1, '%')} (n={v('vi-en', 'n')}); "
-        f"KO→VI BLEU {_fmt(v('ko-vi', 'bleu'))}, Korean character error rate {_fmt(v('ko-vi', 'asr_cer'), 1, '%')} "
-        f"(n={v('ko-vi', 'n')}); VI→KO BLEU {_fmt(v('vi-ko', 'bleu'))} (n={v('vi-ko', 'n')}). The 100 EN→VI "
-        "recordings came without reference texts (the folder holds the VI→EN sheet), so EN→VI is not scored.\n\n"
+        "Metric: sacreBLEU corpus BLEU / chrF++ (13a tokenizer; zh tokenizer for Chinese, characters for Korean) on "
+        "the organisers' sample set, run offline on an x86-64 CPU with the device's translators and settings. For "
+        "voice input the CPU run uses the same Whisper large-v3-turbo weights in int8 (CTranslate2); the device runs "
+        "Qualcomm's w8a16 build of that model on the NPU. " + npu_check + "\n\n"
+        "Text in: " + ("; ".join(text_parts) or "[TO FILL]") + ".\n\n"
+        "Voice in (organisers' recordings → speech recognition → translation): " + ("; ".join(voice_parts) or
+                                                                                   "[TO FILL]") + ". "
+        "The 100 EN→VI recordings came without reference texts (the folder holds the VI→EN sheet), so EN→VI is not "
+        "scored.\n\n"
         "Examples: \"Tôi muốn thuê xe đạp khoảng hai tiếng.\" → \"I'd like to rent a bicycle for two hours.\" "
         "Failure: \"Anh cần thêm dây không?\" → \"You need more rope?\" (reference: \"an extra cable\"): \"dây\" is "
         "ambiguous without context.")
-    q_ev = (f"{tree}/bench/results/published/onevoice_sample_text/ and onevoice_sample_voice/ (results.jsonl: every "
-            "sentence with source, reference, output and timing; run.log)")
+    q_ev = (f"{tree}/bench/results/published/: onevoice_sample_text/, onevoice_sample_voice/, onevoice_sample_voice_zh/ "
+            "(results.jsonl: every sentence with source, reference, output and timing; run.log; summary.md)")
 
     latency = (
         f"Speech recognition on the RB3 Gen 2 NPU (Qualcomm AI Hub profile on a hosted RB3 Gen 2, the exact binaries "
@@ -264,8 +298,10 @@ def fields(board: dict | None) -> dict:
         "requirements": requirements,
         "steps": steps,
         "test_record": (
-            "[TO FILL: date of the board run]. Accuracy: organisers' sample set (VI→EN 100 sentences with "
-            f"recordings; VI ⇄ KO {n_vk} sentence pairs with recordings on both sides), MindBridge v{VERSION}, run "
+            "[TO FILL: date of the board run]. Accuracy: organisers' sample set (VI→EN: "
+            f"{t('vi-en', 'n')} sentences with recordings; VI ⇄ KO: {t('vi-ko', 'n')} pairs and VI ⇄ ZH: "
+            f"{t('vi-zh', 'n')} pairs, recordings on both sides; EN→VI: 100 recordings without texts), "
+            f"MindBridge v{VERSION}, run "
             "offline on x86-64 (CPU) with the same models; on-device NPU timing: Qualcomm AI Hub profiles on hosted "
             "RB3 Gen 2 (Oct 2026); end-to-end timing and memory: [TO FILL: our RB3 Gen 2 run]. Recordings played "
             "from files, no added noise.\n"),

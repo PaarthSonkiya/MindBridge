@@ -15,7 +15,8 @@
 7. **Sample data issue:** the `Vie-Eng dataset/Eng-Vie/` folder has 100 English recordings
    (`EV-0157.wav` …) but its spreadsheet is a copy of the Vietnamese→English sheet (`VE-` IDs). Could you
    share the English→Vietnamese reference texts for the `EV-*.wav` files? (Also: 9 `Vie-Kor` recordings
-   have no matching text file.)
+   have no matching text file.) Also, all 180 Korean recordings (and 3 Vietnamese ones) are MP3 data
+   saved with a `.wav` name. Will the hidden test set use the same formats? (MindBridge reads both.)
 8. The samples are everyday/hospitality conversations, not factory talk. Is the hidden test set the same
    style, and does it include recordings for both directions of each pair?
 

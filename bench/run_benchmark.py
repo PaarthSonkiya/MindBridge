@@ -38,10 +38,11 @@ LANG_ALIASES = {
     "en": ("en", "eng", "english", "en_us", "eng_latn", "tiếng anh", "anh", "영어", "英语"),
     "ko": ("ko", "kor", "korean", "한국어", "ko_kr", "kor_hang", "tiếng hàn", "hàn", "韩语"),
     "zh": ("zh", "zho", "chinese", "中文", "zh_cn", "zho_hans", "cn", "mandarin", "tiếng trung", "tiếng hoa",
-           "중국어", "汉语"),
+           "중국어", "汉语", "man", "cmn", "普通话"),
 }
-# Letters in the organisers' sentence IDs, e.g. VE-0037 = Vietnamese speaker → English listener.
-ID_LETTERS = {"v": "vi", "e": "en", "k": "ko", "c": "zh", "z": "zh"}
+# Letters in the organisers' sentence IDs, e.g. VE-0037 = Vietnamese speaker → English listener,
+# VK = Vietnamese–Korean, VM = Vietnamese–Mandarin.
+ID_LETTERS = {"v": "vi", "e": "en", "k": "ko", "c": "zh", "z": "zh", "m": "zh"}
 AUDIO_EXTS = (".wav", ".flac", ".mp3", ".ogg", ".m4a")
 _GENERIC = re.compile(r"[\s_\-–—:]*(final|ref|reference|text|transcript|source|target|sentence|bản dịch|dịch)$")
 _ID_RE = re.compile(r"^([A-Za-z]{1,4})[-_]?(\d+)$")
@@ -453,6 +454,8 @@ def main():
     if args.pairs:
         keep = {tuple(p.split("-")) for p in args.pairs.split(",")}
         data = {k: v for k, v in data.items() if k in keep}
+        unlinked = [u for u in unlinked if u["src"] and u["tgt"] and
+                    (("vi", u["tgt"]) if u["src"] == "vi" else ("vi", u["src"])) in keep]
     for k, v in data.items():
         log.info("dataset %s-%s: %d sentence pairs, %d with Vietnamese audio, %d with %s audio", *k, len(v),
                  sum(1 for i in v if i.get("audio_a")), sum(1 for i in v if i.get("audio_b")), k[1])
@@ -469,6 +472,12 @@ def main():
     with PeakMemory() as mem_load:
         t0 = time.perf_counter()
         bridge = MindBridge(cfg, load_tts=(args.mode == "voice"), load_memory=False)
+        # Load everything this run will use now, so the inventory and load time are complete.
+        for _vi, other in data:
+            bridge.preload_pair(f"vi-{other}", tts=args.mode == "voice")
+        if args.mode == "voice" and args.unscored_audio:
+            for key in sorted({f"{u['src']}-{u['tgt']}" for u in unlinked if u["src"] and u["tgt"]}):
+                bridge.preload_pair(key)
         load_s = time.perf_counter() - t0
     log.info("models loaded in %.1fs, peak %.0f MB", load_s, mem_load.peak_mb)
     inv = bridge.inventory()

@@ -128,6 +128,7 @@ def test_bench_loader_organiser_layout(tmp_path):
     assert [(u["id"], u["src"], u["tgt"]) for u in unlinked] == [("EV-0002", "en", "vi")]
     assert rb._lang_of_column("Tiếng Anh - Final") == "en"
     assert rb._langs_in_name("OneVoice_V_to_E_samples_100") == ["vi", "en"]
+    assert rb._langs_in_name("Vie-Man dataset") == ["vi", "zh"] and rb._id_langs("VM-0223") == ["vi", "zh"]
 
 
 def test_envit5_english_normalisation():
@@ -138,6 +139,9 @@ def test_envit5_english_normalisation():
     assert normalise_english("Run Line 2 at half speed; check Pump #3.") == \
         "Run production line 2 at half speed; check pump #3."
     assert normalise_english("Machine learning is fun.") == "Machine learning is fun."
+    from mindbridge.mt.envit5_ct2 import detokenise_english
+
+    assert detokenise_english("Do n't add sugar. I 've seen it, is n't it?") == "Don't add sugar. I've seen it, isn't it?"
 
 
 def test_mt_router_picks_backend(tmp_path):

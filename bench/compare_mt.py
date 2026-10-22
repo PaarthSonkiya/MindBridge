@@ -66,11 +66,31 @@ class Nllb:
         return self.mt.translate(text, src, tgt).text
 
 
+class Hybrid:
+    """Pivot through English, using the best model for each leg: NLLB for X⇄EN, envit5 for EN⇄VI."""
+
+    pairs = None
+
+    def __init__(self, nllb_dir: Path, envit5_dir: Path, beam_size: int = 2, threads: int = 0):
+        self.nllb = Nllb(nllb_dir, beam_size=beam_size, threads=threads)
+        self.envit5 = Envit5(envit5_dir, beam_size=1, threads=threads)
+
+    def _leg(self, text, src, tgt):
+        m = self.envit5 if {src, tgt} == {"en", "vi"} else self.nllb
+        return m.translate(text, src, tgt)
+
+    def translate(self, text: str, src: str, tgt: str) -> str:
+        if "en" in (src, tgt):
+            return self._leg(text, src, tgt)
+        return self._leg(self._leg(text, src, "en"), "en", tgt)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", required=True)
     ap.add_argument("--model", action="append", required=True,
-                    help="name=dir[:beam[:pivot]], e.g. nllb-pivot=mt/nllb-200-distilled-1.3B-ct2-int8:2:en")
+                    help="name=dir[:beam[:pivot]], e.g. nllb-pivot=mt/nllb-200-distilled-1.3B-ct2-int8:2:en; "
+                         "name=nllb_dir+envit5_dir[:beam] pivots through English with the best model per leg")
     ap.add_argument("--directions", default="", help="e.g. vi-en,ko-vi (default: what the dataset declares)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--threads", type=int, default=0)
@@ -99,10 +119,15 @@ def main():
     for spec in args.model:
         name, rest = spec.split("=", 1)
         path, beam, pivot = (rest.split(":") + ["", ""])[:3]
-        mdir = Path(path) if Path(path).is_absolute() else ROOT / "models" / path
-        kind = Envit5 if (mdir / "spiece.model").exists() else Nllb
-        beam_size = int(beam) if beam else (1 if kind is Envit5 else 2)
-        model = kind(mdir, beam_size=beam_size, threads=args.threads, **({"pivot": pivot} if pivot else {}))
+        if "+" in path:  # hybrid: nllb_dir+envit5_dir
+            dirs = [Path(x) if Path(x).is_absolute() else ROOT / "models" / x for x in path.split("+")]
+            mdir, kind, beam_size = dirs[0], Hybrid, int(beam) if beam else 2
+            model = Hybrid(dirs[0], dirs[1], beam_size=beam_size, threads=args.threads)
+        else:
+            mdir = Path(path) if Path(path).is_absolute() else ROOT / "models" / path
+            kind = Envit5 if (mdir / "spiece.model").exists() else Nllb
+            beam_size = int(beam) if beam else (1 if kind is Envit5 else 2)
+            model = kind(mdir, beam_size=beam_size, threads=args.threads, **({"pivot": pivot} if pivot else {}))
         for key, (srcs, refs, ids) in sets.items():
             src, tgt = key.split("-")
             if kind.pairs is not None and (src, tgt) not in kind.pairs:

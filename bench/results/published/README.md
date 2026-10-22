@@ -56,6 +56,30 @@ BLEU / chrF++ (sacreBLEU; `zh` tokenizer for Chinese, character tokens for Korea
 
 File: `mt_flores_nllb_size_beam.json`. → NLLB-1.3B, beam 2 is the default.
 
+## 5. Translator choice on the organisers' sample set (text in, text out)
+
+`bench/compare_mt.py`, organisers' OneVoice samples, sacreBLEU (character tokens for Korean), CPU seconds
+per sentence with batch 1 on our 2-core x86 test box (relative speed only).
+
+| Translator | VI→EN (n=100) | VI→KO (n=180) | KO→VI (n=180) | s / sentence |
+|---|---|---|---|---|
+| **envit5 (T5 275M) int8, greedy** | **34.97 / 54.5** | — (EN⇄VI only) | — | 0.26 (VI→EN) |
+| **NLLB-200 1.3B int8, beam 2** | 32.04 / 50.9 | **32.59 / 28.3** | **19.33 / 37.7** | 0.9–1.7 |
+| NLLB-200 1.3B, beam 4 | | 32.11 / 27.8 | 19.33 / 37.7 | ≈1.0 |
+| NLLB-200 1.3B via English | | 26.03 / 22.7 | 17.10 / 36.0 | ≈2.0 |
+| envit5 + NLLB via English | | 23.98 / 20.9 | 15.43 / 35.0 | ≈1.2 |
+| NLLB-200 3.3B int8 | not scored: needs 4.6 GB RAM alone, too much for the 6 GB board | | | |
+
+BLEU / chrF++. On FLORES-200 (200 sentences) envit5 scores VI→EN 38.3 / 62.2 and EN→VI 42.7 / 60.7, against
+NLLB-1.3B's 38.2 / 61.3 and 39.5 / 58.1. → **envit5 for English ⇄ Vietnamese; NLLB-200 1.3B, beam 2,
+direct, for Korean/Chinese ⇄ Vietnamese.** Every hypothesis is in `mt_compare_sample.json`.
+
+## 6. Model sizes
+
+`model_sizes.json` (`bench/model_sizes.py`): 1,405 MB of models loaded for a VI ⇄ EN conversation
+(Whisper turbo QNN 984, envit5 266, two Piper voices 155, VAD 0.6); 2,807 MB for VI ⇄ KO (adds NLLB-1.3B
+1,341 and Supertonic 139); 3,754 MB for everything shipped, including the CPU fallback and fast mode.
+
 ## Caveats
 
 * Accuracy numbers (3, 4) were run on an x86 CPU; they do not depend on the hardware. Latency and memory

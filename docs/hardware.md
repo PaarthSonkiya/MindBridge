@@ -36,8 +36,8 @@ This adds Qualcomm's Ubuntu PPA, installs PortAudio and the FastRPC/QNN user-spa
 in that PPA, creates `.venv`, installs Python packages (including `onnxruntime-qnn`, which bundles the
 Hexagon v68 HTP libraries), downloads the models, and runs `python -m mindbridge doctor`.
 
-The translation model is converted from Hugging Face on a laptop (`python scripts/fetch_models.py --only mt`)
-because the conversion needs PyTorch; copy `models/mt/` to the board.
+All models are prebuilt downloads (Qualcomm AI Hub for the NPU Whisper builds, Hugging Face for the
+CTranslate2 translators and voices), about 3.7 GB; nothing has to be converted on the board.
 
 ## Check the NPU
 
@@ -45,7 +45,7 @@ because the conversion needs PyTorch; copy `models/mt/` to the board.
 python -m mindbridge doctor --run
 ```
 
-Look for `"qnn": {"available": true, ...}` and `"asr": "whisper-small-w8a16 (QNN HTP)"`. If QNN is not
+Look for `"qnn": {"available": true, ...}` and `"asr": "whisper-large-v3-turbo-w8a16 (QNN HTP)"`. If QNN is not
 available the app still works with Whisper on the CPU. The usual causes are:
 
 * `/dev/fastrpc-cdsp` missing or not readable → the setup script adds a udev rule; reboot once.
