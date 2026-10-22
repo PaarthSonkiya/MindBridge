@@ -37,6 +37,15 @@ def detokenise_english(text: str) -> str:
     return _CONTRACTION.sub(r"\1\2", text)
 
 
+_TIME = re.compile(r"\b(\d{1,2}) ?: (\d{2})\b")
+
+
+def tidy_vietnamese(text: str) -> str:
+    """'21: 55' → '21:55'; capital first letter (lower-cased equipment names can start a sentence)."""
+    text = _TIME.sub(r"\1:\2", text)
+    return text[:1].upper() + text[1:]
+
+
 def normalise_english(text: str) -> str:
     return _EQUIP.sub(lambda m: ("production line" if m.group(1) == "Line" else m.group(1).lower()) + m.group(2), text)
 
@@ -106,4 +115,6 @@ class Envit5Translator:
         with self._lock:
             results = self.translator.translate_batch(batch, beam_size=self.beam_size, max_decoding_length=self.max_len)
         outs = [_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).strip() for r in results]
-        return [detokenise_english(o) for o in outs] if tgt == "en" else outs
+        if tgt == "en":
+            return [detokenise_english(o) for o in outs]
+        return [tidy_vietnamese(o) for o in outs]

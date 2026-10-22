@@ -142,6 +142,9 @@ def test_envit5_english_normalisation():
     from mindbridge.mt.envit5_ct2 import detokenise_english
 
     assert detokenise_english("Do n't add sugar. I 've seen it, is n't it?") == "Don't add sugar. I've seen it, isn't it?"
+    from mindbridge.mt.envit5_ct2 import tidy_vietnamese
+
+    assert tidy_vietnamese("máy 6 dừng lúc 21: 55.") == "Máy 6 dừng lúc 21:55."
 
 
 def test_mt_router_picks_backend(tmp_path):

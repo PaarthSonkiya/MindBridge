@@ -42,6 +42,13 @@ _YES_NATIVE = {
 }
 
 
+_KIND_PHRASE = {
+    "instruction": "an instruction", "issue": "an issue was reported", "commitment": "someone committed",
+    "decision": "a decision", "procedure": "a procedure", "outcome": "a result was reported",
+    "question": "a question",
+}
+
+
 def _hhmm(ts: float) -> str:
     return time.strftime("%H:%M", time.localtime(ts))
 
@@ -252,8 +259,11 @@ class MemoryEngine:
             if issues:
                 return f"There is no restriction, but there is an open issue from {_hhmm(issues[0].created_at)}: {issues[0].text_en}"
             return f"There is no active restriction on {subj}."
-        lines = [f"{_hhmm(m.created_at)} {m.kind}: {m.text_en} [{m.status}]" for m in about[:5]]
-        return f"Here is what I know about {subj}: " + " ".join(lines)
+        # Plain sentences, one per item: they translate far better than "21:54 issue: … [active]".
+        status = {"active": "pending", "resolved": "cleared"}
+        lines = [f"At {_hhmm(m.created_at)}, {_KIND_PHRASE.get(m.kind, 'a note')} ({status.get(m.status, m.status)}): "
+                 f"{m.text_en.rstrip('.')}." for m in about[:5]]
+        return f"{subj} has {len(about)} record(s). " + " ".join(lines)
 
     # --------------------------------------------------------------- handover
     def handover_en(self) -> str:
