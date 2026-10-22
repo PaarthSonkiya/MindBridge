@@ -34,22 +34,56 @@ from mindbridge.config import load_config  # noqa: E402
 from mindbridge.metrics import PeakMemory, device_info, network_snapshot  # noqa: E402
 
 LANG_ALIASES = {
-    "vi": ("vi", "vie", "vietnamese", "tiếng việt", "vi_vn", "vie_latn"),
-    "en": ("en", "eng", "english", "en_us", "eng_latn"),
-    "ko": ("ko", "kor", "korean", "한국어", "ko_kr", "kor_hang"),
-    "zh": ("zh", "zho", "chinese", "中文", "zh_cn", "zho_hans", "cn", "mandarin"),
+    "vi": ("vi", "vie", "vietnamese", "tiếng việt", "vi_vn", "vie_latn", "việt", "베트남어", "越南语"),
+    "en": ("en", "eng", "english", "en_us", "eng_latn", "tiếng anh", "anh", "영어", "英语"),
+    "ko": ("ko", "kor", "korean", "한국어", "ko_kr", "kor_hang", "tiếng hàn", "hàn", "韩语"),
+    "zh": ("zh", "zho", "chinese", "中文", "zh_cn", "zho_hans", "cn", "mandarin", "tiếng trung", "tiếng hoa",
+           "중국어", "汉语"),
 }
+# Letters in the organisers' sentence IDs, e.g. VE-0037 = Vietnamese speaker → English listener.
+ID_LETTERS = {"v": "vi", "e": "en", "k": "ko", "c": "zh", "z": "zh"}
+AUDIO_EXTS = (".wav", ".flac", ".mp3", ".ogg", ".m4a")
+_GENERIC = re.compile(r"[\s_\-–—:]*(final|ref|reference|text|transcript|source|target|sentence|bản dịch|dịch)$")
+_ID_RE = re.compile(r"^([A-Za-z]{1,4})[-_]?(\d+)$")
 
 
 # ---------------------------------------------------------------------------
-# Dataset loading — tolerant of CSV / TSV / JSONL / XLSX with language-named columns
+# Dataset loading — tolerant of CSV / TSV / JSONL / XLSX with language-named columns, plus the
+# organisers' layouts: an .xlsx with an ID column next to wav/<ID>.wav, and <Lang>_text/<ID>.txt
+# folders next to <Lang>_voice/<ID>.wav folders.
 # ---------------------------------------------------------------------------
 def _lang_of_column(name: str) -> str | None:
-    n = name.strip().lower()
-    for code, aliases in LANG_ALIASES.items():
-        if n in aliases or any(n.startswith(a + "_") or n.endswith("_" + a) for a in aliases[:3]):
-            return code
+    n = " ".join(name.strip().lower().split())
+    cands = [n, re.split(r"\s*[-–—:(|/]\s*", n)[0]]
+    cands += [_GENERIC.sub("", c).strip() for c in cands]
+    for c in cands:
+        for code, aliases in LANG_ALIASES.items():
+            if c in aliases or any(c.startswith(a + "_") or c.endswith("_" + a) for a in aliases[:3]):
+                return code
     return None
+
+
+def _langs_in_name(name: str) -> list[str]:
+    """Languages named in a folder/file name: 'Vie-Eng dataset' → [vi, en]; 'Kor_voice' → [ko];
+    'OneVoice_V_to_E_samples' → [vi, en]."""
+    low = name.lower()
+    m = re.search(r"(?:^|[\W_])([a-z])[\W_]+to[\W_]+([a-z])(?:[\W_]|$)", low)
+    if m and m.group(1) in ID_LETTERS and m.group(2) in ID_LETTERS:
+        return [ID_LETTERS[m.group(1)], ID_LETTERS[m.group(2)]]
+    out: list[str] = []
+    for tok in re.split(r"[\W_]+", low):
+        for code, aliases in LANG_ALIASES.items():
+            if tok and tok in aliases and code not in out:
+                out.append(code)
+    return out
+
+
+def _id_langs(item_id: str) -> list[str]:
+    m = _ID_RE.match(item_id or "")
+    if not m or len(m.group(1)) != 2:
+        return []
+    langs = [ID_LETTERS.get(ch) for ch in m.group(1).lower()]
+    return langs if all(langs) and langs[0] != langs[1] else []
 
 
 def _tables_from_file(path: Path) -> list[list[dict]]:
@@ -88,53 +122,226 @@ def _audio_lang(col: str) -> str | None:
     return _lang_of_column(tag) if tag else None
 
 
-def load_pairs(data: Path) -> dict[tuple[str, str], list[dict]]:
-    """Return {(vi, other): [{"a": vi_text, "b": other_text, "audio_a": path?, "audio_b": path?}]}."""
+def _id_column(keys: list[str], rows: list[dict]) -> str | None:
+    for k in keys:
+        if k.strip().lower() in ("id", "sentence_id", "utt_id", "uid", "utterance_id", "mã", "ma"):
+            return k
+    for k in keys:  # a column whose values all look like VE-0037
+        vals = [str(r.get(k, "") or "").strip() for r in rows[:20]]
+        if vals and all(_ID_RE.match(v) for v in vals):
+            return k
+    return None
+
+
+def _text_id_folders(root: Path) -> dict[Path, dict[str, dict[str, str]]]:
+    """{parent: {lang: {id: text}}} for folders like Kor_text/VK-0143.txt (one sentence per file)."""
+    found: dict[Path, dict[str, dict[str, str]]] = {}
+    if not root.is_dir():
+        return found
+    for d in sorted(p for p in root.rglob("*") if p.is_dir()):
+        txts = sorted(d.glob("*.txt"))
+        langs = _langs_in_name(d.name)
+        if not txts or len(langs) != 1 or not all(_ID_RE.match(t.stem) for t in txts):
+            continue
+        texts = {t.stem: t.read_text(encoding="utf-8-sig").strip() for t in txts}
+        found.setdefault(d.parent, {})[langs[0]] = {k: v for k, v in texts.items() if v}
+    return found
+
+
+class _AudioIndex:
+    """Every audio file under the dataset root, looked up by file stem (= sentence ID)."""
+
+    def __init__(self, root: Path):
+        self.root = root if root.is_dir() else root.parent
+        self.by_stem: dict[str, list[Path]] = {}
+        for p in sorted(self.root.rglob("*")):
+            if p.suffix.lower() in AUDIO_EXTS and not p.name.startswith("."):
+                self.by_stem.setdefault(p.stem.lower(), []).append(p)
+        self.used: set[Path] = set()
+
+    def lang_of(self, path: Path, item_id: str = "") -> str | None:
+        try:
+            parts = path.relative_to(self.root).parts[:-1]
+        except ValueError:
+            parts = path.parts[:-1]
+        for part in reversed(parts):  # nearest folder that names exactly one language
+            langs = _langs_in_name(part)
+            if len(langs) == 1:
+                return langs[0]
+        idl = _id_langs(item_id or path.stem)
+        if idl:  # the speaker's language comes first in the ID
+            return idl[0]
+        for part in reversed(parts):
+            langs = _langs_in_name(part)
+            if len(langs) == 2:
+                return langs[0]
+        return None
+
+    def pair_of(self, path: Path) -> list[str]:
+        """Both languages of the folder/ID an unlinked recording sits in (speaker first)."""
+        idl = _id_langs(path.stem)
+        if idl:
+            return idl
+        try:
+            parts = path.relative_to(self.root).parts[:-1]
+        except ValueError:
+            parts = path.parts[:-1]
+        for part in reversed(parts):
+            langs = _langs_in_name(part)
+            if len(langs) == 2:
+                return langs
+        return []
+
+    def find(self, item_id: str, near: Path) -> dict[str, Path]:
+        """{lang: path} for recordings named <item_id>.*, closest to `near` when there are several."""
+        out: dict[str, tuple[int, Path]] = {}
+        for p in self.by_stem.get(item_id.lower(), []):
+            lang = self.lang_of(p, item_id)
+            if not lang:
+                continue
+            common = len(Path(*_common_prefix(p.parts, near.parts)).parts) if near else 0
+            if lang not in out or common > out[lang][0]:
+                out[lang] = (common, p)
+        return {k: v for k, (_, v) in out.items()}
+
+    def unlinked(self) -> list[Path]:
+        return [p for ps in self.by_stem.values() for p in ps if p not in self.used]
+
+
+def _common_prefix(a: tuple, b: tuple) -> tuple:
+    n = 0
+    while n < min(len(a), len(b)) and a[n] == b[n]:
+        n += 1
+    return a[:n] or ("/",)
+
+
+def load_dataset(data: Path) -> tuple[dict[tuple[str, str], list[dict]], list[dict]]:
+    """Return ({(vi, other): [item]}, unlinked_recordings).
+
+    item = {"a": vi_text, "b": other_text, "file": name, optional "id", "audio_a", "audio_b",
+    "native": ["vi-en", ...]}. `native` lists the directions the dataset itself declares (from which
+    side has a recording, else the ID letters, else the file/folder name); items without it are
+    usable in both directions.
+    """
     exts = (".csv", ".tsv", ".jsonl", ".json", ".xlsx", ".txt")
-    files = [data] if data.is_file() else sorted(p for p in data.rglob("*") if p.suffix.lower() in exts)
-    out: dict[tuple[str, str], list[dict]] = {}
+    text_dirs = _text_id_folders(data)
+    skip_dirs = set()
+    for parent in text_dirs:
+        for d in parent.iterdir():
+            if d.is_dir() and len(_langs_in_name(d.name)) == 1 and any(d.glob("*.txt")):
+                skip_dirs.add(d)
+    files = [data] if data.is_file() else sorted(
+        p for p in data.rglob("*")
+        if p.suffix.lower() in exts and not p.name.startswith(".") and p.parent not in skip_dirs
+    )
+    audio = _AudioIndex(data)
+
+    tables: list[tuple[str, Path, list[dict]]] = []
     for f in files:
         for ti, rows in enumerate(_tables_from_file(f)):
-            if not rows:
+            tables.append((f"{f.name}" + (f"#{ti}" if ti else ""), f, rows))
+    for parent, by_lang in text_dirs.items():
+        if "vi" not in by_lang:
+            continue
+        for lang, texts in by_lang.items():
+            if lang == "vi":
                 continue
-            keys = list(rows[0].keys())
-            audio_cols = [c for c in keys if _AUDIO_COL.search(c)]
-            text_cols = [c for c in keys if c not in audio_cols]
-            cols = {c: _lang_of_column(c) for c in text_cols}
-            langs = [c for c, lang in cols.items() if lang]
-            if len(langs) < 2:
-                # e.g. columns "source","target" + a file name like vi-en.tsv
-                stem = f.stem.lower().replace("_", "-")
-                parts = [p for p in stem.split("-") if p in LANG_ALIASES]
-                if len(parts) == 2 and len(text_cols) >= 2:
-                    cols = {text_cols[0]: parts[0], text_cols[1]: parts[1]}
-                    langs = text_cols[:2]
-                else:
-                    logging.warning("skip %s (table %d): cannot tell which columns are which language (%s)", f, ti, keys)
-                    continue
-            ca, cb = langs[0], langs[1]
-            la, lb = cols[ca], cols[cb]
-            if "vi" not in (la, lb) or la == lb:
-                logging.warning("skip %s (table %d): need a Vietnamese column and one other language", f, ti)
+            ids = sorted(set(texts) & set(by_lang["vi"]))
+            rows = [{"ID": i, "vi": by_lang["vi"][i], lang: texts[i]} for i in ids]
+            tables.append((f"{parent.name}/<lang>_text", parent / "_", rows))
+
+    out: dict[tuple[str, str], list[dict]] = {}
+    seen: dict[tuple, dict] = {}
+    for label, f, rows in tables:
+        if not rows:
+            continue
+        keys = list(rows[0].keys())
+        audio_cols = [c for c in keys if _AUDIO_COL.search(c)]
+        id_col = _id_column(keys, rows)
+        text_cols = [c for c in keys if c not in audio_cols and c != id_col]
+        cols = {c: _lang_of_column(c) for c in text_cols}
+        langs = [c for c, lang in cols.items() if lang]
+        if len(langs) < 2:
+            # e.g. columns "source","target" + a file name like vi-en.tsv
+            stem = f.stem.lower().replace("_", "-")
+            parts = [p for p in stem.split("-") if p in LANG_ALIASES]
+            if len(parts) == 2 and len(text_cols) >= 2:
+                cols = {text_cols[0]: parts[0], text_cols[1]: parts[1]}
+                langs = text_cols[:2]
+            else:
+                logging.warning("skip %s: cannot tell which columns are which language (%s)", label, keys)
                 continue
-            if la != "vi":
-                ca, cb, la, lb = cb, ca, lb, la
-            key = (la, lb)
-            items = []
-            for r in rows:
-                a, b = str(r.get(ca, "") or "").strip(), str(r.get(cb, "") or "").strip()
-                if not a or not b:
-                    continue
-                item = {"a": a, "b": b, "file": f.name}
-                for c in audio_cols:
-                    val = str(r.get(c, "") or "").strip()
-                    lang = _audio_lang(c)
-                    if val and lang in key:
-                        p = (f.parent / val) if not Path(val).is_absolute() else Path(val)
+        ca, cb = langs[0], langs[1]
+        la, lb = cols[ca], cols[cb]
+        if "vi" not in (la, lb) or la == lb:
+            logging.warning("skip %s: need a Vietnamese column and one other language", label)
+            continue
+        if la != "vi":
+            ca, cb, la, lb = cb, ca, lb, la
+        key = (la, lb)
+        declared = _langs_in_name(f.stem) or next(
+            (ls for ls in (_langs_in_name(p) for p in reversed(f.parent.parts)) if len(ls) == 2), [])
+        table_items: list[dict] = []
+        table_recorded: set[str] = set()
+        for r in rows:
+            a, b = str(r.get(ca, "") or "").strip(), str(r.get(cb, "") or "").strip()
+            if not a or not b:
+                continue
+            item: dict = {"a": a, "b": b, "file": label}
+            rid = str(r.get(id_col, "") or "").strip() if id_col else ""
+            if rid:
+                item["id"] = rid
+            for c in audio_cols:
+                val = str(r.get(c, "") or "").strip()
+                lang = _audio_lang(c)
+                if val and lang in key:
+                    p = (f.parent / val) if not Path(val).is_absolute() else Path(val)
+                    item["audio_a" if lang == key[0] else "audio_b"] = str(p)
+                    audio.used.add(p)
+            if rid:
+                for lang, p in audio.find(rid, f.parent).items():
+                    if lang in key and f"audio_{'a' if lang == key[0] else 'b'}" not in item:
                         item["audio_a" if lang == key[0] else "audio_b"] = str(p)
-                items.append(item)
-            out.setdefault(key, []).extend(items)
-    return out
+                        audio.used.add(p)
+            recorded = [f"{la}-{lb}"] * bool(item.get("audio_a")) + [f"{lb}-{la}"] * bool(item.get("audio_b"))
+            table_recorded.update(recorded)
+            native = recorded
+            if not native:
+                d = _id_langs(rid) or (declared if len(declared) == 2 else [])
+                if sorted(d) == sorted(key):
+                    native = [f"{d[0]}-{d[1]}"]
+            if native:
+                item["native"] = native
+            if rid:  # the same sentence listed twice (e.g. a copied spreadsheet): merge
+                k = (key, rid)
+                if k in seen:
+                    old = seen[k]
+                    for fld in ("audio_a", "audio_b"):
+                        if fld in item and fld not in old:
+                            old[fld] = item[fld]
+                    old["native"] = sorted(set(old.get("native", [])) | set(item.get("native", [])))
+                    continue
+                seen[k] = item
+            out.setdefault(key, []).append(item)
+            table_items.append(item)
+        # A table declares a direction when any of its sentences was recorded on that side; text-mode
+        # runs then cover every sentence of the table in that direction, even if a recording is missing.
+        if table_recorded:
+            for it in table_items:
+                it["native"] = sorted(table_recorded)
+
+    unlinked = []
+    for p in audio.unlinked():
+        pair = audio.pair_of(p)
+        lang = audio.lang_of(p)
+        other = next((x for x in pair if x != lang), None)
+        unlinked.append({"audio": str(p), "id": p.stem, "src": lang, "tgt": other})
+    return out, unlinked
+
+
+def load_pairs(data: Path) -> dict[tuple[str, str], list[dict]]:
+    """Sentence pairs only (see load_dataset)."""
+    return load_dataset(data)[0]
 
 
 # ---------------------------------------------------------------------------
@@ -183,17 +390,46 @@ def pct(values: list[float], q: float) -> float:
 
 
 # ---------------------------------------------------------------------------
+def _read_audio(path: str):
+    import soundfile as sf
+
+    audio, sr = sf.read(path, dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    return audio, sr
+
+
+def _summarise(hyps, refs, tgt, asr_err, src, lat, extra) -> dict:
+    d = {"n": len(hyps), **extra}
+    if refs:
+        d.update(mt_scores(hyps, refs, tgt))
+    else:
+        d.update(bleu=None, **{"chrf++": None}, note="no reference translations supplied")
+    if asr_err:
+        d["asr_" + ("cer" if src in ("zh", "ko") else "wer")] = round(100 * statistics.mean(asr_err), 2)
+    for k, v in lat.items():
+        if v:
+            d[f"{k}_ms_mean"] = round(statistics.mean(v), 1)
+            d[f"{k}_ms_p50"] = round(pct(v, 0.5), 1)
+            d[f"{k}_ms_p90"] = round(pct(v, 0.9), 1)
+    return d
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", required=True, help="dataset file or folder")
     ap.add_argument("--mode", choices=["text", "voice"], default="text")
     ap.add_argument("--pairs", default="", help="e.g. vi-en,vi-ko (default: all found)")
-    ap.add_argument("--directions", default="both", choices=["both", "to-vi", "from-vi"])
-    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--directions", default="auto", choices=["auto", "both", "to-vi", "from-vi"],
+                    help="auto (default): the directions the dataset declares (which side was recorded, the "
+                         "ID letters such as VE-, or a V_to_E file name); both directions when it declares none")
+    ap.add_argument("--limit", type=int, default=0, help="first N sentences per direction")
     ap.add_argument("--out", default="")
     ap.add_argument("--require-offline", action="store_true", help="refuse to run if a default route exists")
     ap.add_argument("--allow-synthetic-audio", action="store_true",
                     help="voice mode without recordings: synthesise source audio with the device TTS (labelled)")
+    ap.add_argument("--unscored-audio", action="store_true",
+                    help="voice mode: also run recordings that have no matching text (latency and transcripts only)")
     args = ap.parse_args()
 
     stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -204,6 +440,7 @@ def main():
         handlers=[logging.FileHandler(out / "run.log", encoding="utf-8"), logging.StreamHandler()],
     )
     log = logging.getLogger("bench")
+    log.info("command %s", " ".join(sys.argv))
 
     net_before = network_snapshot()
     log.info("device %s", json.dumps(device_info(), ensure_ascii=False))
@@ -211,6 +448,20 @@ def main():
     if args.require_offline and (net_before["has_default_route"]):
         sys.exit("Network has a default route. Disconnect Wi-Fi/Ethernet (airplane mode) and re-run.")
     offline_guard.install()
+
+    data, unlinked = load_dataset(Path(args.data))
+    if args.pairs:
+        keep = {tuple(p.split("-")) for p in args.pairs.split(",")}
+        data = {k: v for k, v in data.items() if k in keep}
+    for k, v in data.items():
+        log.info("dataset %s-%s: %d sentence pairs, %d with Vietnamese audio, %d with %s audio", *k, len(v),
+                 sum(1 for i in v if i.get("audio_a")), sum(1 for i in v if i.get("audio_b")), k[1])
+    if unlinked:
+        folders = sorted({str(Path(u["audio"]).parent) for u in unlinked})
+        log.warning("%d recordings have no matching sentence text (e.g. %s) in %s", len(unlinked),
+                    unlinked[0]["id"], folders)
+    if not data and not (args.unscored_audio and unlinked):
+        sys.exit(f"No usable sentence pairs under {args.data}")
 
     cfg = load_config()
     from mindbridge.pipeline import MindBridge
@@ -224,33 +475,37 @@ def main():
     for row in inv:
         log.info("model %s", json.dumps(row, ensure_ascii=False))
 
-    data = load_pairs(Path(args.data))
-    if args.pairs:
-        keep = {tuple(p.split("-")) for p in args.pairs.split(",")}
-        data = {k: v for k, v in data.items() if k in keep}
-    if not data:
-        sys.exit(f"No usable sentence pairs under {args.data}")
-
-    summary: dict = {"mode": args.mode, "started": stamp, "device": device_info(), "models": inv,
-                     "load_seconds": round(load_s, 2), "directions": {}}
+    summary: dict = {"mode": args.mode, "started": stamp, "data": str(args.data), "device": device_info(),
+                     "models": inv, "load_seconds": round(load_s, 2), "directions": {},
+                     "unlinked_recordings": len(unlinked)}
     results = open(out / "results.jsonl", "w", encoding="utf-8")
+    lat_keys = ("asr", "mt", "tts", "total", "speech_to_translation")
 
     with PeakMemory() as mem_run:
-        for (_vi, other), items in data.items():
-            if args.limit:
-                items = items[: args.limit]
+        for (_vi, other), all_items in data.items():
             dirs = []
-            if args.directions in ("both", "from-vi"):
+            if args.directions in ("auto", "both", "from-vi"):
                 dirs.append(("vi", other, "a", "b"))
-            if args.directions in ("both", "to-vi"):
+            if args.directions in ("auto", "both", "to-vi"):
                 dirs.append((other, "vi", "b", "a"))
             for src, tgt, sk, tk in dirs:
                 key = f"{src}-{tgt}"
+                items = [it for it in all_items
+                         if args.directions != "auto" or "native" not in it or key in it["native"]]
+                if args.mode == "voice" and not args.allow_synthetic_audio:
+                    missing = sum(1 for it in items if not it.get(f"audio_{sk}"))
+                    items = [it for it in items if it.get(f"audio_{sk}")]
+                    if missing:
+                        log.info("   %s: %d sentences have no %s recording (skipped)", key, missing, src)
+                if args.limit:
+                    items = items[: args.limit]
+                if not items:
+                    continue
                 log.info("== %s: %d sentences (%s)", key, len(items), args.mode)
-                hyps, refs, asr_err, lat = [], [], [], {"asr": [], "mt": [], "tts": [], "total": [], "speech_to_translation": []}
+                hyps, refs, asr_err, lat = [], [], [], {k: [] for k in lat_keys}
                 synthetic = 0
                 for i, it in enumerate(items):
-                    rec = {"direction": key, "i": i, "source": it[sk], "reference": it[tk]}
+                    rec = {"direction": key, "i": i, "id": it.get("id", ""), "source": it[sk], "reference": it[tk]}
                     if args.mode == "text":
                         r = bridge.translate(it[sk], src, tgt)
                         rec["hypothesis"] = r.text
@@ -258,18 +513,13 @@ def main():
                     else:
                         audio_path = it.get(f"audio_{sk}")
                         if audio_path:
-                            import soundfile as sf
-
-                            audio, sr = sf.read(audio_path, dtype="float32", always_2d=False)
+                            audio, sr = _read_audio(audio_path)
                             rec["audio"] = audio_path
-                        elif args.allow_synthetic_audio and bridge.tts and bridge.tts.available(src):
+                        else:
                             s = bridge.tts.synthesize(it[sk], src)
                             audio, sr = s.audio, s.sample_rate
                             rec["audio"] = "synthetic-tts"
                             synthetic += 1
-                        else:
-                            log.error("no audio for %s #%d (pass --allow-synthetic-audio to synthesise)", key, i)
-                            continue
                         turn = bridge.talk(audio, sr, src, tgt, "bench", remember=False)
                         rec.update(asr_text=turn.source_text, hypothesis=turn.translation, timings_ms=turn.timings_ms,
                                    asr_backend=turn.asr_backend, audio_seconds=round(turn.audio_seconds, 2))
@@ -282,23 +532,41 @@ def main():
                     hyps.append(rec["hypothesis"])
                     refs.append(it[tk])
                     results.write(json.dumps(rec, ensure_ascii=False) + "\n")
-                    if (i + 1) % 50 == 0:
+                    results.flush()
+                    if (i + 1) % 25 == 0:
                         log.info("  %d/%d", i + 1, len(items))
-                if not hyps:
-                    log.error("   %s: nothing scored (no usable audio/text)", key)
-                    summary["directions"][key] = {"n": 0, "bleu": None, "chrf++": None}
-                    continue
-                d = {"n": len(hyps), **mt_scores(hyps, refs, tgt)}
-                if asr_err:
-                    d["asr_" + ("cer" if src in ("zh", "ko") else "wer")] = round(100 * statistics.mean(asr_err), 2)
-                    d["synthetic_audio"] = synthetic
-                for k, v in lat.items():
-                    if v:
-                        d[f"{k}_ms_mean"] = round(statistics.mean(v), 1)
-                        d[f"{k}_ms_p50"] = round(pct(v, 0.5), 1)
-                        d[f"{k}_ms_p90"] = round(pct(v, 0.9), 1)
+                extra = {"synthetic_audio": synthetic} if args.mode == "voice" else {}
+                d = _summarise(hyps, refs, tgt, asr_err, src, lat, extra)
                 summary["directions"][key] = d
                 log.info("   %s", json.dumps(d))
+
+        if args.mode == "voice" and args.unscored_audio and unlinked:
+            groups: dict[str, list[dict]] = {}
+            for u in unlinked:
+                if u["src"] and u["tgt"]:
+                    groups.setdefault(f"{u['src']}-{u['tgt']}", []).append(u)
+            for key, us in groups.items():
+                src, tgt = key.split("-")
+                bridge.preload_pair(key)
+                us = sorted(us, key=lambda u: u["id"])[: args.limit or None]
+                label = f"{key} (no reference)"
+                log.info("== %s: %d recordings without text", label, len(us))
+                hyps, lat = [], {k: [] for k in lat_keys}
+                for i, u in enumerate(us):
+                    audio, sr = _read_audio(u["audio"])
+                    turn = bridge.talk(audio, sr, src, tgt, "bench", remember=False)
+                    hyps.append(turn.translation)
+                    for k in lat:
+                        if k in turn.timings_ms:
+                            lat[k].append(turn.timings_ms[k])
+                    results.write(json.dumps({"direction": label, "i": i, "id": u["id"], "audio": u["audio"],
+                                              "asr_text": turn.source_text, "hypothesis": turn.translation,
+                                              "timings_ms": turn.timings_ms, "asr_backend": turn.asr_backend,
+                                              "audio_seconds": round(turn.audio_seconds, 2)},
+                                             ensure_ascii=False) + "\n")
+                    results.flush()
+                summary["directions"][label] = _summarise(hyps, [], tgt, [], src, lat, {})
+                log.info("   %s", json.dumps(summary["directions"][label]))
     results.close()
 
     net_after = network_snapshot()
@@ -336,15 +604,21 @@ def render_md(s: dict) -> str:
         head += " MT ms mean | MT ms p90 |"
         sep += "---|---|"
     lines += [head, sep]
+
+    def f(v, unit=""):
+        return "—" if v is None or v == "" else f"{v}{unit}"
+
     for k, d in s["directions"].items():
-        row = f"| {k} | {d['n']} | {d['bleu']} | {d['chrf++']} |"
+        row = f"| {k} | {d['n']} | {f(d['bleu'])} | {f(d['chrf++'])} |"
         if voice:
-            er = d.get("asr_wer", d.get("asr_cer", ""))
-            row += (f" {er}% | {d.get('asr_ms_p50', '')} | {d.get('mt_ms_p50', '')} | {d.get('tts_ms_p50', '')} |"
-                    f" {d.get('speech_to_translation_ms_p50', '')} | {d.get('total_ms_p90', '')} |")
+            er = d.get("asr_wer", d.get("asr_cer"))
+            row += (f" {f(er, '%')} | {f(d.get('asr_ms_p50'))} | {f(d.get('mt_ms_p50'))} | {f(d.get('tts_ms_p50'))} |"
+                    f" {f(d.get('speech_to_translation_ms_p50'))} | {f(d.get('total_ms_p90'))} |")
         else:
-            row += f" {d.get('mt_ms_mean', '')} | {d.get('mt_ms_p90', '')} |"
+            row += f" {f(d.get('mt_ms_mean'))} | {f(d.get('mt_ms_p90'))} |"
         lines.append(row)
+    if s.get("unlinked_recordings"):
+        lines += ["", f"{s['unlinked_recordings']} recordings in the dataset have no matching sentence text."]
     return "\n".join(lines) + "\n"
 
 

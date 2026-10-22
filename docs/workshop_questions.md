@@ -12,6 +12,12 @@
    Field-Testing round (28 Nov) and Final (5 Dec) in person only?
 5. Which language pairs will Field-Testing require on top of the one we register?
 6. Does a non-commercial model licence (NLLB-200, CC-BY-NC) cause any problem?
+7. **Sample data issue:** the `Vie-Eng dataset/Eng-Vie/` folder has 100 English recordings
+   (`EV-0157.wav` …) but its spreadsheet is a copy of the Vietnamese→English sheet (`VE-` IDs). Could you
+   share the English→Vietnamese reference texts for the `EV-*.wav` files? (Also: 9 `Vie-Kor` recordings
+   have no matching text file.)
+8. The samples are everyday/hospitality conversations, not factory talk. Is the hidden test set the same
+   style, and does it include recordings for both directions of each pair?
 
 ## For Qualcomm (technical)
 
@@ -24,5 +30,7 @@
 4. Any plans for Genie / small LLM support on QCS6490 (HTP v68), or is IQ-8275 the minimum for LLMs?
 5. Is the Qualcomm **Voice AI SDK** runtime (listed for Whisper on AI Hub) available for Linux on RB3 Gen 2,
    and would you recommend it over ORT-QNN for streaming ASR?
-6. Best practice for keeping the HTP warm (performance mode `burst` vs `sustained_high_performance`)
+6. Which `onnxruntime` version should be paired with `onnxruntime-qnn` 2.7.0 on aarch64? pip resolves
+   onnxruntime 1.31.0 today; is the plugin EP ABI-compatible with it, or should we pin 1.24.x?
+7. Best practice for keeping the HTP warm (performance mode `burst` vs `sustained_high_performance`)
    for bursty push-to-talk workloads, and how to read NPU utilisation on device?

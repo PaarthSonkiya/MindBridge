@@ -1,0 +1,251 @@
+{
+  "mode": "voice",
+  "started": "20261022-191246",
+  "device": {
+    "hostname": "vm",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+    "python": "3.13.16",
+    "soc": "",
+    "cpu_count": 2,
+    "total_ram_mb": 8028
+  },
+  "models": [
+    {
+      "stage": "Voice activity",
+      "model": "Silero VAD v5",
+      "unit": "CPU",
+      "size_mb": 0.6,
+      "note": ""
+    },
+    {
+      "stage": "Speech recognition",
+      "model": "whisper-large-v3-turbo-int8 (CPU, CTranslate2)",
+      "unit": "CPU",
+      "size_mb": 1547.3,
+      "note": ""
+    },
+    {
+      "stage": "Translation",
+      "model": "nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU)",
+      "unit": "CPU",
+      "size_mb": 1340.7,
+      "note": ""
+    },
+    {
+      "stage": "Speech synthesis (Vietnamese)",
+      "model": "vits-piper-vi_VN-vais1000-medium",
+      "unit": "CPU",
+      "size_mb": 60.2,
+      "note": ""
+    },
+    {
+      "stage": "Speech synthesis (English)",
+      "model": "vits-piper-en_US-amy-low",
+      "unit": "CPU",
+      "size_mb": 60.2,
+      "note": ""
+    },
+    {
+      "stage": "Operational memory",
+      "model": "Rule engine + SQLite",
+      "unit": "CPU",
+      "size_mb": 0.0,
+      "note": ""
+    }
+  ],
+  "load_seconds": 8.53,
+  "directions": {
+    "vi-en": {
+      "n": 40,
+      "bleu": 23.96,
+      "chrf++": 47.47,
+      "bleu_tokenizer": "13a",
+      "asr_wer": 13.8,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 9122.3,
+      "asr_ms_p50": 9249.0,
+      "asr_ms_p90": 9812.1,
+      "mt_ms_mean": 3171.6,
+      "mt_ms_p50": 3139.4,
+      "mt_ms_p90": 4362.1,
+      "tts_ms_mean": 419.3,
+      "tts_ms_p50": 415.9,
+      "tts_ms_p90": 567.9,
+      "total_ms_mean": 12817.5,
+      "total_ms_p50": 13086.1,
+      "total_ms_p90": 14395.8,
+      "speech_to_translation_ms_mean": 12398.0,
+      "speech_to_translation_ms_p50": 12733.7,
+      "speech_to_translation_ms_p90": 13780.7
+    },
+    "en-vi": {
+      "n": 40,
+      "bleu": 34.29,
+      "chrf++": 53.94,
+      "bleu_tokenizer": "13a",
+      "asr_wer": 4.98,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 8753.3,
+      "asr_ms_p50": 8762.0,
+      "asr_ms_p90": 9317.5,
+      "mt_ms_mean": 3503.1,
+      "mt_ms_p50": 3193.1,
+      "mt_ms_p90": 4994.2,
+      "tts_ms_mean": 489.8,
+      "tts_ms_p50": 467.0,
+      "tts_ms_p90": 712.0,
+      "total_ms_mean": 12836.0,
+      "total_ms_p50": 12723.6,
+      "total_ms_p90": 15524.2,
+      "speech_to_translation_ms_mean": 12345.9,
+      "speech_to_translation_ms_p50": 12123.4,
+      "speech_to_translation_ms_p90": 14786.7
+    },
+    "vi-ko": {
+      "n": 40,
+      "bleu": 23.49,
+      "chrf++": 19.88,
+      "bleu_tokenizer": "char",
+      "asr_wer": 13.8,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 8732.9,
+      "asr_ms_p50": 8687.9,
+      "asr_ms_p90": 9311.1,
+      "mt_ms_mean": 2714.9,
+      "mt_ms_p50": 2595.7,
+      "mt_ms_p90": 3351.7,
+      "tts_ms_mean": 1595.4,
+      "tts_ms_p50": 1549.7,
+      "tts_ms_p90": 2061.0,
+      "total_ms_mean": 13141.7,
+      "total_ms_p50": 12901.3,
+      "total_ms_p90": 14448.7,
+      "speech_to_translation_ms_mean": 11546.0,
+      "speech_to_translation_ms_p50": 11364.9,
+      "speech_to_translation_ms_p90": 12694.0
+    },
+    "ko-vi": {
+      "n": 40,
+      "bleu": 20.53,
+      "chrf++": 42.19,
+      "bleu_tokenizer": "13a",
+      "asr_cer": 5.53,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 8597.8,
+      "asr_ms_p50": 8623.6,
+      "asr_ms_p90": 8954.3,
+      "mt_ms_mean": 3194.7,
+      "mt_ms_p50": 3074.2,
+      "mt_ms_p90": 4328.8,
+      "tts_ms_mean": 436.1,
+      "tts_ms_p50": 431.8,
+      "tts_ms_p90": 627.5,
+      "total_ms_mean": 12322.6,
+      "total_ms_p50": 12318.0,
+      "total_ms_p90": 14076.7,
+      "speech_to_translation_ms_mean": 11886.2,
+      "speech_to_translation_ms_p50": 11901.3,
+      "speech_to_translation_ms_p90": 13551.9
+    },
+    "vi-zh": {
+      "n": 40,
+      "bleu": 15.34,
+      "chrf++": 12.42,
+      "bleu_tokenizer": "zh",
+      "asr_wer": 13.8,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 8656.7,
+      "asr_ms_p50": 8623.9,
+      "asr_ms_p90": 9142.8,
+      "mt_ms_mean": 2186.1,
+      "mt_ms_p50": 2036.6,
+      "mt_ms_p90": 2834.1,
+      "tts_ms_mean": 376.6,
+      "tts_ms_p50": 338.4,
+      "tts_ms_p90": 541.5,
+      "total_ms_mean": 11314.7,
+      "total_ms_p50": 11227.3,
+      "total_ms_p90": 12216.4,
+      "speech_to_translation_ms_mean": 10937.8,
+      "speech_to_translation_ms_p50": 10873.7,
+      "speech_to_translation_ms_p90": 11808.4
+    },
+    "zh-vi": {
+      "n": 40,
+      "bleu": 21.36,
+      "chrf++": 42.75,
+      "bleu_tokenizer": "13a",
+      "asr_cer": 10.27,
+      "synthetic_audio": 0,
+      "asr_ms_mean": 8724.5,
+      "asr_ms_p50": 8731.6,
+      "asr_ms_p90": 9203.5,
+      "mt_ms_mean": 3400.5,
+      "mt_ms_p50": 3260.5,
+      "mt_ms_p90": 4581.8,
+      "tts_ms_mean": 458.4,
+      "tts_ms_p50": 407.1,
+      "tts_ms_p90": 738.0,
+      "total_ms_mean": 12677.2,
+      "total_ms_p50": 12474.3,
+      "total_ms_p90": 14185.6,
+      "speech_to_translation_ms_mean": 12218.4,
+      "speech_to_translation_ms_p50": 12076.2,
+      "speech_to_translation_ms_p90": 13612.2
+    }
+  },
+  "peak_ram_mb": 4391.9,
+  "network_before": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "network_after": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "offline_guard": {
+    "installed": true,
+    "blocked_attempts": []
+  },
+  "finished": "20261022-200301",
+  "total_model_mb": 3009.0
+}
