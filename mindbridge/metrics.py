@@ -98,6 +98,26 @@ def device_info() -> dict:
     }
 
 
+def _proc_default_route() -> str:
+    """Default route from the kernel tables (works without iproute2)."""
+    found = []
+    try:
+        for line in Path("/proc/net/route").read_text().splitlines()[1:]:
+            f = line.split()
+            if len(f) > 2 and f[1] == "00000000":
+                found.append(f"default via {f[0]} (IPv4)")
+    except OSError:
+        pass
+    try:
+        for line in Path("/proc/net/ipv6_route").read_text().splitlines():
+            f = line.split()
+            if len(f) > 9 and f[0] == "0" * 32 and f[1] == "00" and f[9] != "lo":
+                found.append(f"default via {f[9]} (IPv6)")
+    except OSError:
+        pass
+    return "; ".join(found)
+
+
 def network_snapshot() -> dict:
     """Evidence that the device is offline: interfaces, default route, radios."""
     addrs = psutil.net_if_addrs()
@@ -108,7 +128,7 @@ def network_snapshot() -> dict:
             continue
         ipv4 = [a.address for a in addrs.get(name, []) if a.family == 2]
         ifaces[name] = {"up": st.isup, "ipv4": ipv4}
-    route = _cmd(["ip", "route", "show", "default"])
+    route = _cmd(["ip", "route", "show", "default"]) or _proc_default_route()
     return {
         "interfaces": ifaces,
         "default_route": route or None,

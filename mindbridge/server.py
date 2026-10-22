@@ -227,8 +227,7 @@ def create_app(cfg: AppConfig, bridge: MindBridge) -> FastAPI:
         if pair not in [f"{a}-{b}" for a, b in L.PAIRS]:
             return JSONResponse({"ok": False, "error": f"unknown pair {pair}"}, 400)
         hub.pair = pair
-        if bridge.tts:
-            threading.Thread(target=bridge.tts.preload, args=(pair.split("-"),), daemon=True).start()
+        threading.Thread(target=bridge.preload_pair, args=(pair,), daemon=True).start()
         return {"ok": True, "sides": hub.side_info()}
 
     @app.post("/api/listen/start")

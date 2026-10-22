@@ -34,6 +34,15 @@ class WhisperSherpa(AsrEngine):
                 return p
         raise FileNotFoundError(f"{stem}*.onnx not found in {self.model_dir}")
 
+    def preload(self, languages: list[str]) -> None:
+        """sherpa-onnx fixes Whisper's language per recogniser, so keep one per active language
+        (loaded ahead of time) and drop the rest to bound memory."""
+        for lang in list(self._recognizers):
+            if lang not in languages:
+                del self._recognizers[lang]
+        for lang in languages:
+            self._rec(lang)
+
     def _rec(self, language: str):
         if language not in self._recognizers:
             self._recognizers[language] = self._so.OfflineRecognizer.from_whisper(

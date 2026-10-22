@@ -77,6 +77,7 @@ class MindBridge:
 
         t = time.perf_counter()
         self.asr = load_asr(cfg)
+        self.preload_pair(cfg.default_pair, tts=False)
         self.load_ms["asr"] = (time.perf_counter() - t) * 1e3
 
         t = time.perf_counter()
@@ -98,6 +99,14 @@ class MindBridge:
 
         self.memory = MemoryEngine(MemoryStore(cfg.data_path / "memory.db")) if load_memory else None
         self._lock = threading.Lock()
+
+    def preload_pair(self, pair: str, tts: bool = True) -> None:
+        """Load per-language resources for a pair before the first utterance needs them."""
+        langs = pair.split("-")
+        if hasattr(self.asr, "preload"):
+            self.asr.preload(langs)
+        if tts and getattr(self, "tts", None):
+            self.tts.preload(langs)
 
     # ------------------------------------------------------------------ stages
     def transcribe(self, audio: np.ndarray, sr: int, lang: str | None, candidates: list[str] | None = None):

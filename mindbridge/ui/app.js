@@ -76,7 +76,7 @@ function applyStatus(st) {
   const sel = $("#typer-side");
   sel.innerHTML = ["a", "b"].map((k) => `<option value="${k}">${esc(st.sides[k].role)} (${esc(st.sides[k].native)})</option>`).join("");
   const net = st.offline.network, chip = $("#chip-net");
-  const online = net.has_default_route || net.any_external_ip;
+  const online = net.has_default_route;
   chip.className = "chip " + (online ? "warn" : "ok");
   chip.textContent = online ? "Network is on — turn it off for the demo" : "Offline: no network";
   const asr = st.models.find((m) => m.stage === "Speech recognition");
