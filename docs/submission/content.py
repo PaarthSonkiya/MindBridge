@@ -24,15 +24,18 @@ def _json(rel: str):
 
 
 def _git_sha() -> str:
+    """Last commit that changed what runs on the device (later commits only touch docs and results)."""
+    runtime = ["mindbridge", "config", "scripts", "samples", "requirements.txt", "requirements-aarch64.lock"]
     try:
-        return subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"], capture_output=True,
-                              text=True, check=True).stdout.strip()
+        return subprocess.run(["git", "-C", str(ROOT), "log", "-1", "--format=%h", "--", *runtime],
+                              capture_output=True, text=True, check=True).stdout.strip()
     except Exception:  # noqa: BLE001
         return "[TO FILL: commit]"
 
 
 def _fmt(v, nd=1, unit=""):
-    return "[TO FILL]" if v is None else f"{v:,.{nd}f}{unit}"
+    # round half up (18.45 → 18.5), as people expect, instead of binary-float rounding
+    return "[TO FILL]" if v is None else f"{v + (0.5 * 10 ** -nd if v >= 0 else 0) * 1e-6:,.{nd}f}{unit}"
 
 
 def fields(board: dict | None) -> dict:
@@ -83,8 +86,9 @@ def fields(board: dict | None) -> dict:
     summary = {
         "Team / individual participant": "MindBridge",
         "Project name": "MindBridge: offline voice translation with operational memory for multilingual factory floors",
-        "Submitted build": f"MindBridge v{VERSION}, git commit {sha} on branch {BRANCH}, "
-                           f"{REPO}. [TO FILL: release tag and date of the build shown in the video]",
+        "Submitted build": f"MindBridge v{VERSION}, git commit {sha} (branch {BRANCH}, {REPO}); offline package "
+                           f"mindbridge-offline-{VERSION}-aarch64.tar.gz built from that commit. "
+                           "[TO FILL: date of the build shown in the video]",
         "Demo language(s)": "Vietnamese ⇄ English, both directions (registered pair). Vietnamese ⇄ Korean, both "
                             "directions (scenario Part B). Vietnamese ⇄ Chinese can be selected on screen but is not "
                             "part of the recorded demo.",
@@ -270,7 +274,8 @@ def fields(board: dict | None) -> dict:
     ux_ev = "[TO FILL: video timestamps]"
 
     limitations = (
-        "Korean → Vietnamese is the weakest direction (BLEU about 20 on the samples); the NLLB translator still runs "
+        f"Korean → Vietnamese is the weakest direction (BLEU {_fmt(t('ko-vi', 'bleu'))} on the samples, against "
+        f"{_fmt(t('vi-en', 'bleu'))} for VI→EN); the NLLB translator still runs "
         "on the CPU, so long sentences in VI ⇄ KO/ZH take longer than VI ⇄ EN. Recognition of overlapping speech is "
         "not supported (push-to-talk, one speaker at a time). The memory layer understands common factory phrasing "
         "in English, Vietnamese, Korean and Chinese but not every paraphrase. The wearable badge from Phase 2 is "

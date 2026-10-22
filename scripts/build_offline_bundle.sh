@@ -58,4 +58,4 @@ cp "$ROOT/scripts/install_offline.sh" "$STAGE/"
 cp "$ROOT/scripts/run.sh" "$STAGE/app/scripts/run.sh"
 (cd "$ROOT/dist" && tar -czf "mindbridge-offline-$VER-aarch64.tar.gz" "$(basename "$STAGE")")
 du -sh "$ROOT/dist/mindbridge-offline-$VER-aarch64.tar.gz"
-sha256sum "$ROOT/dist/mindbridge-offline-$VER-aarch64.tar.gz" | tee "$ROOT/dist/mindbridge-offline-$VER-aarch64.tar.gz.sha256"
+(cd "$ROOT/dist" && sha256sum "mindbridge-offline-$VER-aarch64.tar.gz" | tee "mindbridge-offline-$VER-aarch64.tar.gz.sha256")

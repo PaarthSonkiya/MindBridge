@@ -1,0 +1,153 @@
+{
+  "mode": "text",
+  "started": "20261022-212417",
+  "data": "/home/claude/dataset",
+  "device": {
+    "hostname": "vm",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+    "python": "3.13.16",
+    "soc": "",
+    "cpu_count": 2,
+    "total_ram_mb": 8028
+  },
+  "models": [
+    {
+      "stage": "Voice activity",
+      "model": "Silero VAD v5",
+      "unit": "CPU",
+      "size_mb": 0.6,
+      "note": ""
+    },
+    {
+      "stage": "Speech recognition",
+      "model": "whisper-large-v3-turbo-int8 (CPU, CTranslate2)",
+      "unit": "CPU",
+      "size_mb": 1547.3,
+      "note": "QNN unavailable: onnxruntime not installed"
+    },
+    {
+      "stage": "Translation",
+      "model": "envit5-translation-ct2-int8 (CTranslate2 int8, CPU)",
+      "unit": "CPU",
+      "size_mb": 265.7,
+      "note": ""
+    },
+    {
+      "stage": "Translation",
+      "model": "nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU)",
+      "unit": "CPU",
+      "size_mb": 1340.7,
+      "note": ""
+    },
+    {
+      "stage": "Operational memory",
+      "model": "Rule engine + SQLite",
+      "unit": "CPU",
+      "size_mb": 0.0,
+      "note": ""
+    }
+  ],
+  "load_seconds": 8.06,
+  "directions": {
+    "vi-en": {
+      "n": 100,
+      "bleu": 35.09,
+      "chrf++": 54.5,
+      "bleu_tokenizer": "13a",
+      "mt_ms_mean": 374.8,
+      "mt_ms_p50": 320.4,
+      "mt_ms_p90": 540.6
+    },
+    "vi-ko": {
+      "n": 180,
+      "bleu": 32.59,
+      "chrf++": 28.32,
+      "bleu_tokenizer": "char",
+      "mt_ms_mean": 1234.0,
+      "mt_ms_p50": 1208.0,
+      "mt_ms_p90": 1795.5
+    },
+    "ko-vi": {
+      "n": 180,
+      "bleu": 19.33,
+      "chrf++": 37.7,
+      "bleu_tokenizer": "13a",
+      "mt_ms_mean": 1404.0,
+      "mt_ms_p50": 1344.7,
+      "mt_ms_p90": 1907.5
+    },
+    "vi-zh": {
+      "n": 180,
+      "bleu": 32.82,
+      "chrf++": 23.99,
+      "bleu_tokenizer": "zh",
+      "mt_ms_mean": 1885.8,
+      "mt_ms_p50": 1762.8,
+      "mt_ms_p90": 2840.6
+    },
+    "zh-vi": {
+      "n": 180,
+      "bleu": 27.83,
+      "chrf++": 50.09,
+      "bleu_tokenizer": "13a",
+      "mt_ms_mean": 1931.7,
+      "mt_ms_p50": 1767.9,
+      "mt_ms_p90": 2724.2
+    }
+  },
+  "unlinked_recordings": 100,
+  "peak_ram_mb": 4179.5,
+  "network_before": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "network_after": {
+    "interfaces": {
+      "ifb0": {
+        "up": false,
+        "ipv4": []
+      },
+      "ifb1": {
+        "up": false,
+        "ipv4": []
+      },
+      "eth0": {
+        "up": true,
+        "ipv4": [
+          "192.0.2.2"
+        ]
+      }
+    },
+    "default_route": "default via eth0 (IPv4)",
+    "rfkill": null,
+    "nmcli_radio": null,
+    "has_default_route": true,
+    "any_external_ip": true
+  },
+  "offline_guard": {
+    "installed": true,
+    "blocked_attempts": []
+  },
+  "finished": "20261022-214426",
+  "total_model_mb": 3154.3
+}

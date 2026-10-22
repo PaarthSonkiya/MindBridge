@@ -18,3 +18,17 @@ python docs/submission/build_submission.py --template template.docx \
 * Anything that can only come from our own board or the demo video stays as a yellow
   **[TO FILL …]**; the script prints how many remain. Never replace one with an estimate.
 * Submit as **`MindBridge_Prototype Submission_V3.docx`** (or export to PDF) through the submission form.
+
+## The offline package (for the "Offline package" link)
+
+Build it on any Linux machine with internet (the RB3 Gen 2 itself works, during its online setup):
+
+```bash
+git clone -b phase3-prototype https://github.com/PaarthSonkiya/MindBridge && cd MindBridge
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
+python scripts/fetch_models.py               # ~3.7 GB of models, once
+bash scripts/build_offline_bundle.sh         # → dist/mindbridge-offline-0.4.0-aarch64.tar.gz (+ .sha256)
+```
+
+The package is about 3.5 GB. Upload the `.tar.gz` and its `.sha256` to Google Drive (or a GitHub release,
+split below 2 GB per file), set sharing to "anyone with the link", and paste the link in section 3.1.
