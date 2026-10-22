@@ -2,9 +2,9 @@
 # Build the judges' OFFLINE installation bundle (run on any machine WITH internet).
 #
 # Produces dist/mindbridge-offline-<version>-aarch64.tar.gz containing:
-#   app/        this repository (code, UI, config)
-#   wheels/     every Python dependency for aarch64 / CPython 3.12 (pip --no-index installs these)
-#   models/     all models + manifest.json with sha256 sums
+#   app/        this repository at HEAD (code, UI, config, samples, docs, benchmark tool)
+#   wheels/     every Python dependency for aarch64 / CPython 3.12, pinned by requirements-aarch64.lock
+#   models/     the models the app uses + manifest.json with sizes, sha256 sums and licences
 #   install_offline.sh, run.sh
 #
 # Upload the tarball to the GitHub release / Google Drive and put the link in the submission form.
@@ -38,9 +38,21 @@ pip download pip -d "$STAGE/wheels" --no-deps "${PLATS[@]}" "${COMMON[@]}"
 ls "$STAGE/wheels" | grep -qi opencc || pip wheel --no-deps -w "$STAGE/wheels" opencc-python-reimplemented
 echo "$(ls "$STAGE/wheels" | wc -l) wheels"
 
-echo "== Models"
-[ -f "$ROOT/models/manifest.json" ] || python3 "$ROOT/scripts/fetch_models.py"
-cp -rL "$ROOT/models" "$STAGE/models"
+echo "== Models (only what the app uses; see bench/model_sizes.py)"
+[ -f "$ROOT/models/mt/envit5-translation-ct2-int8/model.bin" ] || python3 "$ROOT/scripts/fetch_models.py"
+mkdir -p "$STAGE/models"
+for rel in $(python3 "$ROOT/bench/model_sizes.py" --list-shipped); do
+  mkdir -p "$STAGE/models/$(dirname "$rel")"
+  cp -rL "$ROOT/models/$rel" "$STAGE/models/$rel"
+done
+python3 - "$ROOT" "$STAGE/models" <<'PY'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(sys.argv[1]) / "scripts"))
+import fetch_models as f
+f.write_manifest(f.default_licenses(), root=Path(sys.argv[2]))
+PY
+du -sh "$STAGE/models"
 
 cp "$ROOT/scripts/install_offline.sh" "$STAGE/"
 cp "$ROOT/scripts/run.sh" "$STAGE/app/scripts/run.sh"

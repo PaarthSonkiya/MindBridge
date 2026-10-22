@@ -31,6 +31,7 @@ def dir_bytes(p: Path) -> int:
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", default=str(ROOT / "bench" / "results" / "published" / "model_sizes.json"))
+    ap.add_argument("--list-shipped", action="store_true", help="only print the shipped model paths (for packaging)")
     args = ap.parse_args()
     cfg = load_config()
     mp = cfg.models_path
@@ -57,6 +58,9 @@ def main():
     # What scripts/fetch_models.py installs and the offline package ships.
     shipped = [vad, asr, "asr/whisper-small-quantized-qcs6490", cfg.asr.cpu_model_dir, cfg.mt.en_vi_model_dir,
                cfg.mt.model_dir, *tts.values()]
+    if args.list_shipped:
+        print("\n".join(shipped))
+        return
     report = {
         "created": time.strftime("%Y-%m-%d %H:%M:%S"),
         "unit": "MB (2^20 bytes) of model files on disk",

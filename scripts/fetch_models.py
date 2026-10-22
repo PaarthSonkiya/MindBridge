@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Download and prepare every model MindBridge needs (run once, online).
 
-    python scripts/fetch_models.py            # everything, NLLB-600M
-    python scripts/fetch_models.py --nllb 1.3B
+    python scripts/fetch_models.py            # everything (NLLB-1.3B)
+    python scripts/fetch_models.py --nllb 600M
     python scripts/fetch_models.py --only tts,vad
 
 Layout produced under models/ (and recorded in models/manifest.json):
@@ -10,7 +10,8 @@ Layout produced under models/ (and recorded in models/manifest.json):
     vad/silero_vad.onnx
     asr/whisper-*-quantized-qcs6490/       Qualcomm AI Hub, w8a16, Hexagon NPU   (qualcomm/fetch_whisper.sh)
     asr/ct2-whisper-small/                 CTranslate2 int8 CPU fallback
-    mt/nllb-200-distilled-1.3B-ct2-int8/   CTranslate2 int8
+    mt/envit5-translation-ct2-int8/        CTranslate2 int8, English ⇄ Vietnamese
+    mt/nllb-200-distilled-1.3B-ct2-int8/   CTranslate2 int8, Korean/Chinese ⇄ Vietnamese
     tts/<voice>/                           one voice per language
 
 After this, the device never needs the network again.
@@ -183,13 +184,25 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def write_manifest(licenses: dict[str, str]):
+def default_licenses() -> dict[str, str]:
+    lic = {rel: license_ for items in ASSETS.values() for rel, _url, license_ in items}
+    lic.update({
+        "asr/ct2-whisper-small": "MIT (OpenAI Whisper; CTranslate2 conversion by Systran)",
+        "asr/whisper-large-v3-turbo-quantized-qcs6490": "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license",
+        "asr/whisper-small-quantized-qcs6490": "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license",
+        "mt/envit5-translation-ct2-int8": "OpenRAIL (VietAI envit5-translation)",
+        "mt/nllb-200-distilled-1.3B-ct2-int8": "CC-BY-NC-4.0 (Meta NLLB-200)",
+    })
+    return lic
+
+
+def write_manifest(licenses: dict[str, str], root: Path = MODELS):
     files = []
-    for p in sorted(MODELS.rglob("*")):
+    for p in sorted(root.rglob("*")):
         if p.is_file() and p.name != "manifest.json" and "espeak-ng-data" not in p.parts:
-            files.append({"path": str(p.relative_to(MODELS)), "bytes": p.stat().st_size, "sha256": sha256(p)})
+            files.append({"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "sha256": sha256(p)})
     total = sum(f["bytes"] for f in files)
-    (MODELS / "manifest.json").write_text(json.dumps({
+    (root / "manifest.json").write_text(json.dumps({
         "created": time.strftime("%Y-%m-%d %H:%M:%S"),
         "total_mb": round(total / 2**20, 1),
         "licenses": licenses,
