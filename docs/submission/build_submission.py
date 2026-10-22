@@ -119,11 +119,25 @@ def main():
     ap.add_argument("--template", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--board", default="", help="folder of a voice benchmark run made on the RB3 Gen 2")
+    ap.add_argument("--manual", default="", help="JSON with values only a person can supply (video link, "
+                                                 "package link, test conditions…); see manual_fields.example.json")
     args = ap.parse_args()
 
     C = _load_content()
     board = json.loads((Path(args.board) / "summary.json").read_text()) if args.board else None
     F = C.fields(board)
+    if args.manual:
+        for key, value in json.loads(Path(args.manual).read_text(encoding="utf-8")).items():
+            if key.startswith("_") or not value:
+                continue
+            if isinstance(value, dict):
+                for sub, text in value.items():
+                    if key == "results" and any(text):  # [result text, evidence]; keep ours where empty
+                        F[key][sub] = tuple(t or old for t, old in zip(text, F[key][sub], strict=True))
+                    elif key != "results" and text:
+                        F[key][sub] = text
+            else:
+                F[key] = value
     doc = docx.Document(args.template)
 
     # Section 1 table

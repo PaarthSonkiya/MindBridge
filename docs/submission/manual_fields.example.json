@@ -1,0 +1,19 @@
+{
+  "_how": "Copy to manual_fields.json, fill what you have, run build_submission.py --manual manual_fields.json. Empty values are ignored.",
+  "video_link": "",
+  "video_duration": "",
+  "video_timestamps": "",
+  "package_url": "",
+  "summary": {
+    "Submitted build": "",
+    "Test conditions": "",
+    "Actual demo device": ""
+  },
+  "results": {
+    "Device operation & UX": [
+      "",
+      ""
+    ]
+  },
+  "limitations": ""
+}

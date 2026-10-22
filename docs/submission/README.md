@@ -17,6 +17,9 @@ python docs/submission/build_submission.py --template template.docx \
   profiles) and from `--board`.
 * Anything that can only come from our own board or the demo video stays as a yellow
   **[TO FILL …]**; the script prints how many remain. Never replace one with an estimate.
+* Values only a person can supply (video link and timestamps, package link, test conditions, microphone
+  model): copy `manual_fields.example.json` to `manual_fields.json`, fill it, add `--manual manual_fields.json`.
+  Re-running the script then never loses them.
 * Submit as **`MindBridge_Prototype Submission_V3.docx`** (or export to PDF) through the submission form.
 
 ## The offline package (for the "Offline package" link)
