@@ -130,8 +130,16 @@ class WhisperQnn(AsrEngine):
         self.q_feat = q_for(enc_stem, self.enc_in.name, self.enc_in.type)
         self.q_mask = q_for(dec_stem, "attention_mask", self.dec_inputs["attention_mask"].type)
         self.q_self = {n: q_for(dec_stem, n, self.dec_inputs[n].type) for n in self.self_in}
-        out_types = {o.name: o.type for o in self.decoder.get_outputs()}
-        self.q_logits = q_for(dec_stem, self.logits_name, out_types[self.logits_name])
+        out_specs = {o.name: o for o in self.decoder.get_outputs()}
+        self.q_logits = q_for(dec_stem, self.logits_name, out_specs[self.logits_name].type)
+
+        # Vocabulary size decides the control-token ids (small/medium 51865, large-v3/turbo 51866).
+        shape = getattr(out_specs[self.logits_name], "shape", None) or []
+        self.n_vocab = int(shape[1]) if len(shape) > 1 and isinstance(shape[1], int) and shape[1] > 0 else 51865
+        self.sp = L.whisper_specials(self.n_vocab)
+        size = next((k for k in ("large-v3-turbo", "turbo", "medium", "small", "base", "tiny")
+                     if k.replace("-", "_") in str(self.model_dir).lower()), "small")
+        self.name = f"whisper-{size}-w8a16 (QNN HTP)" if backend == "qnn" else f"whisper-{size}-w8a16 (CPU)"
 
     def model_files(self) -> list[str]:
         files = [self.encoder_path, self.decoder_path]
@@ -173,24 +181,25 @@ class WhisperQnn(AsrEngine):
             pos += 1
             return logits
 
-        logits = feed(L.WHISPER_SOT)
+        sp = self.sp
+        logits = feed(sp["sot"])
         if language is None:
             cands = candidates or list(L.LANGUAGES)
             ids = [L.get(c).whisper_token_id for c in cands]
             language = cands[int(np.argmax(logits[ids]))]
-        for tok in (L.get(language).whisper_token_id, L.WHISPER_TRANSCRIBE):
+        for tok in (L.get(language).whisper_token_id, sp["transcribe"]):
             feed(tok)
-        logits = feed(L.WHISPER_NO_TIMESTAMPS)
+        logits = feed(sp["no_timestamps"])
 
         out: list[int] = []
         for step in range(self.max_tokens):
-            logits[L.WHISPER_NO_TIMESTAMPS :] = -np.inf  # no timestamps / specials
-            logits[L.WHISPER_SOT : L.WHISPER_NO_TIMESTAMPS] = -np.inf
+            logits[sp["no_timestamps"] :] = -np.inf  # timestamps
+            logits[sp["sot"] : sp["no_timestamps"]] = -np.inf  # languages, task and other control tokens
             if step == 0:
-                logits[L.WHISPER_EOT] = -np.inf  # suppress blank output
+                logits[sp["eot"]] = -np.inf  # suppress blank output
                 logits[220] = -np.inf
             tok = int(np.argmax(logits))
-            if tok == L.WHISPER_EOT or _looping(out + [tok]):
+            if tok == sp["eot"] or _looping(out + [tok]):
                 break
             out.append(tok)
             logits = feed(tok)
@@ -198,7 +207,7 @@ class WhisperQnn(AsrEngine):
         return AsrResult(
             text=self.detok.decode(out),
             language=language,
-            backend=self.name if self.backend == "qnn" else self.name.replace("QNN HTP", "CPU"),
+            backend=self.name,
             timings_ms={
                 "features": (t1 - t0) * 1e3,
                 "encoder": (t2 - t1) * 1e3,

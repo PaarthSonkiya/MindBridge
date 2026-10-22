@@ -25,6 +25,21 @@ WHISPER_NO_SPEECH = 50362
 WHISPER_NO_TIMESTAMPS = 50363
 WHISPER_FIRST_TIMESTAMP = 50364
 
+
+
+def whisper_specials(n_vocab: int) -> dict[str, int]:
+    """Control-token ids. large-v3 / turbo (51866) add <|yue|>, shifting everything after the languages by +1."""
+    shift = 1 if n_vocab >= 51866 else 0
+    return {
+        "eot": WHISPER_EOT,
+        "sot": WHISPER_SOT,
+        "translate": WHISPER_TRANSLATE + shift,
+        "transcribe": WHISPER_TRANSCRIBE + shift,
+        "no_speech": WHISPER_NO_SPEECH + shift,
+        "no_timestamps": WHISPER_NO_TIMESTAMPS + shift,
+    }
+
+
 LANGUAGES: dict[str, Language] = {
     "vi": Language("vi", "Vietnamese", "Tiếng Việt", "vie_Latn", 50278, "vits-piper-vi_VN-vais1000-medium"),
     "en": Language("en", "English", "English", "eng_Latn", 50259, "vits-piper-en_US-amy-low"),

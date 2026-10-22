@@ -75,12 +75,14 @@ def main():
     ap.add_argument("--chipset", default="qualcomm-qcs6490")
     ap.add_argument("--device", default=None, help='exact AI Hub device name, e.g. "RB3 Gen 2 (Proxy)"')
     ap.add_argument("--options", default="--max_profiler_iterations 10")
+    ap.add_argument("--out", default="", help="results sub-folder (default: bench/results/aihub)")
     args = ap.parse_args()
+    out = OUT / args.out if args.out else OUT
 
     hub = _hub()
     device = pick_device(hub, args.chipset, args.device)
     print(f"Device: {device.name} ({args.chipset})")
-    OUT.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
 
     results = []
     for path in find_models(Path(args.model_dir).resolve()):
@@ -99,7 +101,7 @@ def main():
             continue
         prof = job.download_profile()
         stamp = time.strftime("%Y%m%d-%H%M%S")
-        raw = OUT / f"{path.stem}_{args.chipset}_{stamp}.json"
+        raw = out / f"{path.stem}_{args.chipset}_{stamp}.json"
         raw.write_text(json.dumps(prof, indent=2))
         row = {"model": path.name, "device": device.name, "job": job.url, **summarize(prof)}
         rows.append(row)
@@ -112,8 +114,8 @@ def main():
         else:
             units = ", ".join(f"{k}: {v}" for k, v in r["layers_by_unit"].items())
             md.append(f"| {r['model']} | {r['device']} | {r['inference_ms']} ms | {r['peak_memory_mb']} MB | {units} | {r['job']} |")
-    (OUT / "summary.md").write_text("\n".join(md) + "\n")
-    (OUT / "summary.json").write_text(json.dumps(rows, indent=2))
+    (out / "summary.md").write_text("\n".join(md) + "\n")
+    (out / "summary.json").write_text(json.dumps(rows, indent=2))
     print("\n".join(md))
 
 

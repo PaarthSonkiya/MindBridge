@@ -175,3 +175,10 @@ def test_loop_guard():
     assert _looping([5, 7, 7, 7])
     assert _looping([1, 2, 3, 1, 2, 3, 1, 2, 3])
     assert not _looping([1, 2, 3, 4, 5])
+
+
+def test_specials_for_large_v3_vocab():
+    sp_small, sp_turbo = L.whisper_specials(51865), L.whisper_specials(51866)
+    assert (sp_small["transcribe"], sp_small["no_timestamps"]) == (50359, 50363)
+    assert (sp_turbo["transcribe"], sp_turbo["no_timestamps"]) == (50360, 50364)
+    assert sp_turbo["sot"] == sp_small["sot"] == 50258

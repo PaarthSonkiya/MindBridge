@@ -1,0 +1,26 @@
+[
+  {
+    "model": "decoder.bin",
+    "device": "Dragonwing RB3 Gen 2 Vision Kit",
+    "job": "https://workbench.aihub.qualcomm.com/jobs/jp114y27p/",
+    "inference_ms": 23.34,
+    "peak_memory_mb": 69.3,
+    "first_load_ms": 318.4,
+    "warm_load_ms": 339.1,
+    "layers_by_unit": {
+      "NPU": 2853
+    }
+  },
+  {
+    "model": "encoder.bin",
+    "device": "Dragonwing RB3 Gen 2 Vision Kit",
+    "job": "https://workbench.aihub.qualcomm.com/jobs/j57ny029p/",
+    "inference_ms": 235.46,
+    "peak_memory_mb": 32.1,
+    "first_load_ms": 496.3,
+    "warm_load_ms": 546.9,
+    "layers_by_unit": {
+      "NPU": 1894
+    }
+  }
+]
