@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 
 from mindbridge.mt.nllb_ct2 import MtResult, PhraseCache
-from mindbridge.mt.text import split_sentences
+from mindbridge.mt.text import keep_final_punctuation, split_sentences
 
 _PREFIX = re.compile(r"^\s*(en|vi)\s*:\s*", re.I)
 # "Machine 4" in Title Case is copied through untranslated ("Machine 4"); lower case gives "máy 4".
@@ -115,6 +115,5 @@ class Envit5Translator:
         with self._lock:
             results = self.translator.translate_batch(batch, beam_size=self.beam_size, max_decoding_length=self.max_len)
         outs = [_PREFIX.sub("", self.sp.decode(r.hypotheses[0])).strip() for r in results]
-        if tgt == "en":
-            return [detokenise_english(o) for o in outs]
-        return [tidy_vietnamese(o) for o in outs]
+        outs = [detokenise_english(o) for o in outs] if tgt == "en" else [tidy_vietnamese(o) for o in outs]
+        return [keep_final_punctuation(s, o, tgt) for s, o in zip(sentences, outs, strict=True)]

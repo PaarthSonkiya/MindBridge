@@ -51,6 +51,21 @@ def chinese_punctuation(text: str) -> str:
     return _ZH_PUNCT.sub(lambda m: _FULLWIDTH[m.group(1)], text)
 
 
+_SRC_END = re.compile(r"([.?!。？！])[\"'”’)\]]*\s*$")
+_OUT_END = re.compile(r"[.?!。？！…][\"'”’)\]]*\s*$")
+_TO_ASCII = {"。": ".", "？": "?", "！": "!"}
+_TO_ZH = {".": "。", "?": "？", "!": "！"}
+
+
+def keep_final_punctuation(source: str, output: str, tgt: str) -> str:
+    """A sentence that ends with . ? ! keeps that ending in translation (NLLB often drops it in Korean)."""
+    m = _SRC_END.search(source)
+    if not m or not output.strip() or _OUT_END.search(output):
+        return output
+    mark = _TO_ASCII.get(m.group(1), m.group(1))
+    return output.rstrip(" ,，、;；:") + (_TO_ZH[mark] if tgt == "zh" else mark)
+
+
 def clean_asr(text: str, lang: str) -> str:
     text = text.strip()
     if lang == "zh":

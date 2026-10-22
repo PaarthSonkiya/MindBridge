@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from mindbridge import languages as L
-from mindbridge.mt.text import chinese_punctuation, split_sentences
+from mindbridge.mt.text import chinese_punctuation, keep_final_punctuation, split_sentences
 
 
 @dataclass
@@ -117,8 +117,9 @@ class NllbTranslator:
                 no_repeat_ngram_size=4,
             )
         outs = []
-        for r in results:
+        for src_sent, r in zip(sentences, results, strict=True):
             toks = [t for t in r.hypotheses[0] if t != t_code]
             out = self.sp.decode(toks).strip()
-            outs.append(chinese_punctuation(out) if tgt == "zh" else out)
+            out = chinese_punctuation(out) if tgt == "zh" else out
+            outs.append(keep_final_punctuation(src_sent, out, tgt))
         return outs

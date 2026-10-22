@@ -29,6 +29,15 @@ def test_mel_matches_reference_when_available():
     assert np.abs(ref - mine).max() < 1e-4
 
 
+def test_keep_final_punctuation():
+    from mindbridge.mt.text import keep_final_punctuation
+
+    assert keep_final_punctuation("Tôi muốn đi.", "가고 싶어요", "ko") == "가고 싶어요."
+    assert keep_final_punctuation("Anh đi đâu?", "你去哪里，", "zh") == "你去哪里？"
+    assert keep_final_punctuation("Xin chào", "Hello", "en") == "Hello"
+    assert keep_final_punctuation("Xin chào.", "Hello!", "en") == "Hello!"
+
+
 def test_chinese_punctuation():
     from mindbridge.mt.text import chinese_punctuation
 
