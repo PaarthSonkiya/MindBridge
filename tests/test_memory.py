@@ -29,6 +29,7 @@ def test_native_language_entities():
     assert find_entities("", "4번 기계를 다시 시작하지 마세요", "ko") == ["Machine 4"]
     assert find_entities("", "不要重新启动四号机器", "zh") == ["Machine 4"]
     assert find_entities("Check machine number four and line 2") == ["Machine 4", "Line 2"]
+    assert find_entities("Engine number six shakes again.") == ["Machine 6"]
 
 
 def test_conflict_then_resolution_then_recall():

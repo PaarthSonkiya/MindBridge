@@ -18,8 +18,10 @@ EQUIPMENT = (
     "machine|line|pump|valve|conveyor|press|station|tank|boiler|compressor|robot|motor|"
     "furnace|oven|belt|mold|mould|generator|crane|forklift|chiller|dryer|mixer|cutter|"
     "lathe|welder|panel|cabinet|gate|zone|area|bay|dock|room|hopper|extruder|reactor|"
-    "filter|fan|heater|cooler|cell|unit|kiln|shredder|sorter|scanner|printer|truck|rack"
+    "filter|fan|heater|cooler|cell|unit|kiln|shredder|sorter|scanner|printer|truck|rack|engine"
 )
+# NLLB often renders Vietnamese "máy" as "engine"; treat it as the same machine.
+_CANON_KIND = {"engine": "machine", "mould": "mold"}
 _NUMWORDS = {
     "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7",
     "eight": "8", "nine": "9", "ten": "10", "eleven": "11", "twelve": "12", "first": "1",
@@ -42,6 +44,7 @@ _ZH_RE = re.compile(r"(?:第\s*)?(\d{1,4}|[一二两三四五六七八九十])\s
 
 
 def _canon(kind: str, num: str) -> str:
+    kind = _CANON_KIND.get(kind.lower(), kind)
     num = _NUMWORDS.get(num.lower(), num)
     num = num.upper() if len(num) == 1 and num.isalpha() else num
     return f"{kind.capitalize()} {num}"

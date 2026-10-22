@@ -16,6 +16,7 @@ first decoder step restricted to the conversation's two languages.
 
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 
@@ -36,6 +37,53 @@ def _find(model_dir: Path, word: str) -> Path:
     if not hits:
         raise FileNotFoundError(f"No *{word}*.onnx under {model_dir}")
     return hits[0]
+
+
+_NP_TYPES = {
+    "tensor(float)": np.float32, "tensor(uint8)": np.uint8, "tensor(uint16)": np.uint16,
+    "tensor(int8)": np.int8, "tensor(int16)": np.int16, "tensor(int32)": np.int32,
+}
+
+
+class _Q:
+    """Per-tensor affine quantisation: float = (q - zero_point) * scale (identity for float tensors)."""
+
+    def __init__(self, dtype, scale: float | None = None, zero_point: int | None = None):
+        self.dtype = dtype
+        self.scale = scale
+        self.zp = zero_point
+        self.is_float = dtype == np.float32
+        if not self.is_float and scale is None:
+            raise RuntimeError("quantised tensor without quantisation parameters")
+        if not self.is_float:
+            info = np.iinfo(dtype)
+            self.lo, self.hi = info.min, info.max
+
+    def quant(self, x: np.ndarray) -> np.ndarray:
+        if self.is_float:
+            return np.asarray(x, dtype=np.float32)
+        q = np.rint(np.asarray(x, dtype=np.float32) / self.scale) + self.zp
+        return np.clip(q, self.lo, self.hi).astype(self.dtype)
+
+    def dequant(self, q: np.ndarray) -> np.ndarray:
+        if self.is_float:
+            return np.asarray(q, dtype=np.float32)
+        return (q.astype(np.float32) - self.zp) * self.scale
+
+
+def _quant_table(model_dir: Path) -> dict[str, tuple[float, int]]:
+    """Quantisation parameters from AI Hub's metadata.json, keyed by '<file stem>:<tensor name>'."""
+    table: dict[str, tuple[float, int]] = {}
+    for meta in model_dir.rglob("metadata.json"):
+        data = json.loads(meta.read_text())
+        for fname, spec in data.get("model_files", {}).items():
+            stem = Path(fname).stem
+            for io in ("inputs", "outputs"):
+                for tname, t in spec.get(io, {}).items():
+                    q = t.get("quantization_parameters") or {}
+                    if "scale" in q:
+                        table[f"{stem}:{tname}"] = (float(q["scale"]), int(q["zero_point"]))
+    return table
 
 
 class WhisperQnn(AsrEngine):
@@ -62,12 +110,28 @@ class WhisperQnn(AsrEngine):
         self.dec_out_names = [o.name for o in self.decoder.get_outputs()]
         self.logits_name = next(n for n in self.dec_out_names if "logit" in n.lower())
         self.self_in = sorted(n for n in self.dec_inputs if "cache_self" in n and n.endswith("_in"))
-        for name, spec in [(self.enc_in.name, self.enc_in), *self.dec_inputs.items()]:
-            if spec.type != "tensor(float)" and name not in ("input_ids", "position_ids"):
-                raise RuntimeError(
-                    f"Input '{name}' is {spec.type}; MindBridge expects float I/O. "
-                    "Re-export the model from AI Hub without --quantize_io."
-                )
+
+        # AI Hub's QCS6490 build uses quantised I/O (uint16 features/mask/logits, uint8 KV caches).
+        # Encoder→decoder cross caches and decoder self caches share parameters, so they pass through raw;
+        # only the features, mask, initial caches and logits need converting.
+        qt = _quant_table(self.model_dir)
+        enc_stem, dec_stem = self.encoder_path.stem, self.decoder_path.stem
+
+        def q_for(stem: str, name: str, type_str: str) -> _Q:
+            dtype = _NP_TYPES.get(type_str)
+            if dtype is None:
+                raise RuntimeError(f"Unsupported tensor type {type_str} for {name}")
+            if dtype == np.float32:
+                return _Q(dtype)
+            if f"{stem}:{name}" not in qt:
+                raise RuntimeError(f"{name} is {type_str} but metadata.json has no quantisation parameters for it")
+            return _Q(dtype, *qt[f"{stem}:{name}"])
+
+        self.q_feat = q_for(enc_stem, self.enc_in.name, self.enc_in.type)
+        self.q_mask = q_for(dec_stem, "attention_mask", self.dec_inputs["attention_mask"].type)
+        self.q_self = {n: q_for(dec_stem, n, self.dec_inputs[n].type) for n in self.self_in}
+        out_types = {o.name: o.type for o in self.decoder.get_outputs()}
+        self.q_logits = q_for(dec_stem, self.logits_name, out_types[self.logits_name])
 
     def model_files(self) -> list[str]:
         files = [self.encoder_path, self.decoder_path]
@@ -76,25 +140,25 @@ class WhisperQnn(AsrEngine):
 
     # ------------------------------------------------------------------
     def _zeros_self_cache(self) -> dict[str, np.ndarray]:
-        return {n: np.zeros(self.dec_inputs[n].shape, dtype=np.float32) for n in self.self_in}
+        return {n: self.q_self[n].quant(np.zeros(self.dec_inputs[n].shape, np.float32)) for n in self.self_in}
 
     def _step(self, token: int, pos: int, mask: np.ndarray, cache_self: dict, cache_cross: dict):
         feeds = {
             "input_ids": np.array([[token]], dtype=np.int32),
-            "attention_mask": mask,
+            "attention_mask": self.q_mask.quant(mask),
             "position_ids": np.array([pos], dtype=np.int32),
             **cache_self,
             **cache_cross,
         }
         outs = dict(zip(self.dec_out_names, self.decoder.run(self.dec_out_names, feeds), strict=True))
         new_self = {n: outs[n.replace("_in", "_out")] for n in self.self_in}
-        return outs[self.logits_name].reshape(-1), new_self
+        return self.q_logits.dequant(outs[self.logits_name]).reshape(-1), new_self
 
     def transcribe(self, audio: np.ndarray, language: str | None, candidates: list[str] | None = None) -> AsrResult:
         t0 = time.perf_counter()
         feats = log_mel(audio, n_mels=int(self.enc_in.shape[1]))
         t1 = time.perf_counter()
-        enc = self.encoder.run(self.enc_out_names, {self.enc_in.name: feats})
+        enc = self.encoder.run(self.enc_out_names, {self.enc_in.name: self.q_feat.quant(feats)})
         cache_cross = {n: v for n, v in zip(self.enc_out_names, enc, strict=True) if n in self.dec_inputs}
         t2 = time.perf_counter()
 

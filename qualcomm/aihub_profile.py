@@ -83,8 +83,8 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
     results = []
-    for path in find_models(Path(args.model_dir)):
-        print(f"Uploading {path.relative_to(ROOT)} …")
+    for path in find_models(Path(args.model_dir).resolve()):
+        print(f"Uploading {path.name} ({path.stat().st_size / 2**20:.0f} MB) …")
         model = hub.upload_model(str(path))
         job = hub.submit_profile_job(model=model, device=device, name=f"mindbridge-{path.stem}", options=args.options)
         print(f"  profile job {job.job_id}: {job.url}")
