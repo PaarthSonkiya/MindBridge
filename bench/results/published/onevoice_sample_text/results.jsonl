@@ -458,186 +458,186 @@
 {"direction": "ko-vi", "i": 177, "id": "VK-9914", "source": "표를 환불하고 싶어요.", "reference": "Ra cầu lửa đâu vậy?", "hypothesis": "Tôi muốn trả lại vé."}
 {"direction": "ko-vi", "i": 178, "id": "VK-9923", "source": "극장이 어디인가요?", "reference": "Tôi có thể xem muối rối nước ở đâu?", "hypothesis": "Nhà hát ở đâu?"}
 {"direction": "ko-vi", "i": 179, "id": "VK-9971", "source": "여기 있어요.", "reference": "Có đây.", "hypothesis": "Ở đây."}
-{"direction": "vi-zh", "i": 0, "id": "VM-0223", "source": "Bạn đã mang hộ chiếu chưa?", "reference": "你带护照了吗？", "hypothesis": "你有没有带着护照?"}
-{"direction": "vi-zh", "i": 1, "id": "VM-0237", "source": "Tôi xin được giới thiệu cho các bạn trước chút, vị này là giáo sư trường tôi, vị này là hiệu trưởng trường tôi.", "reference": "我给大家介绍一下，这位是我们学校的教授，这位是我们学校的校长。", "hypothesis": "让我先介绍一下,这是我的教授,这是我的校长."}
-{"direction": "vi-zh", "i": 2, "id": "VM-0244", "source": "Lần trước bạn đã xem mấy căn chung cư rồi?", "reference": "上次你看了几套公寓了？", "hypothesis": "你上次看过这些公寓吗?"}
-{"direction": "vi-zh", "i": 3, "id": "VM-0370", "source": "Tôi đã bơi một tiếng đồng hồ.", "reference": "我游了一个小时了。", "hypothesis": "我游了一个小时."}
-{"direction": "vi-zh", "i": 4, "id": "VM-0383", "source": "Được điểm tối đa.", "reference": "这次她参加了国外大学考试。这次考试非常难，但是她考得很好，得了满分。", "hypothesis": "获得最高分."}
-{"direction": "vi-zh", "i": 5, "id": "VM-0430", "source": "Bạn còn muốn cái khác không?", "reference": "你还要别的吗？", "hypothesis": "你还想要其他东西吗?"}
-{"direction": "vi-zh", "i": 6, "id": "VM-0475", "source": "Hàng ngày tôi đều kiên trì luyện tập một tiếng đồng hồ.", "reference": "我每天都坚持练习一个小时。", "hypothesis": "每天我坚持练习一个小时."}
-{"direction": "vi-zh", "i": 7, "id": "VM-0484", "source": "Vậy 101 nhân dân tệ nhé, được không?", "reference": "那101块钱吧，行吗？", "hypothesis": "现在我们来看一下."}
-{"direction": "vi-zh", "i": 8, "id": "VM-0527", "source": "Tôi cũng thường lên mạng xem phim HD Trung Quốc và phim bộ.", "reference": "我也经常上网看高清中国电影和电视剧。", "hypothesis": "我也经常上网看中国高清电影和剧情."}
-{"direction": "vi-zh", "i": 9, "id": "VM-0538", "source": "Vali của bạn nặng không?", "reference": "你的行李箱重吗？", "hypothesis": "你的行李很重吗?"}
-{"direction": "vi-zh", "i": 10, "id": "VM-0571", "source": "Trong lúc tôi đi làm, cô ta ở nhà xem lên mạng chat chit với bạn bè.", "reference": "我去上班的时候，她在家上网跟朋友聊天。", "hypothesis": "我去工作的时候,她在家里和朋友聊天."}
-{"direction": "vi-zh", "i": 11, "id": "VM-0621", "source": "Tôi không nhìn thấy xe máy của bạn.", "reference": "我没看见你的摩托车。", "hypothesis": "我没有看到你的摩托车."}
-{"direction": "vi-zh", "i": 12, "id": "VM-0643", "source": "Máy bay đi Việt Nam sắp cất cánh rồi.", "reference": "去越南的飞机快起飞了。", "hypothesis": "越南飞机即将起飞."}
-{"direction": "vi-zh", "i": 13, "id": "VM-0697", "source": "Cửa hàng các bạn có nước ngọt không?", "reference": "你们商店有饮料吗？", "hypothesis": "您的商店有糖果吗?"}
-{"direction": "vi-zh", "i": 14, "id": "VM-0708", "source": "Vì sao cô ta học tốt như vậy?", "reference": "她为什么学得那么好。", "hypothesis": "她为什么学得这么好?"}
-{"direction": "vi-zh", "i": 15, "id": "VM-0751", "source": "Buổi tối sau khi tôi về nhà, cô ta thường kể cho tôi nghe những chuyện thú vị ở trong trường học. Cô ta cũng muốn biết tình hình ở Việt Nam.", "reference": "晚上我回家后，她常给我讲学校里有趣的事。她也很想知道越南的情况。", "hypothesis": "晚上我回家后, 她经常告诉我关于学校的有趣故事.她也想知道越南的情况."}
-{"direction": "vi-zh", "i": 16, "id": "VM-0815", "source": "Ăn cơm xong, tôi thường đi dạo một lát, thỉnh thoảng trò chuyện với bạn bè.", "reference": "吃完饭，我经常散一会儿步，偶尔跟朋友聊聊天。", "hypothesis": "吃完饭后,我经常出去散步,偶尔和朋友聊天."}
-{"direction": "vi-zh", "i": 17, "id": "VM-0925", "source": "Tối qua 12:00 tôi mới đi ngủ.", "reference": "昨晚12点我才睡觉。", "hypothesis": "我昨天晚上12点才睡觉."}
-{"direction": "vi-zh", "i": 18, "id": "VM-1028", "source": "Xe của bạn mầu gì?", "reference": "你的车是什么颜色？", "hypothesis": "你的车是什么颜色的?"}
-{"direction": "vi-zh", "i": 19, "id": "VM-1034", "source": "Bạn đi xe máy đi học phải không?", "reference": "你骑摩托车上学吧？", "hypothesis": "你骑自行车去上学吗?"}
-{"direction": "vi-zh", "i": 20, "id": "VM-1043", "source": "Rất đơn giản, bạn ngồi taxi khoảng 5 phút là tới.", "reference": "很简单，你坐出租车大概5分钟就到了。", "hypothesis": "很简单,你乘坐出租车5分钟左右."}
-{"direction": "vi-zh", "i": 21, "id": "VM-1076", "source": "Tôi thường lên mạng search tài liệu học Tiếng Trung.", "reference": "我经常上网查中文学习资料。", "hypothesis": "我经常在网上搜索中文教材."}
-{"direction": "vi-zh", "i": 22, "id": "VM-1149", "source": "Đây là chiếc máy ảnh kỹ thuật số mới ra.", "reference": "这是最新款的数码相机。", "hypothesis": "这是一款最新的数码相机."}
-{"direction": "vi-zh", "i": 23, "id": "VM-1173", "source": "Sau khi tốt nghiệp đại học tôi sẽ đi Mỹ du học.", "reference": "大学毕业后，我要去美国留学。", "hypothesis": "毕业后,我会去美国留学."}
-{"direction": "vi-zh", "i": 24, "id": "VM-1241", "source": "Trước đây tôi là nhân viên của công ty này, bây giờ tôi là giáo viên Tiếng Trung.", "reference": "以前我是这家公司的员工。现在我是中文老师。", "hypothesis": "我以前是这家公司的员工,现在我是一名中文老师."}
-{"direction": "vi-zh", "i": 25, "id": "VM-1245", "source": "Tôi đang học trường Đại học Bắc Kinh.", "reference": "我在北京大学上学。", "hypothesis": "我正在北京大学学习."}
-{"direction": "vi-zh", "i": 26, "id": "VM-1328", "source": "Cảm ơn bạn đến đón tôi.", "reference": "谢谢你来接我。", "hypothesis": "谢谢你来接我."}
-{"direction": "vi-zh", "i": 27, "id": "VM-1455", "source": "Sau khi ra khỏi siêu thị, tôi đi thăm một người bạn, cô ta đến trung tâm mua sắm.", "reference": "出了超市以后，我去看望一个朋友，她去购物中心了。", "hypothesis": "我离开了超市,去拜访一个朋友,她去了商场."}
-{"direction": "vi-zh", "i": 28, "id": "VM-1475", "source": "Buổi sáng sớm hàng ngày bẩy giờ hơn tôi mới thức dậy, vì vậy thường xuyên không có thời gian ăn sáng, uống một cốc sữa là đi học luôn.", "reference": "每天早晨，7点多我才起床，所以经常没时间吃早饭，喝一杯牛奶就去上课了。", "hypothesis": "我每天早上起床7个小时,所以经常没有时间吃早餐,喝一杯牛奶和去学校."}
-{"direction": "vi-zh", "i": 29, "id": "VM-1482", "source": "Bạn quen với cuộc sống ở đây chứ?", "reference": "你习惯这儿的生活吗？", "hypothesis": "你习惯了这里的生活吗?"}
-{"direction": "vi-zh", "i": 30, "id": "VM-1506", "source": "Trong trường có bưu điện, bạn có thể đến đó gửi thư, mua tem, cũng có thể gửi đồ đạc.", "reference": "学校里有一个邮局，你可以去那儿寄信、买邮票，也可以寄东西。", "hypothesis": "校园里有邮局,你可以去寄信,买邮票,还可以送家具."}
-{"direction": "vi-zh", "i": 31, "id": "VM-1639", "source": "Tối hôm nay tôi đến hiệu sách mua hai quyển từ điển Hán – Việt.", "reference": "今晚，我去书店买两本汉越词典。", "hypothesis": "今晚我去书店买了两本汉语词典."}
-{"direction": "vi-zh", "i": 32, "id": "VM-1698", "source": "Trường học của bạn ở Việt Nam phải không?", "reference": "你的学校在越南吧？", "hypothesis": "你的学校在越南吗?"}
-{"direction": "vi-zh", "i": 33, "id": "VM-1730", "source": "Ngày mai một người bạn của tôi đến Việt Nam du lịch, tôi phải đến sân bay đón cô ta, vì vậy không đi cùng bạn được.", "reference": "明天，我的一个朋友来越南旅游。我得去机场接她。所以不能跟你一起去了。", "hypothesis": "明天我有一个朋友去越南旅游,我必须去机场接她,所以不能和你一起."}
-{"direction": "vi-zh", "i": 34, "id": "VM-1966", "source": "Quyển sách Tiếng Trung đó mà cô ta cho bạn mượn bạn đã xem xong chưa?", "reference": "她借给你的那本中文书你看完了吗？", "hypothesis": "她借给你的那本中文书,你看完了吗?"}
-{"direction": "vi-zh", "i": 35, "id": "VM-1985", "source": "Hôm nay có người tới tìm bạn.", "reference": "今天有人来找你。", "hypothesis": "今天有人来找你."}
-{"direction": "vi-zh", "i": 36, "id": "VM-1989", "source": "Buổi liên hoan khiêu vũ.", "reference": "今晚学校有舞会。我们一起到那儿去跳跳舞吧，玩一玩。", "hypothesis": "舞蹈节."}
-{"direction": "vi-zh", "i": 37, "id": "VM-2046", "source": "Cô ta viết chữ Hán không tốt.", "reference": "她汉字写得不好。", "hypothesis": "她的汉字写得不好."}
-{"direction": "vi-zh", "i": 38, "id": "VM-2114", "source": "Cô ta ngủ bao lâu rồi?", "reference": "她睡了多长时间了？", "hypothesis": "她睡了多久?"}
-{"direction": "vi-zh", "i": 39, "id": "VM-2129", "source": "Lúc nghỉ ngơi tôi thường uống một tách café hoặc ăn một ít đồ.", "reference": "休息的时候，我常喝一杯咖啡或者吃点儿东西。", "hypothesis": "休息时,我经常喝一杯咖啡或吃一些东西."}
-{"direction": "vi-zh", "i": 40, "id": "VM-2461", "source": "Bạn đã nghe ghi âm bao lâu?", "reference": "你听了多长时间的录音了？", "hypothesis": "你听了多久的录音?"}
-{"direction": "vi-zh", "i": 41, "id": "VM-2584", "source": "Sau khi bạn mua được vé thì nói tôi biết nhé.", "reference": "你买到票以后告诉我一声。", "hypothesis": "在你买票后,请告诉我."}
-{"direction": "vi-zh", "i": 42, "id": "VM-2635", "source": "Tôi cảm thấy rất cô đơn nên thường xuyên nhớ cô ta.", "reference": "我觉得很孤独所以经常想她。", "hypothesis": "我觉得自己很孤独,所以经常想念她."}
-{"direction": "vi-zh", "i": 43, "id": "VM-2670", "source": "Công ty các bạn có bao nhiêu nhân viên?", "reference": "你们公司有多少员工？", "hypothesis": "你的公司有多少员工?"}
-{"direction": "vi-zh", "i": 44, "id": "VM-2675", "source": "Cô ta bị cảm rồi, chiều hôm nay không tới học được.", "reference": "她感冒了，今天下午不能来上课了。", "hypothesis": "她感冒了,今天下午不能上学."}
-{"direction": "vi-zh", "i": 45, "id": "VM-2697", "source": "Tối hôm qua bạn đã làm bài tập chưa?", "reference": "昨晚你做作业了吗？", "hypothesis": "你昨晚做了你的功课吗?"}
-{"direction": "vi-zh", "i": 46, "id": "VM-2711", "source": "Mời bạn tối mai tới văn phòng của tôi, tôi có việc muốn nói với bạn.", "reference": "请你明天晚上来我的办公室。我有事想跟你说。", "hypothesis": "明天晚上请你来我的办公室,我有事要跟你说."}
-{"direction": "vi-zh", "i": 47, "id": "VM-2738", "source": "Ba năm không gặp, bạn vẫn như trước.", "reference": "三年不见了，你还是老样子。", "hypothesis": "三年没有见面,你仍然是."}
-{"direction": "vi-zh", "i": 48, "id": "VM-2759", "source": "Họ đều rất khỏe.", "reference": "他们身体都很好。", "hypothesis": "他们都很健康."}
-{"direction": "vi-zh", "i": 49, "id": "VM-2987", "source": "Cô ta là người nước nào?", "reference": "她是哪国人？", "hypothesis": "她来自哪个国家?"}
-{"direction": "vi-zh", "i": 50, "id": "VM-3007", "source": "Tôi hỏi cô giáo có phải là chiều nào cũng đi học không.", "reference": "我问老师是不是每天下午都上课。", "hypothesis": "我问老师,你每天下午都上课吗?"}
-{"direction": "vi-zh", "i": 51, "id": "VM-3185", "source": "Bạn đã làm bài tập chưa?", "reference": "你做作业了吗？", "hypothesis": "你做过你的功课吗?"}
-{"direction": "vi-zh", "i": 52, "id": "VM-3528", "source": "Tôi nghĩ đó là một điều thật đáng tiếc.", "reference": "我觉得很可惜。", "hypothesis": "我觉得这是非常遗憾的."}
-{"direction": "vi-zh", "i": 53, "id": "VM-3595", "source": "Tối nay tôi mới đến khách sạn Hà Nội.", "reference": "今晚我才到河内酒店。", "hypothesis": "我今晚才到达河内酒店."}
-{"direction": "vi-zh", "i": 54, "id": "VM-3628", "source": "Cô ta đã ăn một ít cá và thịt bò.", "reference": "她吃了一些鱼肉和牛肉。", "hypothesis": "她吃了一些鱼和牛肉."}
-{"direction": "vi-zh", "i": 55, "id": "VM-3695", "source": "Trên đường đến Việt Nam bạn có mệt không?", "reference": "来越南的路上，你累吗？", "hypothesis": "在去越南的路上,你觉得很累吗?"}
-{"direction": "vi-zh", "i": 56, "id": "VM-3775", "source": "Phía trước tôi là cô giáo của tôi.", "reference": "我前面是我的老师。", "hypothesis": "在我面前是我的老师."}
-{"direction": "vi-zh", "i": 57, "id": "VM-3899", "source": "Rất ngon.", "reference": "很好吃。", "hypothesis": "这很好."}
-{"direction": "vi-zh", "i": 58, "id": "VM-3937", "source": "Các bạn muốn uống mấy bát canh trứng gà?", "reference": "你们想喝几碗鸡蛋汤？", "hypothesis": "你们想喝一些 ⁇ 蛋吗?"}
-{"direction": "vi-zh", "i": 59, "id": "VM-3984", "source": "Thưa ông, những cái mầu trắng này là đồ gì vậy?", "reference": "先生，这些白色的东西是什么？", "hypothesis": "什么是这些白色?"}
-{"direction": "vi-zh", "i": 60, "id": "VM-4040", "source": "Bạn đã luyện khí công mấy năm?", "reference": "你练了几年的气功了？", "hypothesis": "你有多少年从事空气训练?"}
-{"direction": "vi-zh", "i": 61, "id": "VM-4079", "source": "Sáng hôm qua tôi có việc gấp.", "reference": "昨天早上我有急事。", "hypothesis": "我昨天早上有事要做."}
-{"direction": "vi-zh", "i": 62, "id": "VM-4094", "source": "Một tiếng sau máy bay mới tới.", "reference": "一个小时以后飞机才到。", "hypothesis": "一个小时后的飞机."}
-{"direction": "vi-zh", "i": 63, "id": "VM-4114", "source": "Chiều nay chúng tôi có môn Tiếng Trung.", "reference": "今天下午我们有中文课。", "hypothesis": "今天下午我们有中文课."}
-{"direction": "vi-zh", "i": 64, "id": "VM-4238", "source": "Phải, ông ta là bác sỹ của tôi.", "reference": "对，他是我的医生。", "hypothesis": "他是我的医生."}
-{"direction": "vi-zh", "i": 65, "id": "VM-4265", "source": "Cô ta phải đến bệnh viện khám bệnh, vì vậy nhờ tôi xin nghỉ cho cô ta.", "reference": "她得去医院看病，所以托我给她请假。", "hypothesis": "她必须去医院检查,所以请我让她休息."}
-{"direction": "vi-zh", "i": 66, "id": "VM-4442", "source": "Anh trai bạn mua số di động này ở đâu?", "reference": "你哥哥在哪儿买的这个手机号？", "hypothesis": "你哥哥从哪里买了这个手机?"}
-{"direction": "vi-zh", "i": 67, "id": "VM-4450", "source": "Hôm qua bạn đã ăn gì rồi?", "reference": "昨天你吃什么了？", "hypothesis": "你昨天吃了什么?"}
-{"direction": "vi-zh", "i": 68, "id": "VM-4565", "source": "Hôm nay tôi đến khách sạn, xe dừng một lát là tới.", "reference": "今天我去酒店，车停了一下就到了。", "hypothesis": "今天我去酒店,车停了很久."}
-{"direction": "vi-zh", "i": 69, "id": "VM-4602", "source": "Những quần áo này tôi vẫn chưa giặt xong mà.", "reference": "这些衣服我还没洗完呢。", "hypothesis": "我还没有洗完这些衣服."}
-{"direction": "vi-zh", "i": 70, "id": "VM-4630", "source": "Tôi đi Việt Nam trước, sau đó từ Việt Nam đi Bắc Kinh.", "reference": "我先去越南，然后从越南去北京。", "hypothesis": "我先去越南,然后从越南到北京."}
-{"direction": "vi-zh", "i": 71, "id": "VM-4635", "source": "Sáng nay cô ấy có ra ngoài không?", "reference": "今天早上她出去了吗？", "hypothesis": "今天早上她出去了吗?"}
-{"direction": "vi-zh", "i": 72, "id": "VM-4658", "source": "Đi trung tâm mua sắm, thế nào?", "reference": "去购物中心怎么样？", "hypothesis": "如何去购物中心?"}
-{"direction": "vi-zh", "i": 73, "id": "VM-4761", "source": "Tất nhiên là tôi rất muốn nhảy cùng bạn rồi.", "reference": "当然我很想跟你跳舞了。", "hypothesis": "当然,我很想和你一起跳舞."}
-{"direction": "vi-zh", "i": 74, "id": "VM-4870", "source": "Ngày mai là Chủ nhật, người đi xe chắc chắn sẽ rất đông, chúng ta đi sớm chút đi. Bẩy rưỡi đi thế nào?", "reference": "明天是星期天，坐车的人肯定很多。我们早点儿走吧，7点半怎么样？", "hypothesis": "明天是星期日,乘客肯定会很多,所以我们要早点去.七个半怎么样?"}
-{"direction": "vi-zh", "i": 75, "id": "VM-4874", "source": "Vì sao bạn chạy nhanh như vậy?", "reference": "你为什么跑得那么快？", "hypothesis": "你为什么跑得这么快?"}
-{"direction": "vi-zh", "i": 76, "id": "VM-4984", "source": "Công ty chúng tôi là công ty thương mại quốc tế.", "reference": "我们公司是国际贸易公司。", "hypothesis": "我们是一家国际贸易公司."}
-{"direction": "vi-zh", "i": 77, "id": "VM-4999", "source": "Bạn gọi vào di động cô ta đi.", "reference": "你打我的手机吧。", "hypothesis": "你可以给她打电话."}
-{"direction": "vi-zh", "i": 78, "id": "VM-5021", "source": "Bạn muốn uống chút café không?", "reference": "你想喝点儿咖啡吗？", "hypothesis": "你想喝一杯咖啡吗?"}
-{"direction": "vi-zh", "i": 79, "id": "VM-5073", "source": "Hàng ngày bạn đều dậy sớm như vậy à?", "reference": "你每天都起得这么早吗？", "hypothesis": "你每天都这么早起床吗?"}
-{"direction": "vi-zh", "i": 80, "id": "VM-5074", "source": "Em gái bạn làm công việc gì?", "reference": "你妹妹做什么工作？", "hypothesis": "你妹妹做什么工作?"}
-{"direction": "vi-zh", "i": 81, "id": "VM-5101", "source": "Chúng tôi đã học được khoảng hơn 6000 từ vựng rồi.", "reference": "我们现在学过的词汇大概有6000多个。", "hypothesis": "我们已经学习了大约6000个词汇."}
+{"direction": "vi-zh", "i": 0, "id": "VM-0223", "source": "Bạn đã mang hộ chiếu chưa?", "reference": "你带护照了吗？", "hypothesis": "你有没有带着护照？"}
+{"direction": "vi-zh", "i": 1, "id": "VM-0237", "source": "Tôi xin được giới thiệu cho các bạn trước chút, vị này là giáo sư trường tôi, vị này là hiệu trưởng trường tôi.", "reference": "我给大家介绍一下，这位是我们学校的教授，这位是我们学校的校长。", "hypothesis": "让我先介绍一下，这是我的教授，这是我的校长。"}
+{"direction": "vi-zh", "i": 2, "id": "VM-0244", "source": "Lần trước bạn đã xem mấy căn chung cư rồi?", "reference": "上次你看了几套公寓了？", "hypothesis": "你上次看过这些公寓吗？"}
+{"direction": "vi-zh", "i": 3, "id": "VM-0370", "source": "Tôi đã bơi một tiếng đồng hồ.", "reference": "我游了一个小时了。", "hypothesis": "我游了一个小时。"}
+{"direction": "vi-zh", "i": 4, "id": "VM-0383", "source": "Được điểm tối đa.", "reference": "这次她参加了国外大学考试。这次考试非常难，但是她考得很好，得了满分。", "hypothesis": "获得最高分。"}
+{"direction": "vi-zh", "i": 5, "id": "VM-0430", "source": "Bạn còn muốn cái khác không?", "reference": "你还要别的吗？", "hypothesis": "你还想要其他东西吗？"}
+{"direction": "vi-zh", "i": 6, "id": "VM-0475", "source": "Hàng ngày tôi đều kiên trì luyện tập một tiếng đồng hồ.", "reference": "我每天都坚持练习一个小时。", "hypothesis": "每天我坚持练习一个小时。"}
+{"direction": "vi-zh", "i": 7, "id": "VM-0484", "source": "Vậy 101 nhân dân tệ nhé, được không?", "reference": "那101块钱吧，行吗？", "hypothesis": "现在我们来看一下。"}
+{"direction": "vi-zh", "i": 8, "id": "VM-0527", "source": "Tôi cũng thường lên mạng xem phim HD Trung Quốc và phim bộ.", "reference": "我也经常上网看高清中国电影和电视剧。", "hypothesis": "我也经常上网看中国高清电影和剧情。"}
+{"direction": "vi-zh", "i": 9, "id": "VM-0538", "source": "Vali của bạn nặng không?", "reference": "你的行李箱重吗？", "hypothesis": "你的行李很重吗？"}
+{"direction": "vi-zh", "i": 10, "id": "VM-0571", "source": "Trong lúc tôi đi làm, cô ta ở nhà xem lên mạng chat chit với bạn bè.", "reference": "我去上班的时候，她在家上网跟朋友聊天。", "hypothesis": "我去工作的时候，她在家里和朋友聊天。"}
+{"direction": "vi-zh", "i": 11, "id": "VM-0621", "source": "Tôi không nhìn thấy xe máy của bạn.", "reference": "我没看见你的摩托车。", "hypothesis": "我没有看到你的摩托车。"}
+{"direction": "vi-zh", "i": 12, "id": "VM-0643", "source": "Máy bay đi Việt Nam sắp cất cánh rồi.", "reference": "去越南的飞机快起飞了。", "hypothesis": "越南飞机即将起飞。"}
+{"direction": "vi-zh", "i": 13, "id": "VM-0697", "source": "Cửa hàng các bạn có nước ngọt không?", "reference": "你们商店有饮料吗？", "hypothesis": "您的商店有糖果吗？"}
+{"direction": "vi-zh", "i": 14, "id": "VM-0708", "source": "Vì sao cô ta học tốt như vậy?", "reference": "她为什么学得那么好。", "hypothesis": "她为什么学得这么好？"}
+{"direction": "vi-zh", "i": 15, "id": "VM-0751", "source": "Buổi tối sau khi tôi về nhà, cô ta thường kể cho tôi nghe những chuyện thú vị ở trong trường học. Cô ta cũng muốn biết tình hình ở Việt Nam.", "reference": "晚上我回家后，她常给我讲学校里有趣的事。她也很想知道越南的情况。", "hypothesis": "晚上我回家后，她经常告诉我关于学校的有趣故事。她也想知道越南的情况。"}
+{"direction": "vi-zh", "i": 16, "id": "VM-0815", "source": "Ăn cơm xong, tôi thường đi dạo một lát, thỉnh thoảng trò chuyện với bạn bè.", "reference": "吃完饭，我经常散一会儿步，偶尔跟朋友聊聊天。", "hypothesis": "吃完饭后，我经常出去散步，偶尔和朋友聊天。"}
+{"direction": "vi-zh", "i": 17, "id": "VM-0925", "source": "Tối qua 12:00 tôi mới đi ngủ.", "reference": "昨晚12点我才睡觉。", "hypothesis": "我昨天晚上12点才睡觉。"}
+{"direction": "vi-zh", "i": 18, "id": "VM-1028", "source": "Xe của bạn mầu gì?", "reference": "你的车是什么颜色？", "hypothesis": "你的车是什么颜色的？"}
+{"direction": "vi-zh", "i": 19, "id": "VM-1034", "source": "Bạn đi xe máy đi học phải không?", "reference": "你骑摩托车上学吧？", "hypothesis": "你骑自行车去上学吗？"}
+{"direction": "vi-zh", "i": 20, "id": "VM-1043", "source": "Rất đơn giản, bạn ngồi taxi khoảng 5 phút là tới.", "reference": "很简单，你坐出租车大概5分钟就到了。", "hypothesis": "很简单，你乘坐出租车5分钟左右。"}
+{"direction": "vi-zh", "i": 21, "id": "VM-1076", "source": "Tôi thường lên mạng search tài liệu học Tiếng Trung.", "reference": "我经常上网查中文学习资料。", "hypothesis": "我经常在网上搜索中文教材。"}
+{"direction": "vi-zh", "i": 22, "id": "VM-1149", "source": "Đây là chiếc máy ảnh kỹ thuật số mới ra.", "reference": "这是最新款的数码相机。", "hypothesis": "这是一款最新的数码相机。"}
+{"direction": "vi-zh", "i": 23, "id": "VM-1173", "source": "Sau khi tốt nghiệp đại học tôi sẽ đi Mỹ du học.", "reference": "大学毕业后，我要去美国留学。", "hypothesis": "毕业后，我会去美国留学。"}
+{"direction": "vi-zh", "i": 24, "id": "VM-1241", "source": "Trước đây tôi là nhân viên của công ty này, bây giờ tôi là giáo viên Tiếng Trung.", "reference": "以前我是这家公司的员工。现在我是中文老师。", "hypothesis": "我以前是这家公司的员工，现在我是一名中文老师。"}
+{"direction": "vi-zh", "i": 25, "id": "VM-1245", "source": "Tôi đang học trường Đại học Bắc Kinh.", "reference": "我在北京大学上学。", "hypothesis": "我正在北京大学学习。"}
+{"direction": "vi-zh", "i": 26, "id": "VM-1328", "source": "Cảm ơn bạn đến đón tôi.", "reference": "谢谢你来接我。", "hypothesis": "谢谢你来接我。"}
+{"direction": "vi-zh", "i": 27, "id": "VM-1455", "source": "Sau khi ra khỏi siêu thị, tôi đi thăm một người bạn, cô ta đến trung tâm mua sắm.", "reference": "出了超市以后，我去看望一个朋友，她去购物中心了。", "hypothesis": "我离开了超市，去拜访一个朋友，她去了商场。"}
+{"direction": "vi-zh", "i": 28, "id": "VM-1475", "source": "Buổi sáng sớm hàng ngày bẩy giờ hơn tôi mới thức dậy, vì vậy thường xuyên không có thời gian ăn sáng, uống một cốc sữa là đi học luôn.", "reference": "每天早晨，7点多我才起床，所以经常没时间吃早饭，喝一杯牛奶就去上课了。", "hypothesis": "我每天早上起床7个小时，所以经常没有时间吃早餐，喝一杯牛奶和去学校。"}
+{"direction": "vi-zh", "i": 29, "id": "VM-1482", "source": "Bạn quen với cuộc sống ở đây chứ?", "reference": "你习惯这儿的生活吗？", "hypothesis": "你习惯了这里的生活吗？"}
+{"direction": "vi-zh", "i": 30, "id": "VM-1506", "source": "Trong trường có bưu điện, bạn có thể đến đó gửi thư, mua tem, cũng có thể gửi đồ đạc.", "reference": "学校里有一个邮局，你可以去那儿寄信、买邮票，也可以寄东西。", "hypothesis": "校园里有邮局，你可以去寄信，买邮票，还可以送家具。"}
+{"direction": "vi-zh", "i": 31, "id": "VM-1639", "source": "Tối hôm nay tôi đến hiệu sách mua hai quyển từ điển Hán – Việt.", "reference": "今晚，我去书店买两本汉越词典。", "hypothesis": "今晚我去书店买了两本汉语词典。"}
+{"direction": "vi-zh", "i": 32, "id": "VM-1698", "source": "Trường học của bạn ở Việt Nam phải không?", "reference": "你的学校在越南吧？", "hypothesis": "你的学校在越南吗？"}
+{"direction": "vi-zh", "i": 33, "id": "VM-1730", "source": "Ngày mai một người bạn của tôi đến Việt Nam du lịch, tôi phải đến sân bay đón cô ta, vì vậy không đi cùng bạn được.", "reference": "明天，我的一个朋友来越南旅游。我得去机场接她。所以不能跟你一起去了。", "hypothesis": "明天我有一个朋友去越南旅游，我必须去机场接她，所以不能和你一起。"}
+{"direction": "vi-zh", "i": 34, "id": "VM-1966", "source": "Quyển sách Tiếng Trung đó mà cô ta cho bạn mượn bạn đã xem xong chưa?", "reference": "她借给你的那本中文书你看完了吗？", "hypothesis": "她借给你的那本中文书，你看完了吗？"}
+{"direction": "vi-zh", "i": 35, "id": "VM-1985", "source": "Hôm nay có người tới tìm bạn.", "reference": "今天有人来找你。", "hypothesis": "今天有人来找你。"}
+{"direction": "vi-zh", "i": 36, "id": "VM-1989", "source": "Buổi liên hoan khiêu vũ.", "reference": "今晚学校有舞会。我们一起到那儿去跳跳舞吧，玩一玩。", "hypothesis": "舞蹈节。"}
+{"direction": "vi-zh", "i": 37, "id": "VM-2046", "source": "Cô ta viết chữ Hán không tốt.", "reference": "她汉字写得不好。", "hypothesis": "她的汉字写得不好。"}
+{"direction": "vi-zh", "i": 38, "id": "VM-2114", "source": "Cô ta ngủ bao lâu rồi?", "reference": "她睡了多长时间了？", "hypothesis": "她睡了多久？"}
+{"direction": "vi-zh", "i": 39, "id": "VM-2129", "source": "Lúc nghỉ ngơi tôi thường uống một tách café hoặc ăn một ít đồ.", "reference": "休息的时候，我常喝一杯咖啡或者吃点儿东西。", "hypothesis": "休息时，我经常喝一杯咖啡或吃一些东西。"}
+{"direction": "vi-zh", "i": 40, "id": "VM-2461", "source": "Bạn đã nghe ghi âm bao lâu?", "reference": "你听了多长时间的录音了？", "hypothesis": "你听了多久的录音？"}
+{"direction": "vi-zh", "i": 41, "id": "VM-2584", "source": "Sau khi bạn mua được vé thì nói tôi biết nhé.", "reference": "你买到票以后告诉我一声。", "hypothesis": "在你买票后，请告诉我。"}
+{"direction": "vi-zh", "i": 42, "id": "VM-2635", "source": "Tôi cảm thấy rất cô đơn nên thường xuyên nhớ cô ta.", "reference": "我觉得很孤独所以经常想她。", "hypothesis": "我觉得自己很孤独，所以经常想念她。"}
+{"direction": "vi-zh", "i": 43, "id": "VM-2670", "source": "Công ty các bạn có bao nhiêu nhân viên?", "reference": "你们公司有多少员工？", "hypothesis": "你的公司有多少员工？"}
+{"direction": "vi-zh", "i": 44, "id": "VM-2675", "source": "Cô ta bị cảm rồi, chiều hôm nay không tới học được.", "reference": "她感冒了，今天下午不能来上课了。", "hypothesis": "她感冒了，今天下午不能上学。"}
+{"direction": "vi-zh", "i": 45, "id": "VM-2697", "source": "Tối hôm qua bạn đã làm bài tập chưa?", "reference": "昨晚你做作业了吗？", "hypothesis": "你昨晚做了你的功课吗？"}
+{"direction": "vi-zh", "i": 46, "id": "VM-2711", "source": "Mời bạn tối mai tới văn phòng của tôi, tôi có việc muốn nói với bạn.", "reference": "请你明天晚上来我的办公室。我有事想跟你说。", "hypothesis": "明天晚上请你来我的办公室，我有事要跟你说。"}
+{"direction": "vi-zh", "i": 47, "id": "VM-2738", "source": "Ba năm không gặp, bạn vẫn như trước.", "reference": "三年不见了，你还是老样子。", "hypothesis": "三年没有见面，你仍然是。"}
+{"direction": "vi-zh", "i": 48, "id": "VM-2759", "source": "Họ đều rất khỏe.", "reference": "他们身体都很好。", "hypothesis": "他们都很健康。"}
+{"direction": "vi-zh", "i": 49, "id": "VM-2987", "source": "Cô ta là người nước nào?", "reference": "她是哪国人？", "hypothesis": "她来自哪个国家？"}
+{"direction": "vi-zh", "i": 50, "id": "VM-3007", "source": "Tôi hỏi cô giáo có phải là chiều nào cũng đi học không.", "reference": "我问老师是不是每天下午都上课。", "hypothesis": "我问老师，你每天下午都上课吗？"}
+{"direction": "vi-zh", "i": 51, "id": "VM-3185", "source": "Bạn đã làm bài tập chưa?", "reference": "你做作业了吗？", "hypothesis": "你做过你的功课吗？"}
+{"direction": "vi-zh", "i": 52, "id": "VM-3528", "source": "Tôi nghĩ đó là một điều thật đáng tiếc.", "reference": "我觉得很可惜。", "hypothesis": "我觉得这是非常遗憾的。"}
+{"direction": "vi-zh", "i": 53, "id": "VM-3595", "source": "Tối nay tôi mới đến khách sạn Hà Nội.", "reference": "今晚我才到河内酒店。", "hypothesis": "我今晚才到达河内酒店。"}
+{"direction": "vi-zh", "i": 54, "id": "VM-3628", "source": "Cô ta đã ăn một ít cá và thịt bò.", "reference": "她吃了一些鱼肉和牛肉。", "hypothesis": "她吃了一些鱼和牛肉。"}
+{"direction": "vi-zh", "i": 55, "id": "VM-3695", "source": "Trên đường đến Việt Nam bạn có mệt không?", "reference": "来越南的路上，你累吗？", "hypothesis": "在去越南的路上，你觉得很累吗？"}
+{"direction": "vi-zh", "i": 56, "id": "VM-3775", "source": "Phía trước tôi là cô giáo của tôi.", "reference": "我前面是我的老师。", "hypothesis": "在我面前是我的老师。"}
+{"direction": "vi-zh", "i": 57, "id": "VM-3899", "source": "Rất ngon.", "reference": "很好吃。", "hypothesis": "这很好。"}
+{"direction": "vi-zh", "i": 58, "id": "VM-3937", "source": "Các bạn muốn uống mấy bát canh trứng gà?", "reference": "你们想喝几碗鸡蛋汤？", "hypothesis": "你们想喝一些 ⁇ 蛋吗？"}
+{"direction": "vi-zh", "i": 59, "id": "VM-3984", "source": "Thưa ông, những cái mầu trắng này là đồ gì vậy?", "reference": "先生，这些白色的东西是什么？", "hypothesis": "什么是这些白色？"}
+{"direction": "vi-zh", "i": 60, "id": "VM-4040", "source": "Bạn đã luyện khí công mấy năm?", "reference": "你练了几年的气功了？", "hypothesis": "你有多少年从事空气训练？"}
+{"direction": "vi-zh", "i": 61, "id": "VM-4079", "source": "Sáng hôm qua tôi có việc gấp.", "reference": "昨天早上我有急事。", "hypothesis": "我昨天早上有事要做。"}
+{"direction": "vi-zh", "i": 62, "id": "VM-4094", "source": "Một tiếng sau máy bay mới tới.", "reference": "一个小时以后飞机才到。", "hypothesis": "一个小时后的飞机。"}
+{"direction": "vi-zh", "i": 63, "id": "VM-4114", "source": "Chiều nay chúng tôi có môn Tiếng Trung.", "reference": "今天下午我们有中文课。", "hypothesis": "今天下午我们有中文课。"}
+{"direction": "vi-zh", "i": 64, "id": "VM-4238", "source": "Phải, ông ta là bác sỹ của tôi.", "reference": "对，他是我的医生。", "hypothesis": "他是我的医生。"}
+{"direction": "vi-zh", "i": 65, "id": "VM-4265", "source": "Cô ta phải đến bệnh viện khám bệnh, vì vậy nhờ tôi xin nghỉ cho cô ta.", "reference": "她得去医院看病，所以托我给她请假。", "hypothesis": "她必须去医院检查，所以请我让她休息。"}
+{"direction": "vi-zh", "i": 66, "id": "VM-4442", "source": "Anh trai bạn mua số di động này ở đâu?", "reference": "你哥哥在哪儿买的这个手机号？", "hypothesis": "你哥哥从哪里买了这个手机？"}
+{"direction": "vi-zh", "i": 67, "id": "VM-4450", "source": "Hôm qua bạn đã ăn gì rồi?", "reference": "昨天你吃什么了？", "hypothesis": "你昨天吃了什么？"}
+{"direction": "vi-zh", "i": 68, "id": "VM-4565", "source": "Hôm nay tôi đến khách sạn, xe dừng một lát là tới.", "reference": "今天我去酒店，车停了一下就到了。", "hypothesis": "今天我去酒店，车停了很久。"}
+{"direction": "vi-zh", "i": 69, "id": "VM-4602", "source": "Những quần áo này tôi vẫn chưa giặt xong mà.", "reference": "这些衣服我还没洗完呢。", "hypothesis": "我还没有洗完这些衣服。"}
+{"direction": "vi-zh", "i": 70, "id": "VM-4630", "source": "Tôi đi Việt Nam trước, sau đó từ Việt Nam đi Bắc Kinh.", "reference": "我先去越南，然后从越南去北京。", "hypothesis": "我先去越南，然后从越南到北京。"}
+{"direction": "vi-zh", "i": 71, "id": "VM-4635", "source": "Sáng nay cô ấy có ra ngoài không?", "reference": "今天早上她出去了吗？", "hypothesis": "今天早上她出去了吗？"}
+{"direction": "vi-zh", "i": 72, "id": "VM-4658", "source": "Đi trung tâm mua sắm, thế nào?", "reference": "去购物中心怎么样？", "hypothesis": "如何去购物中心？"}
+{"direction": "vi-zh", "i": 73, "id": "VM-4761", "source": "Tất nhiên là tôi rất muốn nhảy cùng bạn rồi.", "reference": "当然我很想跟你跳舞了。", "hypothesis": "当然，我很想和你一起跳舞。"}
+{"direction": "vi-zh", "i": 74, "id": "VM-4870", "source": "Ngày mai là Chủ nhật, người đi xe chắc chắn sẽ rất đông, chúng ta đi sớm chút đi. Bẩy rưỡi đi thế nào?", "reference": "明天是星期天，坐车的人肯定很多。我们早点儿走吧，7点半怎么样？", "hypothesis": "明天是星期日，乘客肯定会很多，所以我们要早点去。七个半怎么样？"}
+{"direction": "vi-zh", "i": 75, "id": "VM-4874", "source": "Vì sao bạn chạy nhanh như vậy?", "reference": "你为什么跑得那么快？", "hypothesis": "你为什么跑得这么快？"}
+{"direction": "vi-zh", "i": 76, "id": "VM-4984", "source": "Công ty chúng tôi là công ty thương mại quốc tế.", "reference": "我们公司是国际贸易公司。", "hypothesis": "我们是一家国际贸易公司。"}
+{"direction": "vi-zh", "i": 77, "id": "VM-4999", "source": "Bạn gọi vào di động cô ta đi.", "reference": "你打我的手机吧。", "hypothesis": "你可以给她打电话。"}
+{"direction": "vi-zh", "i": 78, "id": "VM-5021", "source": "Bạn muốn uống chút café không?", "reference": "你想喝点儿咖啡吗？", "hypothesis": "你想喝一杯咖啡吗？"}
+{"direction": "vi-zh", "i": 79, "id": "VM-5073", "source": "Hàng ngày bạn đều dậy sớm như vậy à?", "reference": "你每天都起得这么早吗？", "hypothesis": "你每天都这么早起床吗？"}
+{"direction": "vi-zh", "i": 80, "id": "VM-5074", "source": "Em gái bạn làm công việc gì?", "reference": "你妹妹做什么工作？", "hypothesis": "你妹妹做什么工作？"}
+{"direction": "vi-zh", "i": 81, "id": "VM-5101", "source": "Chúng tôi đã học được khoảng hơn 6000 từ vựng rồi.", "reference": "我们现在学过的词汇大概有6000多个。", "hypothesis": "我们已经学习了大约6000个词汇。"}
 {"direction": "vi-zh", "i": 82, "id": "VM-5201", "source": "Sốt.", "reference": "吃完牛肉面，我出了一些汗。她说出汗可能就不发烧了。", "hypothesis": "热症"}
-{"direction": "vi-zh", "i": 83, "id": "VM-5224", "source": "Hàng năm đều có rất nhiều lưu học sinh tới Trung Quốc học Tiếng Trung.", "reference": "每年都有很多留学生来中国学中文。", "hypothesis": "每年都有大量的学生来到中国学习中文."}
-{"direction": "vi-zh", "i": 84, "id": "VM-5274", "source": "Tôi đã học được hai năm ở trường Đại học Bắc Kinh.", "reference": "我在北京大学学了两年了。", "hypothesis": "我在北京大学学习了两年."}
-{"direction": "vi-zh", "i": 85, "id": "VM-5294", "source": "Ngày mai tôi không đi siêu thị, tôi phải đến sân bay đón cô ta.", "reference": "明天我不去超市了，我得去机场接她。", "hypothesis": "明天我没有去超市,"}
-{"direction": "vi-zh", "i": 86, "id": "VM-5308", "source": "Tôi giới thiệu cho cô ta văn hóa của Đất Nước chúng tôi.", "reference": "我给她介绍我们国家的文化。", "hypothesis": "我向她介绍了我们国家的文化."}
-{"direction": "vi-zh", "i": 87, "id": "VM-5351", "source": "Chủ Nhật bạn dậy sớm không?", "reference": "星期天你起得早吗？", "hypothesis": "你在星期天早起吗?"}
-{"direction": "vi-zh", "i": 88, "id": "VM-5382", "source": "Buổi trưa ăn cơm xong, tôi thường về ký túc xá xem sách một lát hoặc nghe một chút nhạc.", "reference": "中午吃完饭，我常回宿舍看一会儿书或者听点儿音乐。", "hypothesis": "午餐后,我往往回宿舍看一本书或听音乐."}
-{"direction": "vi-zh", "i": 89, "id": "VM-5408", "source": "Học Tiếng Trung tương đối khó, nhưng mà rất thú vị.", "reference": "学中文比较难但是很有意思。", "hypothesis": "学习中文比较困难,但却很有趣."}
-{"direction": "vi-zh", "i": 90, "id": "VM-5432", "source": "Ô ng ta là bạn của bố tôi, ông ta là bác sỹ.", "reference": "他是我爸爸的朋友。他是医生。", "hypothesis": "他是我父亲的朋友,他是个医生."}
-{"direction": "vi-zh", "i": 91, "id": "VM-5471", "source": "Tôi hỏi một người, đến trường Đại học Hà Nội đi như thế nào, người đó nói không biết vì không phải là người Việt Nam.", "reference": "去河内大学怎么走？那个人不知道，因为不是越南人。", "hypothesis": "我问一个人如何进入河内大学, 他说他不知道,"}
-{"direction": "vi-zh", "i": 92, "id": "VM-5573", "source": "Thời gian rảnh rỗi tôi thường xem tivi hoặc chơi máy tính.", "reference": "我空闲时间常看电视或者玩电脑。", "hypothesis": "在我的空 ⁇ 时间里,我经常看电视或玩电脑."}
-{"direction": "vi-zh", "i": 93, "id": "VM-5652", "source": "Tôi hỏi lại cô ấy xem, cô ấy có đi hay không.", "reference": "我再问问她，我再问问她，她去不去。", "hypothesis": "我问她是否会去."}
-{"direction": "vi-zh", "i": 94, "id": "VM-5699", "source": "Tôi đã đăng ký rồi.", "reference": "我报名了。", "hypothesis": "我已经报名了."}
-{"direction": "vi-zh", "i": 95, "id": "VM-5719", "source": "Hôm nay trong giờ học, thầy giáo bảo chúng tôi nói về sở thích bản thân.", "reference": "今天上课的时候，老师让我们说说自己的爱好。", "hypothesis": "今天在课堂上,老师让我们谈论自己的兴趣."}
-{"direction": "vi-zh", "i": 96, "id": "VM-5912", "source": "Bạn đã gặp cô giáo Tiếng Trung của tôi chưa?", "reference": "你见过我的中文老师吗？", "hypothesis": "你见过我的中文老师吗?"}
-{"direction": "vi-zh", "i": 97, "id": "VM-5919", "source": "Bạn học Tiếng Anh rất giỏi, tôi nghĩ bạn có thể xem hiểu được.", "reference": "你英语很好，我想你能看懂。", "hypothesis": "你的英语非常好,我认为你可以看到."}
-{"direction": "vi-zh", "i": 98, "id": "VM-5942", "source": "Rèn luyện thân thể.", "reference": "每天下午我都去操场锻炼身体。", "hypothesis": "运动."}
-{"direction": "vi-zh", "i": 99, "id": "VM-5982", "source": "Tôi đã sống ở Bắc Kinh hai năm.", "reference": "我在北京住了两年了。", "hypothesis": "我在北京生活了两年."}
-{"direction": "vi-zh", "i": 100, "id": "VM-5987", "source": "Tôi muốn mua 4 cân táo.", "reference": "我想买4斤苹果。", "hypothesis": "我想买四磅的 ⁇ 果."}
-{"direction": "vi-zh", "i": 101, "id": "VM-6021", "source": "Các bạn học Tiếng Trung ở đâu?", "reference": "你们在哪儿学中文？", "hypothesis": "你们在哪里学习中文?"}
-{"direction": "vi-zh", "i": 102, "id": "VM-6064", "source": "Trên đường về nhà, tôi rất nhớ cô ta.", "reference": "在回家的路上，我很想她。", "hypothesis": "在回家的路上,我非常想念她."}
-{"direction": "vi-zh", "i": 103, "id": "VM-6100", "source": "Các bạn học ở đâu?", "reference": "你们在哪儿上学？", "hypothesis": "你们在哪里上学?"}
-{"direction": "vi-zh", "i": 104, "id": "VM-6143", "source": "Tối mai chúng tôi có một buổi tiệc trà âm nhạc, bạn cũng đến tham gia nhé.", "reference": "明天晚上我们有一个音乐茶话会，你也来参加吧。", "hypothesis": "明天晚上我们有一个音乐茶会,"}
-{"direction": "vi-zh", "i": 105, "id": "VM-6147", "source": "Bạn sống ở Bắc Kinh bao lâu rồi?", "reference": "你在北京住了多长时间了？", "hypothesis": "你在北京住了多久?"}
-{"direction": "vi-zh", "i": 106, "id": "VM-6179", "source": "Lúc nghỉ ngơi bạn thường làm gì?", "reference": "休息的时候，你常做什么？", "hypothesis": "你在休息时常做什么?"}
-{"direction": "vi-zh", "i": 107, "id": "VM-6250", "source": "Cô ta nói cô ta biết làm món Việt Nam, Thứ 7 cô ta mời tôi đến nhà cô ta chơi, sau đó thưởng thức món ăn cô ta tự tay làm cho tôi.", "reference": "星期六她请我去她家玩，然后品尝她亲手做的越南菜。", "hypothesis": "她说她知道如何做越南菜,星期六她邀请我去她的家玩,然后享受她自己为我做的食物."}
-{"direction": "vi-zh", "i": 108, "id": "VM-6262", "source": "Tan học xong tôi sẽ đi nhảy.", "reference": "我上完课就去跳舞。", "hypothesis": "放学后,我会去跳舞."}
-{"direction": "vi-zh", "i": 109, "id": "VM-6376", "source": "Bạn đã xem phim này chưa?", "reference": "你看这部电影了吗？", "hypothesis": "你们看过这部电影吗?"}
-{"direction": "vi-zh", "i": 110, "id": "VM-6385", "source": "Đã rất muộn rồi, chúng ta mau về nhà đi.", "reference": "已经很晚了，我们快回家吧。", "hypothesis": "现在太晚了,我们要回家."}
-{"direction": "vi-zh", "i": 111, "id": "VM-6526", "source": "Tuyến xe này đến Đại học Bắc Kinh không?", "reference": "这趟车去北京大学吗？", "hypothesis": "这条车道到北京大学吗?"}
-{"direction": "vi-zh", "i": 112, "id": "VM-6546", "source": "Tôi đến ngân hàng đổi tiền xong sẽ lái xe đến đón bạn.", "reference": "我去银行换完钱就开车去接妈妈。", "hypothesis": "我去银行换钱,然后开车来接你."}
-{"direction": "vi-zh", "i": 113, "id": "VM-6579", "source": "Thiên an môn ở Trung Quốc.", "reference": "天安门在中国。", "hypothesis": "在中国的天堂."}
-{"direction": "vi-zh", "i": 114, "id": "VM-6593", "source": "Ngày mai ăn cơm xong tôi sẽ đi tìm cô ta.", "reference": "明天我吃完饭就去找她。", "hypothesis": "明天我们吃完饭,我会去找她."}
-{"direction": "vi-zh", "i": 115, "id": "VM-6653", "source": "Bạn đã lái xe mấy năm rồi?", "reference": "你开了几年的车了？", "hypothesis": "你开车多年了?"}
-{"direction": "vi-zh", "i": 116, "id": "VM-6721", "source": "Ngày mai tôi không đến ngân hàng rút tiền.", "reference": "明天我不去银行取钱。", "hypothesis": "明天我不会去银行提款."}
-{"direction": "vi-zh", "i": 117, "id": "VM-6816", "source": "Hai bọn họ đều là lưu học sinh nước Mỹ.", "reference": "他们两个都是美国留学生。", "hypothesis": "他们都是美国留学生."}
-{"direction": "vi-zh", "i": 118, "id": "VM-6957", "source": "Dạo này bạn tiến bộ rất nhanh.", "reference": "最近你进步得很快。", "hypothesis": "你最近进展非常快."}
-{"direction": "vi-zh", "i": 119, "id": "VM-6997", "source": "Kết quả xét nghiệm có chưa?", "reference": "化验结果出来了吗？", "hypothesis": "检查结果有没有?"}
-{"direction": "vi-zh", "i": 120, "id": "VM-7082", "source": "Bài tập của tôi đã làm xong rồi, bài khóa vẫn chưa đọc thạo đâu.", "reference": "我的作业已经做完了，课文还没读熟呢。", "hypothesis": "我已经完成了功课,我还没学好."}
-{"direction": "vi-zh", "i": 121, "id": "VM-7149", "source": "10 giờ cô ấy mới đến.", "reference": "10点她才到。", "hypothesis": "她没有到达10点."}
-{"direction": "vi-zh", "i": 122, "id": "VM-7194", "source": "Tôi cảm thấy nghe rất khó khăn, các bạn học nghe một lần là hiểu, tôi nghe hai ba lần mới nghe hiểu.", "reference": "我觉得听力很难。同学们听一遍就懂了。我听两三遍才听懂。", "hypothesis": "我觉得听起来很困难,你们只要听一次就会明白."}
-{"direction": "vi-zh", "i": 123, "id": "VM-7195", "source": "Khi nào thì bạn trở về?", "reference": "你什么时候回去？", "hypothesis": "你什么时候回来?"}
-{"direction": "vi-zh", "i": 124, "id": "VM-7215", "source": "Cái vali đó nặng bao nhiêu?", "reference": "那个行李箱有多重？", "hypothesis": "这个行李箱有多重?"}
-{"direction": "vi-zh", "i": 125, "id": "VM-7221", "source": "Tôi và cô ấy tuần trước đi nhảy ở khách sạn Hà Nội.", "reference": "我和她上周去河内酒店跳舞了。", "hypothesis": "上周我和她在河内酒店跳舞."}
-{"direction": "vi-zh", "i": 126, "id": "VM-7327", "source": "Bạn có chị gái không?", "reference": "你有姐姐吗？", "hypothesis": "你有没有姐妹?"}
-{"direction": "vi-zh", "i": 127, "id": "VM-7396", "source": "Cô ta đã đến chưa?", "reference": "她来了吗？", "hypothesis": "她来了吗?"}
-{"direction": "vi-zh", "i": 128, "id": "VM-7427", "source": "Cô ta nói Tiếng Trung cũng được.", "reference": "她中文说得还可以。", "hypothesis": "她可以说中文."}
-{"direction": "vi-zh", "i": 129, "id": "VM-7507", "source": "Nghe nói nem là món ăn nổi tiếng của Việt Nam.", "reference": "听说春卷是越南有名的菜。", "hypothesis": "我听说 ⁇ 是越南的热门菜."}
-{"direction": "vi-zh", "i": 130, "id": "VM-7523", "source": "Chủ nhật chúng ta đi xem chút quần áo, thế nào?", "reference": "星期天我们去看看衣服怎么样。", "hypothesis": "星期天我们去看一些衣服,怎么样?"}
-{"direction": "vi-zh", "i": 131, "id": "VM-7636", "source": "Tôi không biết số di động của cô giáo tôi là bao nhiêu", "reference": "我不知道我老师的手机号码是多少。", "hypothesis": "我不知道我老师的手机号码."}
-{"direction": "vi-zh", "i": 132, "id": "VM-7657", "source": "Hàng ngày 6:30 bạn thức dậy hay là 7h?", "reference": "你每天6点半起床还是7点？", "hypothesis": "你每天起床是6:30还是7点?"}
-{"direction": "vi-zh", "i": 133, "id": "VM-7703", "source": "Con sông này nước rất sạch.", "reference": "这条河的水很干净。", "hypothesis": "这条河水很干净."}
-{"direction": "vi-zh", "i": 134, "id": "VM-7747", "source": "Tôi từng đến quán cơm đó ăn cơm.", "reference": "我去那家饭馆吃过饭。", "hypothesis": "我曾经去过那个餐厅吃饭."}
-{"direction": "vi-zh", "i": 135, "id": "VM-7787", "source": "Câu này bạn làm không đúng.", "reference": "这道题你做不对。", "hypothesis": "你做错了这个句子."}
-{"direction": "vi-zh", "i": 136, "id": "VM-7843", "source": "Tối nay ăn cơm xong là tôi xem tivi.", "reference": "今晚我吃完饭就看电视了。", "hypothesis": "今晚吃完饭,我会看电视."}
-{"direction": "vi-zh", "i": 137, "id": "VM-7854", "source": "Tôi mua hai vé xem phim, mời bạn đi xem phim.", "reference": "我买了两张电影票，请你看电影。", "hypothesis": "我买了两张电影票,请你们去看电影."}
-{"direction": "vi-zh", "i": 138, "id": "VM-7870", "source": "Nhà tôi có hai đứa, đứa lớn là con gái, đứa thứ hai là con trai.", "reference": "我家有两个，老大是女孩，老二是男孩。", "hypothesis": "我家有两个孩子,大个是女儿,第二个是男孩."}
-{"direction": "vi-zh", "i": 139, "id": "VM-7998", "source": "Cô giáo bảo tôi nói trước, tôi nói tôi cực kỳ thích thư pháp của Trung Quốc, cô giáo cảm thấy rất ngạc nhiên.", "reference": "老师让我先说。我说我极其喜欢中国书法。老师觉得很惊讶。", "hypothesis": "我说我非常喜欢汉字,她很惊 ⁇ ."}
-{"direction": "vi-zh", "i": 140, "id": "VM-8036", "source": "Múa rối nước Việt Nam rất thú vị, sau này tôi còn muốn đi xem nữa.", "reference": "越南水上木偶戏很有意思，以后我还想去看。", "hypothesis": "越南人偶很有趣,我稍后还想去看."}
-{"direction": "vi-zh", "i": 141, "id": "VM-8069", "source": "Em gái bạn làm việc ở bệnh viện, chị gái bạn làm việc ở ngân hàng.", "reference": "你妹妹在医院工作，你姐姐在银行工作。", "hypothesis": "你的妹妹在医院工作,你的妹妹在银行工作."}
-{"direction": "vi-zh", "i": 142, "id": "VM-8088", "source": "Tôi hơi nhớ bạn một chút.", "reference": "我有点儿想你。", "hypothesis": "我有点想念你."}
-{"direction": "vi-zh", "i": 143, "id": "VM-8116", "source": "Bạn xem cô ta viết chữ Hán thế nào?", "reference": "你看她汉字写得怎么样？", "hypothesis": "你看她如何写汉字吗?"}
-{"direction": "vi-zh", "i": 144, "id": "VM-8131", "source": "Bạn thích ăn món Việt Nam hay là món Trung Quốc?", "reference": "你喜欢吃越南菜还是中国菜？", "hypothesis": "你喜欢越南菜还是中国菜?"}
-{"direction": "vi-zh", "i": 145, "id": "VM-8316", "source": "Hôm qua chị gái tôi đến nhà cô giáo.", "reference": "昨天我姐姐去老师家了。", "hypothesis": "昨天,我的妹妹去过老师家."}
-{"direction": "vi-zh", "i": 146, "id": "VM-8325", "source": "Lúc về đến ký túc xá, cô ta cảm thấy khó chịu trong người, tôi đi cùng cô ta đến bệnh viện khám bệnh.", "reference": "回到宿舍的时候，她感觉身体不舒服。我跟她一起去医院看病。", "hypothesis": "到了宿舍,她觉得自己不舒服,我陪她去诊所."}
-{"direction": "vi-zh", "i": 147, "id": "VM-8351", "source": "Bạn đã bơi được bao lâu?", "reference": "你游了多长时间的泳了？", "hypothesis": "你游泳多久了?"}
-{"direction": "vi-zh", "i": 148, "id": "VM-8379", "source": "Hôm nay chúng tôi đều rất mệt.", "reference": "今天我们都很累。", "hypothesis": "今天我们都很累."}
-{"direction": "vi-zh", "i": 149, "id": "VM-8392", "source": "Tôi cảm thấy khí hậu Bắc Kinh cực kỳ khô hanh.", "reference": "我觉得北京的气候非常干燥。", "hypothesis": "我觉得北京的气候非常干燥."}
-{"direction": "vi-zh", "i": 150, "id": "VM-8473", "source": "Bạn đợi chút đi, cô ta sẽ tới.", "reference": "你等一下吧，她就来了。", "hypothesis": "你等一下,她会来."}
-{"direction": "vi-zh", "i": 151, "id": "VM-8541", "source": "Tôi biết nói chút ít Tiếng Trung.", "reference": "我会说一点儿中文。", "hypothesis": "我可以说一些中文."}
-{"direction": "vi-zh", "i": 152, "id": "VM-8608", "source": "Công ty chúng tôi có khoảng 150 nhân viên.", "reference": "我们公司大概有150个员工。", "hypothesis": "我们的公司有大约150名员工."}
-{"direction": "vi-zh", "i": 153, "id": "VM-8630", "source": "Thời gian 8 năm ngắn quá, tôi muốn kéo dài thêm 2 năm nữa.", "reference": "8年的时间太短了，我想再延长2年。", "hypothesis": "八年时间太短了,我想再加两年."}
-{"direction": "vi-zh", "i": 154, "id": "VM-8655", "source": "Từ nhà tôi đến nhà bạn rất xa.", "reference": "从我家到你家很远。", "hypothesis": "距离我的家到你的家很远."}
-{"direction": "vi-zh", "i": 155, "id": "VM-8677", "source": "Môi trường xung quanh đây rất tốt.", "reference": "这周围的环境很好。", "hypothesis": "这里的环境很好."}
-{"direction": "vi-zh", "i": 156, "id": "VM-8725", "source": "Tôi là cô giáo của cô ta, tôi tìm cô ta có chút việc.", "reference": "我是她的老师。我找她有点儿事。", "hypothesis": "我是她的老师,我找了她一些工作."}
-{"direction": "vi-zh", "i": 157, "id": "VM-8830", "source": "Ngồi xe đi, chiều 3h tôi lái xe tới đón bạn.", "reference": "坐车去吧，下午3点我来接你。", "hypothesis": "坐车,我下午三点开车去接你."}
-{"direction": "vi-zh", "i": 158, "id": "VM-8882", "source": "Xin lỗi đã để bạn đợi lâu.", "reference": "对不起让你久等了。", "hypothesis": "我很抱歉让你等了太久."}
-{"direction": "vi-zh", "i": 159, "id": "VM-8924", "source": "Anh trai tôi biết bạn của cô ta sống ở đâu", "reference": "我哥哥知道她朋友住在哪儿。", "hypothesis": "我哥哥知道她的朋友住在哪里."}
-{"direction": "vi-zh", "i": 160, "id": "VM-8989", "source": "Tôi thấy kế hoạch này không tệ, chúng mình cứ thế mà làm.", "reference": "我觉得这个计划不错，我们就这么做吧。", "hypothesis": "我认为这不是一个糟糕的计划,我们就这样做."}
-{"direction": "vi-zh", "i": 161, "id": "VM-9007", "source": "Hàng ngày buổi chiều 4h tôi thường đến sân tập rèn luyện sức khỏe, chạy bộ, chơi bóng, 6h về ký túc xá, tắm rửa, giặt quần áo.", "reference": "每天下午4点，我常去操场锻炼身体、跑步、打球。6点回宿舍、洗澡、洗衣服。", "hypothesis": "每天下午四点,我去健身场,跑步,打篮球,六点回宿舍洗衣."}
-{"direction": "vi-zh", "i": 162, "id": "VM-9169", "source": "Gập sách lại đi.", "reference": "把书合上吧。", "hypothesis": "闭上这本书."}
-{"direction": "vi-zh", "i": 163, "id": "VM-9318", "source": "Ngày mai có một đoàn đại biểu đến Việt Nam du lịch, vì vậy ngày mai bạn giúp tôi đi phiên dịch cho họ nhé.", "reference": "明天有一个代表团去越南旅游，所以明天你帮我去给他们当翻译吧。", "hypothesis": "明天有一支代表团前往越南旅游,"}
-{"direction": "vi-zh", "i": 164, "id": "VM-9374", "source": "Chúng tôi đã học đến bài thứ 16 rồi.", "reference": "我们已经学到第16课了。", "hypothesis": "我们已经学到了第16课."}
-{"direction": "vi-zh", "i": 165, "id": "VM-9510", "source": "Sau khi kiểm tra xong bác sỹ nói không phải tôi bị viêm ruột, chỉ là tiêu hóa không tốt.", "reference": "检查完后，医生说我得的不是肠炎，只是消化不良。", "hypothesis": "经过检查,医生说我没有肠炎,只是消化不良."}
-{"direction": "vi-zh", "i": 166, "id": "VM-9536", "source": "Tôi đi từ nhà đến công viên, cô ta đi về công ty.", "reference": "我从家去公园，她去公司。", "hypothesis": "我从家到公园,她去公司."}
-{"direction": "vi-zh", "i": 167, "id": "VM-9540", "source": "Tôi đã nhảy hai tiếng đồng hồ.", "reference": "我跳了两个小时了。", "hypothesis": "我跳了两个小时."}
-{"direction": "vi-zh", "i": 168, "id": "VM-9568", "source": "Hôm nay trong giờ học, cô giáo hỏi mọi người, sau khi tốt nghiệp dự định làm gì.", "reference": "今天上课的时候，老师问大家毕业后打算做什么。", "hypothesis": "今天在课堂上,老师问大家毕业后想做什么."}
-{"direction": "vi-zh", "i": 169, "id": "VM-9577", "source": "Cô ấy nói tiếng Trung rất giỏi, giống như người Trung Quốc vậy.", "reference": "她中文说得很好，就像中国人一样。", "hypothesis": "她说中文很好,就像中国人一样."}
-{"direction": "vi-zh", "i": 170, "id": "VM-9612", "source": "Tôi vừa học Tiếng Trung, tôi không nói được Tiếng Trung.", "reference": "我刚学中文，我不会说中文。", "hypothesis": "我刚开始学习中文,我不讲中文."}
-{"direction": "vi-zh", "i": 171, "id": "VM-9686", "source": "Những câu này bạn dịch đúng rồi.", "reference": "这几句话你翻译对了。", "hypothesis": "你正确地翻译了这些句子."}
-{"direction": "vi-zh", "i": 172, "id": "VM-9698", "source": "Bạn học Tiếng Trung mấy năm rồi?", "reference": "你学了几年的中文了？", "hypothesis": "你学习中文多年了?"}
-{"direction": "vi-zh", "i": 173, "id": "VM-9705", "source": "Vẫn chưa đến.", "reference": "还没到。", "hypothesis": "我还没有来."}
-{"direction": "vi-zh", "i": 174, "id": "VM-9783", "source": "Bạn xem tivi bao lâu rồi?", "reference": "你看了多长时间的电视了？", "hypothesis": "你看电视多久了?"}
-{"direction": "vi-zh", "i": 175, "id": "VM-9841", "source": "Thầy Vũ dạy chúng tôi môn nghe và nói.", "reference": "武老师教我们听力和口语。", "hypothesis": "⁇ 先生教我们听和说."}
-{"direction": "vi-zh", "i": 176, "id": "VM-9853", "source": "Xin hỏi, bạn biết Viện bảo tàng Việt Nam ở đâu không?", "reference": "请问，你知道越南博物馆在哪儿吗？", "hypothesis": "请问,你知道越南博物馆在哪里吗?"}
-{"direction": "vi-zh", "i": 177, "id": "VM-9891", "source": "Chụp được tòa nhà kia không?", "reference": "那座楼能拍到吗？", "hypothesis": "能拍到那个建筑吗?"}
-{"direction": "vi-zh", "i": 178, "id": "VM-9894", "source": "Bật máy tính lên, xem chút đĩa bạn mới mua đi.", "reference": "把电脑打开，看看你新买的影碟吧。", "hypothesis": "打开电脑,看一下你刚买的盘子."}
-{"direction": "vi-zh", "i": 179, "id": "VM-9953", "source": "Bạn cảm thấy phim tối qua thế nào?", "reference": "你觉得那部电影怎么样？", "hypothesis": "你对昨晚的电影有什么感觉?"}
+{"direction": "vi-zh", "i": 83, "id": "VM-5224", "source": "Hàng năm đều có rất nhiều lưu học sinh tới Trung Quốc học Tiếng Trung.", "reference": "每年都有很多留学生来中国学中文。", "hypothesis": "每年都有大量的学生来到中国学习中文。"}
+{"direction": "vi-zh", "i": 84, "id": "VM-5274", "source": "Tôi đã học được hai năm ở trường Đại học Bắc Kinh.", "reference": "我在北京大学学了两年了。", "hypothesis": "我在北京大学学习了两年。"}
+{"direction": "vi-zh", "i": 85, "id": "VM-5294", "source": "Ngày mai tôi không đi siêu thị, tôi phải đến sân bay đón cô ta.", "reference": "明天我不去超市了，我得去机场接她。", "hypothesis": "明天我没有去超市，"}
+{"direction": "vi-zh", "i": 86, "id": "VM-5308", "source": "Tôi giới thiệu cho cô ta văn hóa của Đất Nước chúng tôi.", "reference": "我给她介绍我们国家的文化。", "hypothesis": "我向她介绍了我们国家的文化。"}
+{"direction": "vi-zh", "i": 87, "id": "VM-5351", "source": "Chủ Nhật bạn dậy sớm không?", "reference": "星期天你起得早吗？", "hypothesis": "你在星期天早起吗？"}
+{"direction": "vi-zh", "i": 88, "id": "VM-5382", "source": "Buổi trưa ăn cơm xong, tôi thường về ký túc xá xem sách một lát hoặc nghe một chút nhạc.", "reference": "中午吃完饭，我常回宿舍看一会儿书或者听点儿音乐。", "hypothesis": "午餐后，我往往回宿舍看一本书或听音乐。"}
+{"direction": "vi-zh", "i": 89, "id": "VM-5408", "source": "Học Tiếng Trung tương đối khó, nhưng mà rất thú vị.", "reference": "学中文比较难但是很有意思。", "hypothesis": "学习中文比较困难，但却很有趣。"}
+{"direction": "vi-zh", "i": 90, "id": "VM-5432", "source": "Ô ng ta là bạn của bố tôi, ông ta là bác sỹ.", "reference": "他是我爸爸的朋友。他是医生。", "hypothesis": "他是我父亲的朋友，他是个医生。"}
+{"direction": "vi-zh", "i": 91, "id": "VM-5471", "source": "Tôi hỏi một người, đến trường Đại học Hà Nội đi như thế nào, người đó nói không biết vì không phải là người Việt Nam.", "reference": "去河内大学怎么走？那个人不知道，因为不是越南人。", "hypothesis": "我问一个人如何进入河内大学，他说他不知道，"}
+{"direction": "vi-zh", "i": 92, "id": "VM-5573", "source": "Thời gian rảnh rỗi tôi thường xem tivi hoặc chơi máy tính.", "reference": "我空闲时间常看电视或者玩电脑。", "hypothesis": "在我的空 ⁇ 时间里，我经常看电视或玩电脑。"}
+{"direction": "vi-zh", "i": 93, "id": "VM-5652", "source": "Tôi hỏi lại cô ấy xem, cô ấy có đi hay không.", "reference": "我再问问她，我再问问她，她去不去。", "hypothesis": "我问她是否会去。"}
+{"direction": "vi-zh", "i": 94, "id": "VM-5699", "source": "Tôi đã đăng ký rồi.", "reference": "我报名了。", "hypothesis": "我已经报名了。"}
+{"direction": "vi-zh", "i": 95, "id": "VM-5719", "source": "Hôm nay trong giờ học, thầy giáo bảo chúng tôi nói về sở thích bản thân.", "reference": "今天上课的时候，老师让我们说说自己的爱好。", "hypothesis": "今天在课堂上，老师让我们谈论自己的兴趣。"}
+{"direction": "vi-zh", "i": 96, "id": "VM-5912", "source": "Bạn đã gặp cô giáo Tiếng Trung của tôi chưa?", "reference": "你见过我的中文老师吗？", "hypothesis": "你见过我的中文老师吗？"}
+{"direction": "vi-zh", "i": 97, "id": "VM-5919", "source": "Bạn học Tiếng Anh rất giỏi, tôi nghĩ bạn có thể xem hiểu được.", "reference": "你英语很好，我想你能看懂。", "hypothesis": "你的英语非常好，我认为你可以看到。"}
+{"direction": "vi-zh", "i": 98, "id": "VM-5942", "source": "Rèn luyện thân thể.", "reference": "每天下午我都去操场锻炼身体。", "hypothesis": "运动。"}
+{"direction": "vi-zh", "i": 99, "id": "VM-5982", "source": "Tôi đã sống ở Bắc Kinh hai năm.", "reference": "我在北京住了两年了。", "hypothesis": "我在北京生活了两年。"}
+{"direction": "vi-zh", "i": 100, "id": "VM-5987", "source": "Tôi muốn mua 4 cân táo.", "reference": "我想买4斤苹果。", "hypothesis": "我想买四磅的 ⁇ 果。"}
+{"direction": "vi-zh", "i": 101, "id": "VM-6021", "source": "Các bạn học Tiếng Trung ở đâu?", "reference": "你们在哪儿学中文？", "hypothesis": "你们在哪里学习中文？"}
+{"direction": "vi-zh", "i": 102, "id": "VM-6064", "source": "Trên đường về nhà, tôi rất nhớ cô ta.", "reference": "在回家的路上，我很想她。", "hypothesis": "在回家的路上，我非常想念她。"}
+{"direction": "vi-zh", "i": 103, "id": "VM-6100", "source": "Các bạn học ở đâu?", "reference": "你们在哪儿上学？", "hypothesis": "你们在哪里上学？"}
+{"direction": "vi-zh", "i": 104, "id": "VM-6143", "source": "Tối mai chúng tôi có một buổi tiệc trà âm nhạc, bạn cũng đến tham gia nhé.", "reference": "明天晚上我们有一个音乐茶话会，你也来参加吧。", "hypothesis": "明天晚上我们有一个音乐茶会，"}
+{"direction": "vi-zh", "i": 105, "id": "VM-6147", "source": "Bạn sống ở Bắc Kinh bao lâu rồi?", "reference": "你在北京住了多长时间了？", "hypothesis": "你在北京住了多久？"}
+{"direction": "vi-zh", "i": 106, "id": "VM-6179", "source": "Lúc nghỉ ngơi bạn thường làm gì?", "reference": "休息的时候，你常做什么？", "hypothesis": "你在休息时常做什么？"}
+{"direction": "vi-zh", "i": 107, "id": "VM-6250", "source": "Cô ta nói cô ta biết làm món Việt Nam, Thứ 7 cô ta mời tôi đến nhà cô ta chơi, sau đó thưởng thức món ăn cô ta tự tay làm cho tôi.", "reference": "星期六她请我去她家玩，然后品尝她亲手做的越南菜。", "hypothesis": "她说她知道如何做越南菜，星期六她邀请我去她的家玩，然后享受她自己为我做的食物。"}
+{"direction": "vi-zh", "i": 108, "id": "VM-6262", "source": "Tan học xong tôi sẽ đi nhảy.", "reference": "我上完课就去跳舞。", "hypothesis": "放学后，我会去跳舞。"}
+{"direction": "vi-zh", "i": 109, "id": "VM-6376", "source": "Bạn đã xem phim này chưa?", "reference": "你看这部电影了吗？", "hypothesis": "你们看过这部电影吗？"}
+{"direction": "vi-zh", "i": 110, "id": "VM-6385", "source": "Đã rất muộn rồi, chúng ta mau về nhà đi.", "reference": "已经很晚了，我们快回家吧。", "hypothesis": "现在太晚了，我们要回家。"}
+{"direction": "vi-zh", "i": 111, "id": "VM-6526", "source": "Tuyến xe này đến Đại học Bắc Kinh không?", "reference": "这趟车去北京大学吗？", "hypothesis": "这条车道到北京大学吗？"}
+{"direction": "vi-zh", "i": 112, "id": "VM-6546", "source": "Tôi đến ngân hàng đổi tiền xong sẽ lái xe đến đón bạn.", "reference": "我去银行换完钱就开车去接妈妈。", "hypothesis": "我去银行换钱，然后开车来接你。"}
+{"direction": "vi-zh", "i": 113, "id": "VM-6579", "source": "Thiên an môn ở Trung Quốc.", "reference": "天安门在中国。", "hypothesis": "在中国的天堂。"}
+{"direction": "vi-zh", "i": 114, "id": "VM-6593", "source": "Ngày mai ăn cơm xong tôi sẽ đi tìm cô ta.", "reference": "明天我吃完饭就去找她。", "hypothesis": "明天我们吃完饭，我会去找她。"}
+{"direction": "vi-zh", "i": 115, "id": "VM-6653", "source": "Bạn đã lái xe mấy năm rồi?", "reference": "你开了几年的车了？", "hypothesis": "你开车多年了？"}
+{"direction": "vi-zh", "i": 116, "id": "VM-6721", "source": "Ngày mai tôi không đến ngân hàng rút tiền.", "reference": "明天我不去银行取钱。", "hypothesis": "明天我不会去银行提款。"}
+{"direction": "vi-zh", "i": 117, "id": "VM-6816", "source": "Hai bọn họ đều là lưu học sinh nước Mỹ.", "reference": "他们两个都是美国留学生。", "hypothesis": "他们都是美国留学生。"}
+{"direction": "vi-zh", "i": 118, "id": "VM-6957", "source": "Dạo này bạn tiến bộ rất nhanh.", "reference": "最近你进步得很快。", "hypothesis": "你最近进展非常快。"}
+{"direction": "vi-zh", "i": 119, "id": "VM-6997", "source": "Kết quả xét nghiệm có chưa?", "reference": "化验结果出来了吗？", "hypothesis": "检查结果有没有？"}
+{"direction": "vi-zh", "i": 120, "id": "VM-7082", "source": "Bài tập của tôi đã làm xong rồi, bài khóa vẫn chưa đọc thạo đâu.", "reference": "我的作业已经做完了，课文还没读熟呢。", "hypothesis": "我已经完成了功课，我还没学好。"}
+{"direction": "vi-zh", "i": 121, "id": "VM-7149", "source": "10 giờ cô ấy mới đến.", "reference": "10点她才到。", "hypothesis": "她没有到达10点。"}
+{"direction": "vi-zh", "i": 122, "id": "VM-7194", "source": "Tôi cảm thấy nghe rất khó khăn, các bạn học nghe một lần là hiểu, tôi nghe hai ba lần mới nghe hiểu.", "reference": "我觉得听力很难。同学们听一遍就懂了。我听两三遍才听懂。", "hypothesis": "我觉得听起来很困难，你们只要听一次就会明白。"}
+{"direction": "vi-zh", "i": 123, "id": "VM-7195", "source": "Khi nào thì bạn trở về?", "reference": "你什么时候回去？", "hypothesis": "你什么时候回来？"}
+{"direction": "vi-zh", "i": 124, "id": "VM-7215", "source": "Cái vali đó nặng bao nhiêu?", "reference": "那个行李箱有多重？", "hypothesis": "这个行李箱有多重？"}
+{"direction": "vi-zh", "i": 125, "id": "VM-7221", "source": "Tôi và cô ấy tuần trước đi nhảy ở khách sạn Hà Nội.", "reference": "我和她上周去河内酒店跳舞了。", "hypothesis": "上周我和她在河内酒店跳舞。"}
+{"direction": "vi-zh", "i": 126, "id": "VM-7327", "source": "Bạn có chị gái không?", "reference": "你有姐姐吗？", "hypothesis": "你有没有姐妹？"}
+{"direction": "vi-zh", "i": 127, "id": "VM-7396", "source": "Cô ta đã đến chưa?", "reference": "她来了吗？", "hypothesis": "她来了吗？"}
+{"direction": "vi-zh", "i": 128, "id": "VM-7427", "source": "Cô ta nói Tiếng Trung cũng được.", "reference": "她中文说得还可以。", "hypothesis": "她可以说中文。"}
+{"direction": "vi-zh", "i": 129, "id": "VM-7507", "source": "Nghe nói nem là món ăn nổi tiếng của Việt Nam.", "reference": "听说春卷是越南有名的菜。", "hypothesis": "我听说 ⁇ 是越南的热门菜。"}
+{"direction": "vi-zh", "i": 130, "id": "VM-7523", "source": "Chủ nhật chúng ta đi xem chút quần áo, thế nào?", "reference": "星期天我们去看看衣服怎么样。", "hypothesis": "星期天我们去看一些衣服，怎么样？"}
+{"direction": "vi-zh", "i": 131, "id": "VM-7636", "source": "Tôi không biết số di động của cô giáo tôi là bao nhiêu", "reference": "我不知道我老师的手机号码是多少。", "hypothesis": "我不知道我老师的手机号码。"}
+{"direction": "vi-zh", "i": 132, "id": "VM-7657", "source": "Hàng ngày 6:30 bạn thức dậy hay là 7h?", "reference": "你每天6点半起床还是7点？", "hypothesis": "你每天起床是6:30还是7点？"}
+{"direction": "vi-zh", "i": 133, "id": "VM-7703", "source": "Con sông này nước rất sạch.", "reference": "这条河的水很干净。", "hypothesis": "这条河水很干净。"}
+{"direction": "vi-zh", "i": 134, "id": "VM-7747", "source": "Tôi từng đến quán cơm đó ăn cơm.", "reference": "我去那家饭馆吃过饭。", "hypothesis": "我曾经去过那个餐厅吃饭。"}
+{"direction": "vi-zh", "i": 135, "id": "VM-7787", "source": "Câu này bạn làm không đúng.", "reference": "这道题你做不对。", "hypothesis": "你做错了这个句子。"}
+{"direction": "vi-zh", "i": 136, "id": "VM-7843", "source": "Tối nay ăn cơm xong là tôi xem tivi.", "reference": "今晚我吃完饭就看电视了。", "hypothesis": "今晚吃完饭，我会看电视。"}
+{"direction": "vi-zh", "i": 137, "id": "VM-7854", "source": "Tôi mua hai vé xem phim, mời bạn đi xem phim.", "reference": "我买了两张电影票，请你看电影。", "hypothesis": "我买了两张电影票，请你们去看电影。"}
+{"direction": "vi-zh", "i": 138, "id": "VM-7870", "source": "Nhà tôi có hai đứa, đứa lớn là con gái, đứa thứ hai là con trai.", "reference": "我家有两个，老大是女孩，老二是男孩。", "hypothesis": "我家有两个孩子，大个是女儿，第二个是男孩。"}
+{"direction": "vi-zh", "i": 139, "id": "VM-7998", "source": "Cô giáo bảo tôi nói trước, tôi nói tôi cực kỳ thích thư pháp của Trung Quốc, cô giáo cảm thấy rất ngạc nhiên.", "reference": "老师让我先说。我说我极其喜欢中国书法。老师觉得很惊讶。", "hypothesis": "我说我非常喜欢汉字，她很惊 ⁇ ."}
+{"direction": "vi-zh", "i": 140, "id": "VM-8036", "source": "Múa rối nước Việt Nam rất thú vị, sau này tôi còn muốn đi xem nữa.", "reference": "越南水上木偶戏很有意思，以后我还想去看。", "hypothesis": "越南人偶很有趣，我稍后还想去看。"}
+{"direction": "vi-zh", "i": 141, "id": "VM-8069", "source": "Em gái bạn làm việc ở bệnh viện, chị gái bạn làm việc ở ngân hàng.", "reference": "你妹妹在医院工作，你姐姐在银行工作。", "hypothesis": "你的妹妹在医院工作，你的妹妹在银行工作。"}
+{"direction": "vi-zh", "i": 142, "id": "VM-8088", "source": "Tôi hơi nhớ bạn một chút.", "reference": "我有点儿想你。", "hypothesis": "我有点想念你。"}
+{"direction": "vi-zh", "i": 143, "id": "VM-8116", "source": "Bạn xem cô ta viết chữ Hán thế nào?", "reference": "你看她汉字写得怎么样？", "hypothesis": "你看她如何写汉字吗？"}
+{"direction": "vi-zh", "i": 144, "id": "VM-8131", "source": "Bạn thích ăn món Việt Nam hay là món Trung Quốc?", "reference": "你喜欢吃越南菜还是中国菜？", "hypothesis": "你喜欢越南菜还是中国菜？"}
+{"direction": "vi-zh", "i": 145, "id": "VM-8316", "source": "Hôm qua chị gái tôi đến nhà cô giáo.", "reference": "昨天我姐姐去老师家了。", "hypothesis": "昨天，我的妹妹去过老师家。"}
+{"direction": "vi-zh", "i": 146, "id": "VM-8325", "source": "Lúc về đến ký túc xá, cô ta cảm thấy khó chịu trong người, tôi đi cùng cô ta đến bệnh viện khám bệnh.", "reference": "回到宿舍的时候，她感觉身体不舒服。我跟她一起去医院看病。", "hypothesis": "到了宿舍，她觉得自己不舒服，我陪她去诊所。"}
+{"direction": "vi-zh", "i": 147, "id": "VM-8351", "source": "Bạn đã bơi được bao lâu?", "reference": "你游了多长时间的泳了？", "hypothesis": "你游泳多久了？"}
+{"direction": "vi-zh", "i": 148, "id": "VM-8379", "source": "Hôm nay chúng tôi đều rất mệt.", "reference": "今天我们都很累。", "hypothesis": "今天我们都很累。"}
+{"direction": "vi-zh", "i": 149, "id": "VM-8392", "source": "Tôi cảm thấy khí hậu Bắc Kinh cực kỳ khô hanh.", "reference": "我觉得北京的气候非常干燥。", "hypothesis": "我觉得北京的气候非常干燥。"}
+{"direction": "vi-zh", "i": 150, "id": "VM-8473", "source": "Bạn đợi chút đi, cô ta sẽ tới.", "reference": "你等一下吧，她就来了。", "hypothesis": "你等一下，她会来。"}
+{"direction": "vi-zh", "i": 151, "id": "VM-8541", "source": "Tôi biết nói chút ít Tiếng Trung.", "reference": "我会说一点儿中文。", "hypothesis": "我可以说一些中文。"}
+{"direction": "vi-zh", "i": 152, "id": "VM-8608", "source": "Công ty chúng tôi có khoảng 150 nhân viên.", "reference": "我们公司大概有150个员工。", "hypothesis": "我们的公司有大约150名员工。"}
+{"direction": "vi-zh", "i": 153, "id": "VM-8630", "source": "Thời gian 8 năm ngắn quá, tôi muốn kéo dài thêm 2 năm nữa.", "reference": "8年的时间太短了，我想再延长2年。", "hypothesis": "八年时间太短了，我想再加两年。"}
+{"direction": "vi-zh", "i": 154, "id": "VM-8655", "source": "Từ nhà tôi đến nhà bạn rất xa.", "reference": "从我家到你家很远。", "hypothesis": "距离我的家到你的家很远。"}
+{"direction": "vi-zh", "i": 155, "id": "VM-8677", "source": "Môi trường xung quanh đây rất tốt.", "reference": "这周围的环境很好。", "hypothesis": "这里的环境很好。"}
+{"direction": "vi-zh", "i": 156, "id": "VM-8725", "source": "Tôi là cô giáo của cô ta, tôi tìm cô ta có chút việc.", "reference": "我是她的老师。我找她有点儿事。", "hypothesis": "我是她的老师，我找了她一些工作。"}
+{"direction": "vi-zh", "i": 157, "id": "VM-8830", "source": "Ngồi xe đi, chiều 3h tôi lái xe tới đón bạn.", "reference": "坐车去吧，下午3点我来接你。", "hypothesis": "坐车，我下午三点开车去接你。"}
+{"direction": "vi-zh", "i": 158, "id": "VM-8882", "source": "Xin lỗi đã để bạn đợi lâu.", "reference": "对不起让你久等了。", "hypothesis": "我很抱歉让你等了太久。"}
+{"direction": "vi-zh", "i": 159, "id": "VM-8924", "source": "Anh trai tôi biết bạn của cô ta sống ở đâu", "reference": "我哥哥知道她朋友住在哪儿。", "hypothesis": "我哥哥知道她的朋友住在哪里。"}
+{"direction": "vi-zh", "i": 160, "id": "VM-8989", "source": "Tôi thấy kế hoạch này không tệ, chúng mình cứ thế mà làm.", "reference": "我觉得这个计划不错，我们就这么做吧。", "hypothesis": "我认为这不是一个糟糕的计划，我们就这样做。"}
+{"direction": "vi-zh", "i": 161, "id": "VM-9007", "source": "Hàng ngày buổi chiều 4h tôi thường đến sân tập rèn luyện sức khỏe, chạy bộ, chơi bóng, 6h về ký túc xá, tắm rửa, giặt quần áo.", "reference": "每天下午4点，我常去操场锻炼身体、跑步、打球。6点回宿舍、洗澡、洗衣服。", "hypothesis": "每天下午四点，我去健身场，跑步，打篮球，六点回宿舍洗衣。"}
+{"direction": "vi-zh", "i": 162, "id": "VM-9169", "source": "Gập sách lại đi.", "reference": "把书合上吧。", "hypothesis": "闭上这本书。"}
+{"direction": "vi-zh", "i": 163, "id": "VM-9318", "source": "Ngày mai có một đoàn đại biểu đến Việt Nam du lịch, vì vậy ngày mai bạn giúp tôi đi phiên dịch cho họ nhé.", "reference": "明天有一个代表团去越南旅游，所以明天你帮我去给他们当翻译吧。", "hypothesis": "明天有一支代表团前往越南旅游，"}
+{"direction": "vi-zh", "i": 164, "id": "VM-9374", "source": "Chúng tôi đã học đến bài thứ 16 rồi.", "reference": "我们已经学到第16课了。", "hypothesis": "我们已经学到了第16课。"}
+{"direction": "vi-zh", "i": 165, "id": "VM-9510", "source": "Sau khi kiểm tra xong bác sỹ nói không phải tôi bị viêm ruột, chỉ là tiêu hóa không tốt.", "reference": "检查完后，医生说我得的不是肠炎，只是消化不良。", "hypothesis": "经过检查，医生说我没有肠炎，只是消化不良。"}
+{"direction": "vi-zh", "i": 166, "id": "VM-9536", "source": "Tôi đi từ nhà đến công viên, cô ta đi về công ty.", "reference": "我从家去公园，她去公司。", "hypothesis": "我从家到公园，她去公司。"}
+{"direction": "vi-zh", "i": 167, "id": "VM-9540", "source": "Tôi đã nhảy hai tiếng đồng hồ.", "reference": "我跳了两个小时了。", "hypothesis": "我跳了两个小时。"}
+{"direction": "vi-zh", "i": 168, "id": "VM-9568", "source": "Hôm nay trong giờ học, cô giáo hỏi mọi người, sau khi tốt nghiệp dự định làm gì.", "reference": "今天上课的时候，老师问大家毕业后打算做什么。", "hypothesis": "今天在课堂上，老师问大家毕业后想做什么。"}
+{"direction": "vi-zh", "i": 169, "id": "VM-9577", "source": "Cô ấy nói tiếng Trung rất giỏi, giống như người Trung Quốc vậy.", "reference": "她中文说得很好，就像中国人一样。", "hypothesis": "她说中文很好，就像中国人一样。"}
+{"direction": "vi-zh", "i": 170, "id": "VM-9612", "source": "Tôi vừa học Tiếng Trung, tôi không nói được Tiếng Trung.", "reference": "我刚学中文，我不会说中文。", "hypothesis": "我刚开始学习中文，我不讲中文。"}
+{"direction": "vi-zh", "i": 171, "id": "VM-9686", "source": "Những câu này bạn dịch đúng rồi.", "reference": "这几句话你翻译对了。", "hypothesis": "你正确地翻译了这些句子。"}
+{"direction": "vi-zh", "i": 172, "id": "VM-9698", "source": "Bạn học Tiếng Trung mấy năm rồi?", "reference": "你学了几年的中文了？", "hypothesis": "你学习中文多年了？"}
+{"direction": "vi-zh", "i": 173, "id": "VM-9705", "source": "Vẫn chưa đến.", "reference": "还没到。", "hypothesis": "我还没有来。"}
+{"direction": "vi-zh", "i": 174, "id": "VM-9783", "source": "Bạn xem tivi bao lâu rồi?", "reference": "你看了多长时间的电视了？", "hypothesis": "你看电视多久了？"}
+{"direction": "vi-zh", "i": 175, "id": "VM-9841", "source": "Thầy Vũ dạy chúng tôi môn nghe và nói.", "reference": "武老师教我们听力和口语。", "hypothesis": "⁇ 先生教我们听和说。"}
+{"direction": "vi-zh", "i": 176, "id": "VM-9853", "source": "Xin hỏi, bạn biết Viện bảo tàng Việt Nam ở đâu không?", "reference": "请问，你知道越南博物馆在哪儿吗？", "hypothesis": "请问，你知道越南博物馆在哪里吗？"}
+{"direction": "vi-zh", "i": 177, "id": "VM-9891", "source": "Chụp được tòa nhà kia không?", "reference": "那座楼能拍到吗？", "hypothesis": "能拍到那个建筑吗？"}
+{"direction": "vi-zh", "i": 178, "id": "VM-9894", "source": "Bật máy tính lên, xem chút đĩa bạn mới mua đi.", "reference": "把电脑打开，看看你新买的影碟吧。", "hypothesis": "打开电脑，看一下你刚买的盘子。"}
+{"direction": "vi-zh", "i": 179, "id": "VM-9953", "source": "Bạn cảm thấy phim tối qua thế nào?", "reference": "你觉得那部电影怎么样？", "hypothesis": "你对昨晚的电影有什么感觉？"}
 {"direction": "zh-vi", "i": 0, "id": "VM-0223", "source": "你带护照了吗？", "reference": "Bạn đã mang hộ chiếu chưa?", "hypothesis": "Bạn có mang theo hộ chiếu không?"}
 {"direction": "zh-vi", "i": 1, "id": "VM-0237", "source": "我给大家介绍一下，这位是我们学校的教授，这位是我们学校的校长。", "reference": "Tôi xin được giới thiệu cho các bạn trước chút, vị này là giáo sư trường tôi, vị này là hiệu trưởng trường tôi.", "hypothesis": "Tôi xin giới thiệu với các bạn, đây là giáo sư của trường tôi và ông ấy là hiệu trưởng của trường."}
 {"direction": "zh-vi", "i": 2, "id": "VM-0244", "source": "上次你看了几套公寓了？", "reference": "Lần trước bạn đã xem mấy căn chung cư rồi?", "hypothesis": "Bạn đã xem bao nhiêu căn hộ lần cuối?"}

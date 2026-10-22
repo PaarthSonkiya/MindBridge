@@ -1,6 +1,6 @@
 {
   "mode": "text",
-  "started": "20261022-212417",
+  "started": "20261022-215832",
   "data": "/home/claude/dataset",
   "device": {
     "hostname": "vm",
@@ -48,56 +48,56 @@
       "note": ""
     }
   ],
-  "load_seconds": 8.06,
+  "load_seconds": 9.56,
   "directions": {
     "vi-en": {
       "n": 100,
       "bleu": 35.09,
       "chrf++": 54.5,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 374.8,
-      "mt_ms_p50": 320.4,
-      "mt_ms_p90": 540.6
+      "mt_ms_mean": 349.8,
+      "mt_ms_p50": 330.8,
+      "mt_ms_p90": 482.3
     },
     "vi-ko": {
       "n": 180,
       "bleu": 32.59,
       "chrf++": 28.32,
       "bleu_tokenizer": "char",
-      "mt_ms_mean": 1234.0,
-      "mt_ms_p50": 1208.0,
-      "mt_ms_p90": 1795.5
+      "mt_ms_mean": 1248.5,
+      "mt_ms_p50": 1206.0,
+      "mt_ms_p90": 1784.5
     },
     "ko-vi": {
       "n": 180,
       "bleu": 19.33,
       "chrf++": 37.7,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 1404.0,
-      "mt_ms_p50": 1344.7,
-      "mt_ms_p90": 1907.5
+      "mt_ms_mean": 1399.8,
+      "mt_ms_p50": 1337.0,
+      "mt_ms_p90": 1946.8
     },
     "vi-zh": {
       "n": 180,
-      "bleu": 32.82,
-      "chrf++": 23.99,
+      "bleu": 40.86,
+      "chrf++": 30.75,
       "bleu_tokenizer": "zh",
-      "mt_ms_mean": 1885.8,
-      "mt_ms_p50": 1762.8,
-      "mt_ms_p90": 2840.6
+      "mt_ms_mean": 1876.0,
+      "mt_ms_p50": 1738.3,
+      "mt_ms_p90": 2772.9
     },
     "zh-vi": {
       "n": 180,
       "bleu": 27.83,
       "chrf++": 50.09,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 1931.7,
-      "mt_ms_p50": 1767.9,
-      "mt_ms_p90": 2724.2
+      "mt_ms_mean": 2023.1,
+      "mt_ms_p50": 1884.8,
+      "mt_ms_p90": 2900.6
     }
   },
   "unlinked_recordings": 100,
-  "peak_ram_mb": 4179.5,
+  "peak_ram_mb": 4188.1,
   "network_before": {
     "interfaces": {
       "ifb0": {
@@ -148,6 +148,6 @@
     "installed": true,
     "blocked_attempts": []
   },
-  "finished": "20261022-214426",
+  "finished": "20261022-221856",
   "total_model_mb": 3154.3
 }
