@@ -21,8 +21,13 @@ Folders: `aihub_whisper_turbo_qcs6490/`, `aihub_whisper_small_qcs6490/`.
 
 `qualcomm/aihub_validate_whisper.py` runs MindBridge's own decoding loop (quantised I/O, KV cache,
 attention mask, forced prompt) with every encoder/decoder call executed as an AI Hub inference job on
-the hosted RB3 Gen 2. On an English test clip the NPU predicted `<|en|>` → `<|transcribe|>` →
-`<|notimestamps|>` → "Do not restart …", matching the spoken sentence. Log: `aihub_validate_whisper.json`.
+the hosted RB3 Gen 2 (Whisper-small w8a16 context binaries). Input: an English clip of
+"Do not restart machine 4 until the pressure valve is replaced."
+
+Real-NPU output, token by token: `<|en|>` → `<|transcribe|>` → `<|notimestamps|>` → **"Do not restart
+machine 4 until the pressure valve is replaced"** (exact). Every step's AI Hub job link is in
+`aihub_validate_whisper.json`. (The run stopped at a 90-minute limit before the final end-of-text step;
+each step waits for a free device in Qualcomm's farm.)
 
 ## 3. Speech recognition accuracy (real human speech)
 

@@ -1,0 +1,97 @@
+{
+  "device": "Dragonwing RB3 Gen 2 Vision Kit (QCS6490), Qualcomm AI Hub hosted",
+  "model": "whisper_small_quantized w8a16 (precompiled QNN context binaries)",
+  "audio": "English TTS clip: 'Do not restart machine 4 until the pressure valve is replaced.'",
+  "decoder_steps_completed": 14,
+  "encoder_job": [
+    "https://workbench.aihub.qualcomm.com/jobs/jpexdeovg/"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jpvm600rp/",
+      "predicted": 50259,
+      "token": "<|en|>"
+    },
+    {
+      "step": 2,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jp8rq0mog/",
+      "predicted": 50359,
+      "token": "<|transcribe|>"
+    },
+    {
+      "step": 3,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jprdv8ekg/",
+      "predicted": 50363,
+      "token": "<|notimestamps|>"
+    },
+    {
+      "step": 4,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jp09z310p/",
+      "predicted": 1144,
+      "token": "'Do'"
+    },
+    {
+      "step": 5,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jp114y3np/",
+      "predicted": 406,
+      "token": "'not'"
+    },
+    {
+      "step": 6,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jgzy3o8zp/",
+      "predicted": 21022,
+      "token": "'restart'"
+    },
+    {
+      "step": 7,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jp8rq04zg/",
+      "predicted": 3479,
+      "token": "'machine'"
+    },
+    {
+      "step": 8,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jgow2k84p/",
+      "predicted": 1017,
+      "token": "'4'"
+    },
+    {
+      "step": 9,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jpxrknl9p/",
+      "predicted": 1826,
+      "token": "'until'"
+    },
+    {
+      "step": 10,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jp2dk0q45/",
+      "predicted": 264,
+      "token": "'the'"
+    },
+    {
+      "step": 11,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jgk0e7125/",
+      "predicted": 3321,
+      "token": "'pressure'"
+    },
+    {
+      "step": 12,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/j56myek0p/",
+      "predicted": 15294,
+      "token": "'valve'"
+    },
+    {
+      "step": 13,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jgk0e7z25/",
+      "predicted": 307,
+      "token": "'is'"
+    },
+    {
+      "step": 14,
+      "job": "https://workbench.aihub.qualcomm.com/jobs/jg92ljewp/",
+      "predicted": 10772,
+      "token": "'replaced'"
+    }
+  ],
+  "transcript_so_far": "Do not restart machine 4 until the pressure valve is replaced",
+  "note": "Each decoder step ran as a separate AI Hub inference job; run stopped at the 90-minute limit."
+}
