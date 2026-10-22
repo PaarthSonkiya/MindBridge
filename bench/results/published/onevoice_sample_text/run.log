@@ -118,3 +118,63 @@
 2026-10-22 22:18:46,706 INFO bench:   175/180
 2026-10-22 22:18:56,849 INFO bench:    {"n": 180, "bleu": 27.83, "chrf++": 50.09, "bleu_tokenizer": "13a", "mt_ms_mean": 2023.1, "mt_ms_p50": 1884.8, "mt_ms_p90": 2900.6}
 2026-10-22 22:18:56,904 INFO bench: network after run {"interfaces": {"ifb0": {"up": false, "ipv4": []}, "ifb1": {"up": false, "ipv4": []}, "eth0": {"up": true, "ipv4": ["192.0.2.2"]}}, "default_route": "default via eth0 (IPv4)", "rfkill": null, "nmcli_radio": null, "has_default_route": true, "any_external_ip": true}
+2026-10-22 22:20:22,144 INFO bench: command bench/run_benchmark.py --data /home/claude/dataset --mode text --out bench/results/published/onevoice_sample_text
+2026-10-22 22:20:22,149 INFO bench: device {"hostname": "vm", "machine": "x86_64", "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39", "python": "3.13.16", "soc": "", "cpu_count": 2, "total_ram_mb": 8028}
+2026-10-22 22:20:22,149 INFO bench: network before run {"interfaces": {"ifb0": {"up": false, "ipv4": []}, "ifb1": {"up": false, "ipv4": []}, "eth0": {"up": true, "ipv4": ["192.0.2.2"]}}, "default_route": "default via eth0 (IPv4)", "rfkill": null, "nmcli_radio": null, "has_default_route": true, "any_external_ip": true}
+2026-10-22 22:20:22,149 INFO mindbridge.offline: Strict offline mode: outbound network disabled for this process
+2026-10-22 22:20:22,538 INFO bench: dataset vi-en: 100 sentence pairs, 100 with Vietnamese audio, 0 with en audio
+2026-10-22 22:20:22,539 INFO bench: dataset vi-ko: 180 sentence pairs, 180 with Vietnamese audio, 180 with ko audio
+2026-10-22 22:20:22,539 INFO bench: dataset vi-zh: 180 sentence pairs, 180 with Vietnamese audio, 180 with zh audio
+2026-10-22 22:20:22,540 WARNING bench: 100 recordings have no matching sentence text (e.g. EV-0157) in ['/home/claude/dataset/Vie-Eng dataset/Eng-Vie/wav']
+2026-10-22 22:20:28,011 WARNING mindbridge.asr: ASR falling back to CPU (QNN unavailable: onnxruntime not installed)
+2026-10-22 22:20:28,564 INFO mindbridge.mt: loaded envit5-translation-ct2-int8 (CTranslate2 int8, CPU) in 552 ms
+2026-10-22 22:20:31,365 INFO mindbridge.mt: loaded nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU) in 2801 ms
+2026-10-22 22:20:31,404 INFO bench: models loaded in 8.0s, peak 4117 MB
+2026-10-22 22:20:31,406 INFO bench: model {"stage": "Voice activity", "model": "Silero VAD v5", "unit": "CPU", "size_mb": 0.6, "note": ""}
+2026-10-22 22:20:31,406 INFO bench: model {"stage": "Speech recognition", "model": "whisper-large-v3-turbo-int8 (CPU, CTranslate2)", "unit": "CPU", "size_mb": 1547.3, "note": "QNN unavailable: onnxruntime not installed"}
+2026-10-22 22:20:31,406 INFO bench: model {"stage": "Translation", "model": "envit5-translation-ct2-int8 (CTranslate2 int8, CPU)", "unit": "CPU", "size_mb": 265.7, "note": ""}
+2026-10-22 22:20:31,406 INFO bench: model {"stage": "Translation", "model": "nllb-200-distilled-1.3B-ct2-int8 (CTranslate2 int8, CPU)", "unit": "CPU", "size_mb": 1340.7, "note": ""}
+2026-10-22 22:20:31,406 INFO bench: model {"stage": "Operational memory", "model": "Rule engine + SQLite", "unit": "CPU", "size_mb": 0.0, "note": ""}
+2026-10-22 22:20:31,408 INFO bench: == vi-en: 100 sentences (text)
+2026-10-22 22:20:40,287 INFO bench:   25/100
+2026-10-22 22:20:48,181 INFO bench:   50/100
+2026-10-22 22:20:56,368 INFO bench:   75/100
+2026-10-22 22:21:05,212 INFO bench:   100/100
+2026-10-22 22:21:05,316 INFO bench:    {"n": 100, "bleu": 35.09, "chrf++": 54.5, "bleu_tokenizer": "13a", "mt_ms_mean": 337.9, "mt_ms_p50": 315.5, "mt_ms_p90": 469.6}
+2026-10-22 22:21:05,316 INFO bench: == vi-ko: 180 sentences (text)
+2026-10-22 22:21:37,009 INFO bench:   25/180
+2026-10-22 22:22:09,771 INFO bench:   50/180
+2026-10-22 22:22:41,149 INFO bench:   75/180
+2026-10-22 22:23:12,774 INFO bench:   100/180
+2026-10-22 22:23:43,999 INFO bench:   125/180
+2026-10-22 22:24:14,457 INFO bench:   150/180
+2026-10-22 22:24:45,327 INFO bench:   175/180
+2026-10-22 22:24:50,794 INFO bench:    {"n": 180, "bleu": 33.22, "chrf++": 29.02, "bleu_tokenizer": "char", "mt_ms_mean": 1252.4, "mt_ms_p50": 1203.5, "mt_ms_p90": 1772.7}
+2026-10-22 22:24:50,794 INFO bench: == ko-vi: 180 sentences (text)
+2026-10-22 22:25:23,810 INFO bench:   25/180
+2026-10-22 22:25:59,686 INFO bench:   50/180
+2026-10-22 22:26:33,163 INFO bench:   75/180
+2026-10-22 22:27:06,909 INFO bench:   100/180
+2026-10-22 22:27:40,971 INFO bench:   125/180
+2026-10-22 22:28:12,910 INFO bench:   150/180
+2026-10-22 22:28:53,347 INFO bench:   175/180
+2026-10-22 22:28:58,884 INFO bench:    {"n": 180, "bleu": 19.33, "chrf++": 37.7, "bleu_tokenizer": "13a", "mt_ms_mean": 1378.0, "mt_ms_p50": 1325.4, "mt_ms_p90": 1896.9}
+2026-10-22 22:28:58,884 INFO bench: == vi-zh: 180 sentences (text)
+2026-10-22 22:29:47,018 INFO bench:   25/180
+2026-10-22 22:30:37,980 INFO bench:   50/180
+2026-10-22 22:31:23,105 INFO bench:   75/180
+2026-10-22 22:32:06,429 INFO bench:   100/180
+2026-10-22 22:32:49,919 INFO bench:   125/180
+2026-10-22 22:33:36,268 INFO bench:   150/180
+2026-10-22 22:34:24,949 INFO bench:   175/180
+2026-10-22 22:34:34,480 INFO bench:    {"n": 180, "bleu": 40.77, "chrf++": 30.7, "bleu_tokenizer": "zh", "mt_ms_mean": 1864.2, "mt_ms_p50": 1754.1, "mt_ms_p90": 2700.3}
+2026-10-22 22:34:34,481 INFO bench: == zh-vi: 180 sentences (text)
+2026-10-22 22:35:27,125 INFO bench:   25/180
+2026-10-22 22:36:19,858 INFO bench:   50/180
+2026-10-22 22:37:06,715 INFO bench:   75/180
+2026-10-22 22:37:58,201 INFO bench:   100/180
+2026-10-22 22:38:43,171 INFO bench:   125/180
+2026-10-22 22:39:30,376 INFO bench:   150/180
+2026-10-22 22:40:19,958 INFO bench:   175/180
+2026-10-22 22:40:29,581 INFO bench:    {"n": 180, "bleu": 27.83, "chrf++": 50.09, "bleu_tokenizer": "13a", "mt_ms_mean": 1972.3, "mt_ms_p50": 1833.5, "mt_ms_p90": 2886.6}
+2026-10-22 22:40:29,637 INFO bench: network after run {"interfaces": {"ifb0": {"up": false, "ipv4": []}, "ifb1": {"up": false, "ipv4": []}, "eth0": {"up": true, "ipv4": ["192.0.2.2"]}}, "default_route": "default via eth0 (IPv4)", "rfkill": null, "nmcli_radio": null, "has_default_route": true, "any_external_ip": true}

@@ -1,4 +1,4 @@
-### MindBridge benchmark (text mode, 20261022-215832)
+### MindBridge benchmark (text mode, 20261022-222022)
 
 Device: x86_64, Linux-6.18.44-fc-v140-x86_64-with-glibc2.39, 8028 MB RAM. Network default route during run: yes. Outbound connections blocked: 0.
 
@@ -11,14 +11,14 @@ Device: x86_64, Linux-6.18.44-fc-v140-x86_64-with-glibc2.39, 8028 MB RAM. Networ
 | Operational memory | Rule engine + SQLite | CPU | 0.0 MB |
 | **Total** | | | **3154.3 MB** |
 
-Peak process RAM: **4188.1 MB**. Model load time: 9.56 s.
+Peak process RAM: **4186.0 MB**. Model load time: 8.0 s.
 
 | Direction | N | BLEU | chrF++ | MT ms mean | MT ms p90 |
 |---|---|---|---|---|---|
-| vi-en | 100 | 35.09 | 54.5 | 349.8 | 482.3 |
-| vi-ko | 180 | 32.59 | 28.32 | 1248.5 | 1784.5 |
-| ko-vi | 180 | 19.33 | 37.7 | 1399.8 | 1946.8 |
-| vi-zh | 180 | 40.86 | 30.75 | 1876.0 | 2772.9 |
-| zh-vi | 180 | 27.83 | 50.09 | 2023.1 | 2900.6 |
+| vi-en | 100 | 35.09 | 54.5 | 337.9 | 469.6 |
+| vi-ko | 180 | 33.22 | 29.02 | 1252.4 | 1772.7 |
+| ko-vi | 180 | 19.33 | 37.7 | 1378.0 | 1896.9 |
+| vi-zh | 180 | 40.77 | 30.7 | 1864.2 | 2700.3 |
+| zh-vi | 180 | 27.83 | 50.09 | 1972.3 | 2886.6 |
 
 100 recordings in the dataset have no matching sentence text.

@@ -1,6 +1,6 @@
 {
   "mode": "text",
-  "started": "20261022-215832",
+  "started": "20261022-222022",
   "data": "/home/claude/dataset",
   "device": {
     "hostname": "vm",
@@ -48,56 +48,56 @@
       "note": ""
     }
   ],
-  "load_seconds": 9.56,
+  "load_seconds": 8.0,
   "directions": {
     "vi-en": {
       "n": 100,
       "bleu": 35.09,
       "chrf++": 54.5,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 349.8,
-      "mt_ms_p50": 330.8,
-      "mt_ms_p90": 482.3
+      "mt_ms_mean": 337.9,
+      "mt_ms_p50": 315.5,
+      "mt_ms_p90": 469.6
     },
     "vi-ko": {
       "n": 180,
-      "bleu": 32.59,
-      "chrf++": 28.32,
+      "bleu": 33.22,
+      "chrf++": 29.02,
       "bleu_tokenizer": "char",
-      "mt_ms_mean": 1248.5,
-      "mt_ms_p50": 1206.0,
-      "mt_ms_p90": 1784.5
+      "mt_ms_mean": 1252.4,
+      "mt_ms_p50": 1203.5,
+      "mt_ms_p90": 1772.7
     },
     "ko-vi": {
       "n": 180,
       "bleu": 19.33,
       "chrf++": 37.7,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 1399.8,
-      "mt_ms_p50": 1337.0,
-      "mt_ms_p90": 1946.8
+      "mt_ms_mean": 1378.0,
+      "mt_ms_p50": 1325.4,
+      "mt_ms_p90": 1896.9
     },
     "vi-zh": {
       "n": 180,
-      "bleu": 40.86,
-      "chrf++": 30.75,
+      "bleu": 40.77,
+      "chrf++": 30.7,
       "bleu_tokenizer": "zh",
-      "mt_ms_mean": 1876.0,
-      "mt_ms_p50": 1738.3,
-      "mt_ms_p90": 2772.9
+      "mt_ms_mean": 1864.2,
+      "mt_ms_p50": 1754.1,
+      "mt_ms_p90": 2700.3
     },
     "zh-vi": {
       "n": 180,
       "bleu": 27.83,
       "chrf++": 50.09,
       "bleu_tokenizer": "13a",
-      "mt_ms_mean": 2023.1,
-      "mt_ms_p50": 1884.8,
-      "mt_ms_p90": 2900.6
+      "mt_ms_mean": 1972.3,
+      "mt_ms_p50": 1833.5,
+      "mt_ms_p90": 2886.6
     }
   },
   "unlinked_recordings": 100,
-  "peak_ram_mb": 4188.1,
+  "peak_ram_mb": 4186.0,
   "network_before": {
     "interfaces": {
       "ifb0": {
@@ -148,6 +148,6 @@
     "installed": true,
     "blocked_attempts": []
   },
-  "finished": "20261022-221856",
+  "finished": "20261022-224029",
   "total_model_mb": 3154.3
 }
