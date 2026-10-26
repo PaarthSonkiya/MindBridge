@@ -20,6 +20,7 @@ if [ "${FREE_GB:-0}" -lt 8 ]; then
 fi
 
 echo "== Python 3.12 (uv, installed in your home folder; no admin needed)"
+echo "   If macOS offers to install 'command line developer tools', click Not Now: they are not needed."
 export PATH="$HOME/.local/bin:$PATH"
 if ! command -v uv >/dev/null; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -35,6 +36,10 @@ uv pip install "huggingface_hub>=0.23" "certifi>=2024.2.2"   # only for download
 
 echo "== Models (about 3.5 GB)"
 python scripts/fetch_models.py --target mac
+
+echo "== Microphone permission"
+echo "macOS will now ask whether Terminal may use the microphone: click OK / Allow."
+python -c "import sounddevice as sd; sd.rec(8000, samplerate=16000, channels=1); sd.wait()" || true
 
 echo "== Self-check"
 python -m mindbridge doctor --run || true

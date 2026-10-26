@@ -28,16 +28,16 @@ portalocker==4.4.1
 protobuf==7.36.2
 psutil==7.2.2
 pycparser==3.11
-pydantic==2.14.1
 pydantic-core==2.50.1
+pydantic==2.14.1
 python-multipart==0.0.32
 pyyaml==6.0.3
 regex==2026.9.29
 sacrebleu==2.6.0
 scipy==1.18.1
 sentencepiece==0.2.2
-sherpa-onnx==1.13.8
 sherpa-onnx-core==1.13.8
+sherpa-onnx==1.13.8
 sounddevice==0.5.6
 soundfile==0.14.0
 starlette==1.9.0
@@ -46,3 +46,4 @@ tabulate==0.10.0
 typing-extensions==4.16.0
 typing-inspection==0.4.4
 uvicorn==0.54.0
+websockets==17.3

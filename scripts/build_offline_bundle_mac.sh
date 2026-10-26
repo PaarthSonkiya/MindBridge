@@ -19,7 +19,8 @@ rm -rf "$STAGE" && mkdir -p "$STAGE/wheels" "$STAGE/models"
 
 echo "== Code"
 mkdir -p "$STAGE/app"
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+# /usr/bin/git on a Mac without developer tools only opens an install dialog, so check for them first.
+if [ -d .git ] && xcode-select -p >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git archive --format=tar HEAD | tar -x -C "$STAGE/app"
 else  # downloaded as a ZIP from GitHub: copy the tree without local environments, models and run outputs
   tar -c --exclude ./.venv --exclude ./models --exclude ./data --exclude ./dist --exclude "*/__pycache__" \
@@ -27,12 +28,15 @@ else  # downloaded as a ZIP from GitHub: copy the tree without local environment
 fi
 
 echo "== Python 3.12 (standalone build)"
-PYHOME="$(python -c 'import sys; print(sys.base_prefix)')"
+PYHOME="$(python -c 'import os, sys; print(os.path.realpath(sys.base_prefix))')"
 case "$(python -c 'import sys; print("%d.%d" % sys.version_info[:2])')" in
   3.12) ;;
   *) echo "Run scripts/setup_mac.sh first (needs its Python 3.12 environment)"; exit 1 ;;
 esac
-cp -R "$PYHOME" "$STAGE/python"
+cp -R "$PYHOME/" "$STAGE/python"
+if [ -L "$STAGE/python" ] || [ ! -x "$STAGE/python/bin/python3" ]; then
+  echo "Could not copy a standalone Python from $PYHOME"; exit 1
+fi
 # A standalone build is relocatable; drop caches and the test suite to save space.
 find "$STAGE/python" -name "__pycache__" -type d -prune -exec rm -rf {} +
 rm -rf "$STAGE/python/lib/python3.12/test"

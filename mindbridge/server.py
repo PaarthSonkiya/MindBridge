@@ -99,6 +99,12 @@ class Hub:
             return {"ok": False}
         audio = self.recorder.stop()
         job, self.listening = self.listening, None
+        if self.recorder.last_was_digital_silence:
+            self._set_state("idle")
+            msg = ("The microphone is blocked: it only returns silence. On a Mac: System Settings → Privacy & "
+                   "Security → Microphone → turn on Terminal, then restart MindBridge (Ctrl+C, bash scripts/run.sh).")
+            self.emit({"type": "error", "message": msg})
+            return {"ok": False, "error": msg}
         self.jobs.put({**job, "audio": audio, "sr": dsp.TARGET_SR, "t_end": time.time()})
         self._set_state("processing", side=job["side"], mode=job["mode"])
         return {"ok": True, "seconds": round(len(audio) / dsp.TARGET_SR, 2)}

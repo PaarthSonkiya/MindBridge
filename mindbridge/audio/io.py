@@ -67,6 +67,7 @@ class Recorder:
         self._native_sr = TARGET_SR
         self.started_at = 0.0
         self.level_dbfs = -120.0
+        self.last_was_digital_silence = False
 
     @property
     def active(self) -> bool:
@@ -116,6 +117,9 @@ class Recorder:
         with self._lock:
             audio = np.concatenate(self._chunks) if self._chunks else np.zeros(0, np.float32)
             self._chunks = []
+        # Exact zeros for a whole recording mean the OS gave us no microphone access (e.g. macOS privacy
+        # settings), not a quiet room: real microphones always have some noise.
+        self.last_was_digital_silence = bool(audio.size > TARGET_SR // 4 and not np.any(audio))
         return resample(audio, self._native_sr)
 
 

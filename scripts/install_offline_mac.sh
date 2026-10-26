@@ -24,7 +24,7 @@ python -m pip install --no-index --find-links "$HERE/wheels" -q --upgrade pip
 python -m pip install --no-index --find-links "$HERE/wheels" -r "$APP/requirements-macos-arm64.lock"
 
 rm -rf "$APP/models"
-ln -s "$HERE/models" "$APP/models"
+ln -s ../models "$APP/models"   # relative, so the folder can be moved
 
 # Verify model integrity against the manifest.
 python - "$HERE/models" <<'EOF'
@@ -40,7 +40,10 @@ print(f"models: {len(m['files'])} files, {m['total_mb']} MB, {'all checksums OK'
 sys.exit(1 if bad else 0)
 EOF
 
+echo "macOS will now ask whether Terminal may use the microphone: click OK / Allow."
+python -c "import sounddevice as sd; sd.rec(8000, samplerate=16000, channels=1); sd.wait()" || true
 cd "$APP" && python -m mindbridge doctor || true
 echo
 echo "Installed. Start with:  cd $APP && bash scripts/run.sh"
+echo "(If you move this folder later, run install_offline_mac.sh again.)"
 echo "The first time you speak, allow Terminal to use the microphone (System Settings → Privacy & Security → Microphone)."

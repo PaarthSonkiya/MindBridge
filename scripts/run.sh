@@ -6,7 +6,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-[ -d .venv ] && . .venv/bin/activate
+if [ -d .venv ]; then
+  if ! .venv/bin/python -c 1 2>/dev/null; then
+    echo "The Python environment no longer works (was the folder moved?). Re-run the installer."; exit 1
+  fi
+  . .venv/bin/activate
+fi
 
 # Point the Hexagon DSP loader at the QNN skel libraries shipped inside onnxruntime-qnn (Linux only).
 QNN_DIR=""

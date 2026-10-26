@@ -203,3 +203,27 @@ def test_peak_memory_units(monkeypatch):
     monkeypatch.setattr(metrics, "IS_MAC", False)
     R.ru_maxrss = 2 * 2**20  # 2 GiB in KiB
     assert round(metrics.peak_rss_mb()) == 2048
+
+
+def test_locks_have_websocket_support():
+    """uvicorn serves the UI's /ws only with a WebSocket library installed (the UI is blank without it)."""
+    from pathlib import Path
+
+    root = Path(__file__).parent.parent
+    for f in ("requirements.txt", "requirements-aarch64.lock", "requirements-macos-arm64.lock"):
+        text = (root / f).read_text()
+        assert "websockets" in text and "uvicorn" in text, f
+
+
+def test_recorder_flags_blocked_microphone():
+    import numpy as np
+
+    from mindbridge.audio.io import Recorder
+
+    r = Recorder()
+    r._chunks = [np.zeros(16000, np.float32)]
+    r.stop()
+    assert r.last_was_digital_silence
+    r._chunks = [np.full(16000, 1e-4, np.float32)]
+    r.stop()
+    assert not r.last_was_digital_silence
