@@ -19,7 +19,8 @@ bash scripts/setup_mac.sh
 
 The script installs Python 3.12 for this user only, the exact package versions MindBridge was tested
 with, and the models (about 3.5 GB), then runs a self-check that translates one sentence. It ends with
-"Done. Next: …".
+"Done. Next: …". Two macOS pop-ups may appear: "install command line developer tools?" → **Not Now**
+(not needed), and "Terminal would like to access the microphone" → **OK**.
 
 Later code updates: `cd ~/MindBridge-main && bash scripts/update_mac.sh` (keeps the models).
 
