@@ -1,9 +1,10 @@
 # MindBridge
 
-**Offline voice translation and operational memory for multilingual factory floors, running entirely on a Qualcomm QCS6490 (RB3 Gen 2).**
+**Offline voice translation and operational memory for multilingual factory floors. Runs entirely on the device: an Apple Silicon Mac (the Phase 3 demo device) or a Qualcomm QCS6490 (RB3 Gen 2), where speech recognition runs on the Hexagon NPU.**
 
 A Korean, Chinese or English supervisor and a Vietnamese operator each tap their side of the
-screen and talk. MindBridge recognises the speech on the Hexagon NPU, translates it on the device,
+screen and talk. MindBridge recognises the speech (on the Hexagon NPU on an RB3 Gen 2, on the CPU on a
+Mac), translates it on the device,
 speaks the translation aloud, and remembers what matters for safety: it catches a contradicting
 order ("start Machine 4" while a restriction is still active), checks that the operator understood,
 answers "can we restart Machine 4?" from the factory's own history, and writes the shift handover.
@@ -52,6 +53,21 @@ token. Every number, raw log and per-sentence output, plus FLEURS/FLORES model c
 [bench/results/published/](bench/results/published/README.md).
 
 Language pairs: **VI ⇄ EN**, **VI ⇄ KO**, **VI ⇄ ZH** (choose on the screen).
+
+## For judges: install offline on a Mac (Phase 3 demo device)
+
+Apple Silicon Mac (M1 or later), macOS 14 or later, about 8 GB free disk. No admin rights or internet needed.
+Download the Mac package linked in our submission, then in Terminal:
+
+```bash
+cd ~/Downloads
+shasum -a 256 -c mindbridge-offline-0.4.0-macos-arm64.tar.gz.sha256
+tar -xzf mindbridge-offline-0.4.0-macos-arm64.tar.gz && cd mindbridge-offline-0.4.0-macos-arm64
+bash install_offline_mac.sh        # bundled Python + wheels, checks every model's sha256
+cd app && bash scripts/run.sh      # Wi-Fi off first; allow Terminal to use the microphone
+```
+
+Full Mac guide (online setup, benchmark, recording): [docs/mac.md](docs/mac.md).
 
 ## For judges: install offline on an RB3 Gen 2
 

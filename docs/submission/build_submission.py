@@ -158,7 +158,7 @@ def main():
     p = find_para(doc, "[Insert a compact diagram")
     for r in list(p.runs):
         r._r.getparent().remove(r._r)
-    p.add_run().add_picture(str(ROOT / "docs" / "img" / "architecture.png"), width=Cm(16.5))
+    p.add_run().add_picture(str(ROOT / "docs" / "img" / "architecture_mac.png"), width=Cm(16.5))
     fill_inline(find_para(doc, "Implementation notes:"), [F["implementation_notes"]])
 
     # Section 3.3 table
