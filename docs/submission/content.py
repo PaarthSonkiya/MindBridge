@@ -260,11 +260,11 @@ def fields(board: dict | None) -> dict:
     m = MS["models_mb"]
     cfgs = {k: x["total"] for k, x in MS["loaded_per_configuration_mb"].items()}
     size_text = (
-        f"Model files loaded for the VI ⇄ EN demo: {_fmt(cfgs.get('VI ⇄ EN demo (NPU)'), 0)} MB = Whisper "
+        f"Model files loaded for the VI ⇄ EN demo: {_fmt(cfgs.get('VI ⇄ EN (NPU)'), 0)} MB = Whisper "
         f"large-v3-turbo w8a16 QNN binaries {_fmt(m.get('asr/whisper-large-v3-turbo-quantized-qcs6490'), 0)} MB + "
         f"envit5 int8 {_fmt(m.get('mt/envit5-translation-ct2-int8'), 0)} MB + Piper voices "
         f"{_fmt(m.get('tts/vits-piper-vi_VN-vais1000-medium'), 0)} + {_fmt(m.get('tts/vits-piper-en_US-amy-low'), 0)} MB "
-        f"+ Silero VAD {_fmt(m.get('vad/silero_vad.onnx'))} MB. VI ⇄ KO: {_fmt(cfgs.get('VI ⇄ KO demo (NPU)'), 0)} MB "
+        f"+ Silero VAD {_fmt(m.get('vad/silero_vad.onnx'))} MB. VI ⇄ KO: {_fmt(cfgs.get('VI ⇄ KO (NPU)'), 0)} MB "
         f"(adds NLLB-200 1.3B int8 {_fmt(m.get('mt/nllb-200-distilled-1.3B-ct2-int8'), 0)} MB, and Supertonic-3 "
         f"{_fmt(m.get('tts/sherpa-onnx-supertonic-3-tts-int8-2026-05-11'), 0)} MB in place of the English voice)."
         "\n\n"

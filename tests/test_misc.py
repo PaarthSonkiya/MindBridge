@@ -176,3 +176,30 @@ def test_mt_router_picks_backend(tmp_path):
     assert r.backend_key("vi", "ko") == "nllb" and r.backend_key("en", "zh") == "nllb"
     r2 = MtRouter(tmp_path, MtConfig(en_vi_model_dir=""))
     assert r2.backend_key("vi", "en") == "nllb"
+
+
+def test_macos_route_parsing():
+    from mindbridge.metrics import parse_darwin_route
+
+    online = ("   route to: default\ndestination: default\n       mask: default\n    gateway: 192.168.1.1\n"
+              "  interface: en0\n      flags: <UP,GATEWAY,DONE,STATIC,PRCLONING,GLOBAL>\n")
+    tunnel_v6 = "   route to: ::\ndestination: default\n    gateway: fe80::%utun0\n  interface: utun0\n"
+    assert parse_darwin_route(online) == "default via en0 gateway 192.168.1.1 (IPv4)"
+    assert parse_darwin_route("", tunnel_v6) == ""  # Wi-Fi off: only the system tunnel's link-local route
+    assert parse_darwin_route("", "") == ""
+
+
+def test_peak_memory_units(monkeypatch):
+    import resource
+
+    from mindbridge import metrics
+
+    class R:
+        ru_maxrss = 2 * 2**30  # 2 GiB in bytes on macOS, would be KiB on Linux
+
+    monkeypatch.setattr(resource, "getrusage", lambda _who: R)
+    monkeypatch.setattr(metrics, "IS_MAC", True)
+    assert round(metrics.peak_rss_mb()) == 2048
+    monkeypatch.setattr(metrics, "IS_MAC", False)
+    R.ru_maxrss = 2 * 2**20  # 2 GiB in KiB
+    assert round(metrics.peak_rss_mb()) == 2048

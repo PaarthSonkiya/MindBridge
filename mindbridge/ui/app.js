@@ -81,8 +81,10 @@ function applyStatus(st) {
   chip.textContent = online ? "Network is on — turn it off for the demo" : "Offline: no network";
   const asr = st.models.find((m) => m.stage === "Speech recognition");
   const npu = $("#chip-npu");
-  npu.className = "chip " + (asr && asr.unit === "NPU" ? "ok" : "warn");
-  npu.textContent = asr && asr.unit === "NPU" ? "Speech on NPU" : "Speech on CPU";
+  // Amber only when the CPU is a fallback (NPU expected but unavailable); on a Mac the CPU is the plan.
+  const onNpu = asr && asr.unit === "NPU", fallback = asr && !onNpu && asr.note;
+  npu.className = "chip " + (fallback ? "warn" : "ok");
+  npu.textContent = onNpu ? "Speech on NPU" : `Speech on CPU${st.device && st.device.soc ? " · " + st.device.soc : ""}`;
   npu.title = asr ? `${asr.model}${asr.note ? " — " + asr.note : ""}` : "";
   setLight(st.light);
 }

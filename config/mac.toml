@@ -1,0 +1,38 @@
+# MindBridge on an Apple Silicon Mac (tested: MacBook Air M5, 16 GB). Picked automatically on macOS.
+# Everything runs on the Mac's CPU with CTranslate2 int8: there is no Hexagon NPU here, so Whisper
+# large-v3-turbo runs as an int8 CTranslate2 model instead of Qualcomm's w8a16 NPU build.
+# Any key can be overridden with MINDBRIDGE_<SECTION>_<KEY>, e.g. MINDBRIDGE_ASR_THREADS=6.
+
+models_dir = "models"
+data_dir = "data"
+default_pair = "vi-en"
+host = "127.0.0.1"
+port = 8765
+strict_offline = true
+
+[asr]
+backend = "cpu"
+qnn_model_dir = "asr/whisper-large-v3-turbo-quantized-qcs6490"   # unused on a Mac
+cpu_model_dir = "asr/ct2-whisper-large-v3-turbo"
+max_tokens = 120
+threads = 4                   # the performance cores
+
+[mt]
+en_vi_model_dir = "mt/envit5-translation-ct2-int8"
+en_vi_beam_size = 1
+model_dir = "mt/nllb-200-distilled-1.3B-ct2-int8"
+beam_size = 2
+threads = 4
+max_decoding_length = 200
+
+[tts]
+enabled = true
+threads = 2
+speed = 1.0
+
+[audio]
+input_device = ""             # "" = the Mac's current input (System Settings → Sound → Input)
+output_device = ""
+sample_rate = 16000
+vad_endpoint_silence_s = 0.9
+max_utterance_s = 25.0

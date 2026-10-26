@@ -30,11 +30,25 @@ def dir_bytes(p: Path) -> int:
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out", default=str(ROOT / "bench" / "results" / "published" / "model_sizes.json"))
+    ap.add_argument("--config", default="", help="config file (default: the one this machine uses)")
+    ap.add_argument("--out", default="", help="default: bench/results/published/model_sizes[_mac].json")
     ap.add_argument("--list-shipped", action="store_true", help="only print the shipped model paths (for packaging)")
     args = ap.parse_args()
-    cfg = load_config()
+    cfg = load_config(args.config or None)
     mp = cfg.models_path
+    on_npu = cfg.asr.backend != "cpu"
+
+    vad = "vad/silero_vad.onnx"
+    asr = cfg.asr.qnn_model_dir if on_npu else cfg.asr.cpu_model_dir
+    tts = {code: f"tts/{lang.tts_voice}" for code, lang in L.LANGUAGES.items()}
+    # What scripts/fetch_models.py installs and the offline package ships for this target.
+    shipped = [vad, asr]
+    if on_npu:  # RB3 Gen 2: fast-mode NPU build and the CPU fallback
+        shipped += ["asr/whisper-small-quantized-qcs6490", cfg.asr.cpu_model_dir]
+    shipped += [cfg.mt.en_vi_model_dir, cfg.mt.model_dir, *tts.values()]
+    if args.list_shipped:
+        print("\n".join(shipped))
+        return
 
     models = {}
     for group in ("vad", "asr", "mt", "tts"):
@@ -46,30 +60,26 @@ def main():
     def mb(keys):
         return round(sum(models.get(k, 0) for k in keys) / 2**20, 1)
 
-    vad = "vad/silero_vad.onnx"
-    asr = f"{cfg.asr.qnn_model_dir}".replace("\\", "/")
-    tts = {code: f"tts/{lang.tts_voice}" for code, lang in L.LANGUAGES.items()}
+    where = "NPU" if on_npu else "CPU"
     groups = {
-        "VI ⇄ EN demo (NPU)": [vad, asr, cfg.mt.en_vi_model_dir, tts["vi"], tts["en"]],
-        "VI ⇄ KO demo (NPU)": [vad, asr, cfg.mt.en_vi_model_dir, cfg.mt.model_dir, tts["vi"], tts["ko"]],
-        "VI ⇄ ZH demo (NPU)": [vad, asr, cfg.mt.en_vi_model_dir, cfg.mt.model_dir, tts["vi"], tts["zh"]],
-        "CPU fallback speech recognition": [cfg.asr.cpu_model_dir],
+        f"VI ⇄ EN ({where})": [vad, asr, cfg.mt.en_vi_model_dir, tts["vi"], tts["en"]],
+        f"VI ⇄ KO ({where})": [vad, asr, cfg.mt.en_vi_model_dir, cfg.mt.model_dir, tts["vi"], tts["ko"]],
+        f"VI ⇄ ZH ({where})": [vad, asr, cfg.mt.en_vi_model_dir, cfg.mt.model_dir, tts["vi"], tts["zh"]],
     }
-    # What scripts/fetch_models.py installs and the offline package ships.
-    shipped = [vad, asr, "asr/whisper-small-quantized-qcs6490", cfg.asr.cpu_model_dir, cfg.mt.en_vi_model_dir,
-               cfg.mt.model_dir, *tts.values()]
-    if args.list_shipped:
-        print("\n".join(shipped))
-        return
+    if on_npu:
+        groups["CPU fallback speech recognition"] = [cfg.asr.cpu_model_dir]
     report = {
         "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "target": "Qualcomm RB3 Gen 2 (Whisper on the NPU)" if on_npu else "CPU-only device, e.g. Apple Silicon Mac",
         "unit": "MB (2^20 bytes) of model files on disk",
-        "models_mb": {k: round(v / 2**20, 1) for k, v in models.items()},
+        "models_mb": {k: round(models[k] / 2**20, 1) for k in shipped if k in models},
         "loaded_per_configuration_mb": {name: {"total": mb(keys), "models": keys} for name, keys in groups.items()},
         "shipped_models": shipped,
         "all_shipped_models_mb": mb(shipped),
     }
-    Path(args.out).write_text(json.dumps(report, indent=2, ensure_ascii=False))
+    out = Path(args.out or ROOT / "bench" / "results" / "published" /
+               ("model_sizes.json" if on_npu else "model_sizes_mac.json"))
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False))
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
 

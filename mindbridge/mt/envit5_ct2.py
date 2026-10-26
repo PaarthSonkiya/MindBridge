@@ -17,6 +17,7 @@ import threading
 import time
 from pathlib import Path
 
+from mindbridge.ct2util import cpu_compute_type
 from mindbridge.mt.nllb_ct2 import MtResult, PhraseCache
 from mindbridge.mt.text import keep_final_punctuation, split_sentences
 
@@ -70,7 +71,7 @@ class Envit5Translator:
         if not sp_file.exists():
             raise FileNotFoundError(f"spiece.model missing in {self.model_dir}")
         self.translator = ctranslate2.Translator(
-            str(self.model_dir), device="cpu", compute_type="int8", inter_threads=1, intra_threads=threads
+            str(self.model_dir), device="cpu", compute_type=cpu_compute_type(), inter_threads=1, intra_threads=threads
         )
         self.sp = spm.SentencePieceProcessor(model_file=str(sp_file))
         self.beam_size = beam_size

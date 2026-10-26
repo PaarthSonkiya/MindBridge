@@ -1,23 +1,21 @@
 {
-  "created": "2026-10-22 20:43:37",
+  "created": "2026-10-26 16:43:02",
+  "target": "Qualcomm RB3 Gen 2 (Whisper on the NPU)",
   "unit": "MB (2^20 bytes) of model files on disk",
   "models_mb": {
     "vad/silero_vad.onnx": 0.6,
-    "asr/ct2-whisper-large-v3-turbo": 1547.3,
-    "asr/ct2-whisper-small": 464.5,
     "asr/whisper-large-v3-turbo-quantized-qcs6490": 983.9,
-    "asr/whisper-small-quantized-onnx": 0.8,
     "asr/whisper-small-quantized-qcs6490": 327.9,
+    "asr/ct2-whisper-small": 464.5,
     "mt/envit5-translation-ct2-int8": 265.7,
     "mt/nllb-200-distilled-1.3B-ct2-int8": 1340.7,
-    "mt/nllb-200-distilled-600M-ct2-int8": 604.0,
-    "tts/sherpa-onnx-supertonic-3-tts-int8-2026-05-11": 138.6,
-    "tts/vits-piper-en_US-amy-low": 77.3,
     "tts/vits-piper-vi_VN-vais1000-medium": 77.4,
+    "tts/vits-piper-en_US-amy-low": 77.3,
+    "tts/sherpa-onnx-supertonic-3-tts-int8-2026-05-11": 138.6,
     "tts/vits-piper-zh_CN-huayan-medium": 77.4
   },
   "loaded_per_configuration_mb": {
-    "VI ⇄ EN demo (NPU)": {
+    "VI ⇄ EN (NPU)": {
       "total": 1405.0,
       "models": [
         "vad/silero_vad.onnx",
@@ -27,7 +25,7 @@
         "tts/vits-piper-en_US-amy-low"
       ]
     },
-    "VI ⇄ KO demo (NPU)": {
+    "VI ⇄ KO (NPU)": {
       "total": 2807.0,
       "models": [
         "vad/silero_vad.onnx",
@@ -38,7 +36,7 @@
         "tts/sherpa-onnx-supertonic-3-tts-int8-2026-05-11"
       ]
     },
-    "VI ⇄ ZH demo (NPU)": {
+    "VI ⇄ ZH (NPU)": {
       "total": 2745.8,
       "models": [
         "vad/silero_vad.onnx",

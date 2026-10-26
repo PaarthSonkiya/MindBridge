@@ -16,6 +16,7 @@ from mindbridge import languages as L
 from mindbridge.asr.base import AsrEngine, AsrResult
 from mindbridge.asr.mel import log_mel
 from mindbridge.asr.tokenizer import WhisperDetokenizer
+from mindbridge.ct2util import cpu_compute_type
 
 
 class WhisperCt2(AsrEngine):
@@ -27,7 +28,7 @@ class WhisperCt2(AsrEngine):
         self._ct2 = ctranslate2
         self.model_dir = Path(model_dir)
         self.model = ctranslate2.models.Whisper(
-            str(self.model_dir), device="cpu", compute_type="int8", intra_threads=threads
+            str(self.model_dir), device="cpu", compute_type=cpu_compute_type(), intra_threads=threads
         )
         self.n_mels = int(self.model.n_mels)
         self.n_vocab = 51866 if self.n_mels == 128 else 51865  # large-v3 / turbo use 128 bands

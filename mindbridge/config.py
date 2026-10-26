@@ -7,6 +7,7 @@ environment variable ``MINDBRIDGE_<SECTION>_<KEY>`` (e.g. ``MINDBRIDGE_ASR_BACKE
 from __future__ import annotations
 
 import os
+import sys
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -15,7 +16,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _default_config_path() -> Path:
-    return Path(os.environ.get("MINDBRIDGE_CONFIG", REPO_ROOT / "config" / "mindbridge.toml"))
+    """config/mindbridge.toml (Qualcomm RB3 Gen 2), or config/mac.toml on a Mac; MINDBRIDGE_CONFIG overrides."""
+    if "MINDBRIDGE_CONFIG" in os.environ:
+        return Path(os.environ["MINDBRIDGE_CONFIG"])
+    mac = REPO_ROOT / "config" / "mac.toml"
+    if sys.platform == "darwin" and mac.exists():
+        return mac
+    return REPO_ROOT / "config" / "mindbridge.toml"
 
 
 @dataclass

@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from mindbridge import languages as L
+from mindbridge.ct2util import cpu_compute_type
 from mindbridge.mt.text import chinese_punctuation, keep_final_punctuation, split_sentences
 
 
@@ -65,7 +66,7 @@ class NllbTranslator:
 
         self.model_dir = Path(model_dir)
         self.translator = ctranslate2.Translator(
-            str(self.model_dir), device="cpu", compute_type="int8", inter_threads=1, intra_threads=threads
+            str(self.model_dir), device="cpu", compute_type=cpu_compute_type(), inter_threads=1, intra_threads=threads
         )
         sp_file = next(iter(sorted(self.model_dir.glob("*.model"))), None)
         if sp_file is None:

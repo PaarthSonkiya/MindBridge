@@ -56,10 +56,22 @@ def log(msg: str):
     print(f"[fetch] {msg}", flush=True)
 
 
+def _ssl_context():
+    """Standalone Pythons on macOS may not find the system CA store; certifi's bundle always works."""
+    import ssl
+
+    try:
+        import certifi
+
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
 def download(url: str, dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".part")
-    with urllib.request.urlopen(url) as r, open(tmp, "wb") as f:
+    with urllib.request.urlopen(url, context=_ssl_context()) as r, open(tmp, "wb") as f:
         shutil.copyfileobj(r, f, length=1 << 20)
     tmp.rename(dest)
 
@@ -146,6 +158,26 @@ def fetch_cpu_whisper():
     write_whisper_tokens(out / "whisper-tokens.txt")
 
 
+# Whisper large-v3-turbo as a CTranslate2 model (fp16 weights, loaded as int8) for CPUs without the
+# Hexagon NPU, e.g. Apple Silicon Macs. Pinned to the revision MindBridge was measured with.
+TURBO_CT2 = ("dropbox-dash/faster-whisper-large-v3-turbo", "0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf")
+
+
+def fetch_cpu_whisper_turbo():
+    out = MODELS / "asr" / "ct2-whisper-large-v3-turbo"
+    if (out / "model.bin").exists():
+        log(f"have {out.relative_to(ROOT)}")
+        return
+    from huggingface_hub import snapshot_download
+
+    log(f"downloading {TURBO_CT2[0]} (Whisper large-v3-turbo, CTranslate2)")
+    snapshot_download(TURBO_CT2[0], revision=TURBO_CT2[1], local_dir=str(out),
+                      allow_patterns=["model.bin", "config.json", "vocabulary.json", "tokenizer.json",
+                                      "preprocessor_config.json", "README.md"])
+    shutil.rmtree(out / ".cache", ignore_errors=True)
+    write_whisper_tokens(out / "whisper-tokens.txt")
+
+
 def write_whisper_tokens(path: Path):
     """Byte-level token table ('<base64 bytes> <id>') from Whisper's multilingual vocabulary.
 
@@ -188,6 +220,7 @@ def default_licenses() -> dict[str, str]:
     lic = {rel: license_ for items in ASSETS.values() for rel, _url, license_ in items}
     lic.update({
         "asr/ct2-whisper-small": "MIT (OpenAI Whisper; CTranslate2 conversion by Systran)",
+        "asr/ct2-whisper-large-v3-turbo": "MIT (OpenAI Whisper; CTranslate2 conversion)",
         "asr/whisper-large-v3-turbo-quantized-qcs6490": "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license",
         "asr/whisper-small-quantized-qcs6490": "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license",
         "mt/envit5-translation-ct2-int8": "OpenRAIL (VietAI envit5-translation)",
@@ -219,6 +252,8 @@ def main():
     ap.add_argument("--convert", action="store_true", help="convert NLLB from Meta's weights even if a prebuilt exists")
     ap.add_argument("--only", default="", help="comma list: vad,asr_cpu,asr_npu,mt,tts")
     ap.add_argument("--skip-npu", action="store_true", help="skip the Qualcomm AI Hub Whisper download")
+    ap.add_argument("--target", choices=["rb3", "mac"], default="rb3",
+                    help="rb3: Qualcomm RB3 Gen 2 (NPU builds + CPU fallback); mac: Apple Silicon (CPU turbo, no NPU)")
     args = ap.parse_args()
     only = set(filter(None, args.only.split(",")))
     want = lambda k: not only or k in only  # noqa: E731
@@ -229,15 +264,18 @@ def main():
             for rel, url, lic in items:
                 fetch_asset(rel, url)
                 licenses[rel] = lic
-    if want("asr_cpu"):
+    if want("asr_cpu") and args.target == "rb3":
         fetch_cpu_whisper()
         licenses["asr/ct2-whisper-small"] = "MIT (OpenAI Whisper; CTranslate2 conversion by Systran)"
+    if want("asr_cpu") and args.target == "mac":
+        fetch_cpu_whisper_turbo()
+        licenses["asr/ct2-whisper-large-v3-turbo"] = "MIT (OpenAI Whisper; CTranslate2 conversion)"
     if want("mt"):
         fetch_envit5()
         licenses["mt/envit5-translation-ct2-int8"] = "OpenRAIL (VietAI envit5-translation)"
         fetch_nllb(args.nllb, args.convert)
         licenses[f"mt/nllb-200-distilled-{args.nllb}-ct2-int8"] = "CC-BY-NC-4.0 (Meta NLLB-200)"
-    if want("asr_npu") and not args.skip_npu:
+    if want("asr_npu") and not args.skip_npu and args.target == "rb3":
         for model in filter(None, args.whisper.split(",")):
             fetch_qnn_whisper(model)
             licenses[f"asr/{model.replace('_', '-')}-qcs6490"] = "MIT (OpenAI Whisper) / Qualcomm AI Hub Models license"
