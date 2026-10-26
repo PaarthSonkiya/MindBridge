@@ -25,6 +25,7 @@ if ! command -v uv >/dev/null; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 uv python install 3.12
+rm -rf .venv   # re-running the setup starts from a clean environment (packages come from uv's cache)
 uv venv --seed --python 3.12 .venv
 . .venv/bin/activate
 
