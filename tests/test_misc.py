@@ -227,3 +227,18 @@ def test_recorder_flags_blocked_microphone():
     r._chunks = [np.full(16000, 1e-4, np.float32)]
     r.stop()
     assert not r.last_was_digital_silence
+
+
+def test_mac_launchers_point_to_existing_scripts():
+    import os
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).parent.parent
+    text = (root / "scripts" / "mac_launchers.sh").read_text()
+    targets = re.findall(r'^make_launcher ".+" "bash (scripts/[\w.-]+\.sh)"$', text, re.M)
+    assert len(targets) == 3
+    for t in [*targets, "scripts/install_mac.sh", "scripts/setup_mac.sh", "scripts/update_mac.sh"]:
+        p = root / t
+        assert p.is_file(), t
+        assert os.access(p, os.X_OK), t

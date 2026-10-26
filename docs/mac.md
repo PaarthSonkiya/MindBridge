@@ -22,7 +22,15 @@ with, and the models (about 3.5 GB), then runs a self-check that translates one 
 "Done. Next: …". Two macOS pop-ups may appear: "install command line developer tools?" → **Not Now**
 (not needed), and "Terminal would like to access the microphone" → **OK**.
 
-Later code updates: `cd ~/MindBridge-main && bash scripts/update_mac.sh` (keeps the models).
+Or the same in one line, which also puts three double-click icons on the Desktop (Start MindBridge,
+MindBridge Benchmark, Build MindBridge Package):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PaarthSonkiya/MindBridge/main/scripts/install_mac.sh | bash
+```
+
+Later code updates: `cd ~/MindBridge-main && bash scripts/update_mac.sh` (keeps the models), or run the
+one-line installer again.
 
 ## 2. First run
 
@@ -51,7 +59,8 @@ caffeinate -i python bench/run_benchmark.py --data ~/onevoice-samples --mode voi
 python bench/model_sizes.py
 ```
 
-`caffeinate` keeps the Mac awake; `--require-offline` refuses to start while Wi-Fi is on. Each folder gets
+Or double-click **MindBridge Benchmark** on the Desktop (`bash scripts/benchmark_mac.sh`): it runs the
+same three commands and leaves `mindbridge-mac-results.zip` on the Desktop. `caffeinate` keeps the Mac awake; `--require-offline` refuses to start while Wi-Fi is on. Each folder gets
 `summary.md` (the table), `summary.json`, `results.jsonl` (every sentence) and `run.log` (device, models,
 network state before and after). Zip `bench/results/published/mac_m5_text`, `mac_m5_voice` and
 `model_sizes_mac.json` and send them to the team.
