@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 PUB = ROOT / "bench" / "results" / "published"
 REPO = "https://github.com/PaarthSonkiya/MindBridge"
-BRANCH = "phase3-prototype"
+BRANCH = "main"
 VERSION = "0.4.0"
 
 

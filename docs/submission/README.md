@@ -27,7 +27,7 @@ python docs/submission/build_submission.py --template template.docx \
 Build it on any Linux machine with internet (the RB3 Gen 2 itself works, during its online setup):
 
 ```bash
-git clone -b phase3-prototype https://github.com/PaarthSonkiya/MindBridge && cd MindBridge
+git clone https://github.com/PaarthSonkiya/MindBridge && cd MindBridge
 python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
 python scripts/fetch_models.py               # ~3.7 GB of models, once
 bash scripts/build_offline_bundle.sh         # → dist/mindbridge-offline-0.4.0-aarch64.tar.gz (+ .sha256)

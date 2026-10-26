@@ -28,7 +28,6 @@ Canonical publishes a certified Ubuntu 24.04 image for the QCS6490 (desktop and 
 
 ```bash
 git clone https://github.com/PaarthSonkiya/MindBridge && cd MindBridge
-git checkout phase3-prototype
 bash scripts/setup_rb3.sh
 ```
 
